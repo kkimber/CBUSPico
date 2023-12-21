@@ -2,7 +2,10 @@ add_executable(CBUSPico
    # Sources for CBUSPico libary 
    CBUSLED.cpp
    CBUSSwitch.cpp
+   CBUSConfig.cpp
+   CBUSParams.cpp
    SystemTick.cpp
+   CBUS.cpp
    ExampleModule.c
 )
 
