@@ -103,7 +103,7 @@ void CBUSbase::setSLiM(void)
 /// extract CANID from CAN frame header
 //
 
-inline uint8_t CBUSbase::getCANID(unsigned long header)
+inline uint8_t CBUSbase::getCANID(uint32_t header)
 {
 
    return header & 0x7f;
@@ -309,7 +309,7 @@ void CBUSbase::process(uint8_t num_messages)
 {
 
    uint8_t remoteCANID = 0, evindex = 0, evval = 0;
-   unsigned int nn = 0, en = 0, opc;
+   uint32_t nn = 0, en = 0, opc;
 
    // start bus enumeration if required
    if (enumeration_required)
@@ -351,7 +351,7 @@ void CBUSbase::process(uint8_t num_messages)
          {
 
             // how long was it pressed for ?
-            unsigned long press_time = _sw.getLastStateDuration();
+            uint32_t press_time = _sw.getLastStateDuration();
 
             // long hold > 6 secs
             if (press_time > SW_TR_HOLD)
@@ -1177,7 +1177,7 @@ void CBUSbase::checkCANenum(void)
 /// for accessory event messages, lookup the event in the event table and call the user's registered event handler function
 //
 
-void CBUSbase::processAccessoryEvent(unsigned int nn, unsigned int en, bool is_on_event)
+void CBUSbase::processAccessoryEvent(uint32_t nn, uint32_t en, bool is_on_event)
 {
 
    // try to find a matching stored event -- match on nn, en
@@ -1358,7 +1358,7 @@ CANFrame *circular_buffer2::get(void)
 /// get the insert time of the current buffer tail item
 /// must be called before the item is removed by ::get
 
-unsigned long circular_buffer2::insert_time(void)
+uint32_t circular_buffer2::insert_time(void)
 {
 
    return (_buffer[_tail]._item_insert_time);
@@ -1449,7 +1449,7 @@ uint8_t circular_buffer2::free_slots(void)
 
 /// number of puts
 
-unsigned int circular_buffer2::puts(void)
+uint32_t circular_buffer2::puts(void)
 {
 
    return _puts;
@@ -1457,7 +1457,7 @@ unsigned int circular_buffer2::puts(void)
 
 /// number of gets
 
-unsigned int circular_buffer2::gets(void)
+uint32_t circular_buffer2::gets(void)
 {
 
    return _gets;
@@ -1465,7 +1465,7 @@ unsigned int circular_buffer2::gets(void)
 
 /// number of overflows
 
-unsigned int circular_buffer2::overflows(void)
+uint32_t circular_buffer2::overflows(void)
 {
 
    return _overflows;

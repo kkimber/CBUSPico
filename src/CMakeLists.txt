@@ -5,6 +5,7 @@ add_executable(CBUSPico
    CBUSConfig.cpp
    CBUSParams.cpp
    SystemTick.cpp
+   CBUSLongMessage.cpp
    CBUS.cpp
    ExampleModule.c
 )

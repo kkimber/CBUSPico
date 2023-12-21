@@ -88,7 +88,7 @@ public:
    bool sendWRACK(void);
    bool sendCMDERR(uint8_t cerrno);
    void CANenumeration(void);
-   uint8_t getCANID(unsigned long header);
+   uint8_t getCANID(uint32_t header);
    bool isExt(CANFrame *msg);
    bool isRTR(CANFrame *msg);
    void process(uint8_t num_messages = 3);
@@ -106,12 +106,12 @@ public:
    void setEventHandler(void (*fptr)(uint8_t index, CANFrame *msg, bool ison, uint8_t evval));
    void setFrameHandler(void (*fptr)(CANFrame *msg), uint8_t *opcodes = NULL, uint8_t num_opcodes = 0);
    void makeHeader(CANFrame *msg, uint8_t priority = DEFAULT_PRIORITY);
-   void processAccessoryEvent(unsigned int nn, unsigned int en, bool is_on_event);
+   void processAccessoryEvent(uint32_t nn, uint32_t en, bool is_on_event);
 
    void setLongMessageHandler(CBUSLongMessage *handler);
    void consumeOwnEvents(CBUScoe *coe);
 
-   unsigned int _numMsgsSent, _numMsgsRcvd;
+   uint32_t _numMsgsSent, _numMsgsRcvd;
 
 protected: // protected members become private in derived classes
    CANFrame _msg;
@@ -127,7 +127,7 @@ protected: // protected members become private in derived classes
    uint8_t _num_opcodes;
    uint8_t enum_responses[16]; // 128 bits for storing CAN ID enumeration results
    bool bModeChanging, bCANenum, bLearn;
-   unsigned long timeOutTimer, CANenumTime;
+   uint32_t timeOutTimer, CANenumTime;
    bool enumeration_required;
    bool UI = false;
 
@@ -146,13 +146,13 @@ class CBUSLongMessage
 
 public:
    CBUSLongMessage(CBUSbase *cbus_object_ptr);
-   bool sendLongMessage(const void *msg, const unsigned int msg_len, const uint8_t stream_id, const uint8_t priority = DEFAULT_PRIORITY);
-   void subscribe(uint8_t *stream_ids, const uint8_t num_stream_ids, void *receive_buffer, const unsigned int receive_buffer_len, void (*messagehandler)(void *fragment, const unsigned int fragment_len, const uint8_t stream_id, const uint8_t status));
+   bool sendLongMessage(const void *msg, const uint32_t msg_len, const uint8_t stream_id, const uint8_t priority = DEFAULT_PRIORITY);
+   void subscribe(uint8_t *stream_ids, const uint8_t num_stream_ids, void *receive_buffer, const uint32_t receive_buffer_len, void (*messagehandler)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status));
    bool process(void);
    virtual void processReceivedMessageFragment(const CANFrame *frame);
    bool is_sending(void);
    void setDelay(uint8_t delay_in_millis);
-   void setTimeout(unsigned int timeout_in_millis);
+   void setTimeout(uint32_t timeout_in_millis);
 
 protected:
    bool sendMessageFragment(CANFrame *frame, const uint8_t priority);
@@ -160,11 +160,11 @@ protected:
    bool _is_receiving = false;
    uint8_t *_send_buffer, *_receive_buffer;
    uint8_t _send_stream_id = 0, _receive_stream_id = 0, *_stream_ids = NULL, _num_stream_ids = 0, _send_priority = DEFAULT_PRIORITY, _msg_delay = LONG_MESSAGE_DEFAULT_DELAY, _sender_canid = 0;
-   unsigned int _send_buffer_len = 0, _incoming_message_length = 0, _receive_buffer_len = 0, _receive_buffer_index = 0, _send_buffer_index = 0, _incoming_message_crc = 0,
+   uint32_t _send_buffer_len = 0, _incoming_message_length = 0, _receive_buffer_len = 0, _receive_buffer_index = 0, _send_buffer_index = 0, _incoming_message_crc = 0,
                 _incoming_bytes_received = 0, _receive_timeout = LONG_MESSAGE_RECEIVE_TIMEOUT, _send_sequence_num = 0, _expected_next_receive_sequence_num = 0;
-   unsigned long _last_fragment_sent = 0UL, _last_fragment_received = 0UL;
+   uint32_t _last_fragment_sent = 0UL, _last_fragment_received = 0UL;
 
-   void (*_messagehandler)(void *fragment, const unsigned int fragment_len, const uint8_t stream_id, const uint8_t status); // user callback function to receive long message fragments
+   void (*_messagehandler)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status); // user callback function to receive long message fragments
    CBUSbase *_cbus_object_ptr;
 };
 
@@ -177,8 +177,8 @@ typedef struct _receive_context_t
    bool in_use;
    uint8_t receive_stream_id, sender_canid;
    uint8_t *buffer;
-   unsigned int receive_buffer_index, incoming_bytes_received, incoming_message_length, expected_next_receive_sequence_num, incoming_message_crc;
-   unsigned long last_fragment_received;
+   uint32_t receive_buffer_index, incoming_bytes_received, incoming_message_length, expected_next_receive_sequence_num, incoming_message_crc;
+   uint32_t last_fragment_received;
 } receive_context_t;
 
 typedef struct _send_context_t
@@ -186,8 +186,8 @@ typedef struct _send_context_t
    bool in_use;
    uint8_t send_stream_id, send_priority, msg_delay;
    uint8_t *buffer;
-   unsigned int send_buffer_len, send_buffer_index, send_sequence_num;
-   unsigned long last_fragment_sent;
+   uint32_t send_buffer_len, send_buffer_index, send_sequence_num;
+   uint32_t last_fragment_sent;
 } send_context_t;
 
 //
@@ -201,10 +201,10 @@ public:
    CBUSLongMessageEx(CBUSbase *cbus_object_ptr)
        : CBUSLongMessage(cbus_object_ptr) {} // derived class constructor calls the base class constructor
 
-   bool allocateContexts(uint8_t num_receive_contexts = NUM_EX_CONTEXTS, unsigned int receive_buffer_len = EX_BUFFER_LEN, uint8_t num_send_contexts = NUM_EX_CONTEXTS);
-   bool sendLongMessage(const void *msg, const unsigned int msg_len, const uint8_t stream_id, const uint8_t priority = DEFAULT_PRIORITY);
+   bool allocateContexts(uint8_t num_receive_contexts = NUM_EX_CONTEXTS, uint32_t receive_buffer_len = EX_BUFFER_LEN, uint8_t num_send_contexts = NUM_EX_CONTEXTS);
+   bool sendLongMessage(const void *msg, const uint32_t msg_len, const uint8_t stream_id, const uint8_t priority = DEFAULT_PRIORITY);
    bool process(void);
-   void subscribe(uint8_t *stream_ids, const uint8_t num_stream_ids, void (*messagehandler)(void *msg, unsigned int msg_len, uint8_t stream_id, uint8_t status));
+   void subscribe(uint8_t *stream_ids, const uint8_t num_stream_ids, void (*messagehandler)(void *msg, uint32_t msg_len, uint8_t stream_id, uint8_t status));
    virtual void processReceivedMessageFragment(const CANFrame *frame);
    uint8_t is_sending(void);
    void use_crc(bool use_crc);
@@ -224,7 +224,7 @@ private:
 
 typedef struct _buffer_entry2
 {
-   unsigned long _item_insert_time;
+   uint32_t _item_insert_time;
    CANFrame _item;
 } buffer_entry2_t;
 
@@ -240,21 +240,21 @@ public:
    void put(const CANFrame *cf);
    CANFrame *peek(void);
    CANFrame *get(void);
-   unsigned long insert_time(void);
+   uint32_t insert_time(void);
    bool full(void);
    void clear(void);
    bool empty(void);
    uint8_t size(void);
    uint8_t free_slots(void);
-   unsigned int puts();
-   unsigned int gets();
+   uint32_t puts();
+   uint32_t gets();
    uint8_t hwm(void);
-   unsigned int overflows(void);
+   uint32_t overflows(void);
 
 private:
    bool _full;
    uint8_t _head, _tail, _capacity, _size, _hwm;
-   unsigned int _puts, _gets, _overflows;
+   uint32_t _puts, _gets, _overflows;
    buffer_entry2_t *_buffer;
 };
 
