@@ -63,7 +63,7 @@ public:
    void run();
    void pulse();
 
-protected:
+private:
    uint8_t m_pin;
    bool m_state;
    bool m_blink;

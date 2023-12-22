@@ -108,7 +108,6 @@ class CBUSbase
 {
 
 public:
-   CBUSbase();
    CBUSbase(CBUSConfig *the_config);
 
    // these methods are pure virtual and must be implemented by the derived class

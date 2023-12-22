@@ -18,31 +18,26 @@ pico_sdk_init()
 add_subdirectory(src)
 
 # Look for the Doxygen package
-find_package(Doxygen)
+find_package(Doxygen
+   REQUIRED dot)
 
 # Build documentation
 if (DOXYGEN_FOUND)
 
-set(DOXYGEN_GENERATE_LATEX NO)
-set(DOXYGEN_GENERATE_HTML YES)
-doxygen_add_docs(
-   doxygen
-   ${PROJECT_SOURCE_DIR}
-)
-   # set input and output files
-   set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs_doxygen/Doxyfile.in)
-   set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.out)
+   set(DOXYGEN_GENERATE_LATEX NO)
+   set(DOXYGEN_GENERATE_HTML YES)
+   set(DOXYGEN_EXTRACT_PACKAGE YES)
+   set(DOXYGEN_INLINE_SIMPLE_STRUCTS YES)
+   set(DOXYGEN_TYPEDEF_HIDES_STRUCT YES)
+   set(DOXYGEN_RECURSIVE NO)
+   set(DOXYGEN_PROJECT_LOGO ${PROJECT_SOURCE_DIR}/doc/logo.png)
 
-   # request to configure the file
-   configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-   message("Doxygen build started")
-
-   # Note: do not put "ALL" - this builds docs together with application EVERY TIME!
-   add_custom_target( docs
-      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating API documentation with Doxygen"
-      VERBATIM )
+   doxygen_add_docs(
+      doxygen
+      ${PROJECT_SOURCE_DIR}/src
+      ${PROJECT_SOURCE_DIR}/doc
+      COMMENT "Generate CBUS Library Docs"
+   )
 else (DOXYGEN_FOUND)
    message("Doxygen need to be installed to generate the doxygen documentation")
 endif (DOXYGEN_FOUND)

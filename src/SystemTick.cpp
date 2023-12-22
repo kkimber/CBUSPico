@@ -39,40 +39,29 @@
 
 #include "SystemTick.h"
 
-#include <RP2040.h>
 #include <pico/stdlib.h>
-#include <hardware/irq.h>
 
-// Initialize milliseconds since boot counter
-uint32_t SystemTick::m_nMilliTicks = 0x0UL;
-
-#define MHZ_TO_MS 1000
-
+///
+/// Constructor
+///
 SystemTick::SystemTick()
 {
 
 }
 
-bool SystemTick::Init(void)
-{
-   // Configure SysTick for 1ms tick rate
-   return SysTick_Config(SystemCoreClock / MHZ_TO_MS) == 0;
-}
-
-void SystemTick::IncMilli(void)
-{
-   // Increment milliseconds since boot counter
-   SystemTick::m_nMilliTicks++;
-}
-
+//
+/// Get milliseconds since boot counter value
+//
 uint32_t SystemTick::GetMilli(void)
 {
-   // Get milliseconds since boot counter value
-   return m_nMilliTicks;
+  // return m_nMilliTicks;
+  return to_ms_since_boot(get_absolute_time());
 }
 
-extern "C" void SysTick_Handler(void)
+///
+/// Get microseconds since boot counter value
+///
+uint32_t SystemTick::GetMicros(void)
 {
-   // Increment millisecond since boot tick counter on every SysTick
-   SystemTick::IncMilli();
+   return to_us_since_boot(get_absolute_time());
 }

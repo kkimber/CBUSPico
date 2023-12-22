@@ -41,8 +41,9 @@
 
 #include <cstdint>
 
-#include "CBUSLED.h"
-#include "CBUSSwitch.h"
+// Forward declations
+class CBUSLED;
+class CBUSSwitch;
 
 // in-memory hash table
 static const uint8_t EE_HASH_BYTES = 4;
@@ -71,7 +72,6 @@ public:
    uint8_t findExistingEvent(uint32_t nn, uint32_t en);
    uint8_t findEventSpace(void);
 
-   void printEvHashTable(bool raw);
    uint8_t getEvTableEntry(uint8_t tindex);
    uint8_t numEvents(void);
    uint8_t makeHash(uint8_t tarr[]);
@@ -127,7 +127,6 @@ public:
    uint32_t nodeNum;
    uint8_t eeprom_type;
    uint8_t external_address;
-  // TwoWire *I2Cbus;
    uint8_t *evhashtbl;
    bool hash_collision;
 };

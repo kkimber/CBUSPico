@@ -46,10 +46,12 @@
 /// class for individual LED with non-blocking control
 //
 
-CBUSLED::CBUSLED() : m_state{false},
+CBUSLED::CBUSLED() : m_pin{0x0U},
+                     m_state{false},
                      m_blink{false},
                      m_pulse{false},
-                     m_lastTime{0UL}
+                     m_lastTime{0x0UL},
+                     m_pulseStart{0x0UL}
 {
 }
 

@@ -94,9 +94,6 @@ void setupCBUS()
    module_config.setEEPROMtype(EEPROM_INTERNAL);
    module_config.begin();
 
-   //Serial << F("> mode = ") << ((module_config.FLiM) ? "FLiM" : "SLiM") << F(", CANID = ") << module_config.CANID;
-   //Serial << F(", NN = ") << module_config.nodeNum << endl;
-
    // set module parameters
    CBUSParams params(module_config);
    params.setVersion(VER_MAJ, VER_MIN, VER_BETA);
@@ -143,11 +140,7 @@ void setupCBUS()
 
    if (!CBUS.begin())
    {
-      //Serial << F("> can2040 init fail") << endl;
-   }
-   else
-   {
-      //Serial << F("> can2040 init ok") << endl;
+      // Init OK 
    }
 }
 
@@ -157,13 +150,7 @@ void setupCBUS()
 
 void setup()
 {
-   //Serial.begin(115200);
-   //while (!Serial)
-   //   ;
-   //Serial << endl
-   //       << endl
-   //       << F("> ** CBUS 1 in 1 out v1 ** ") << __FILE__ << endl;
-
+   // Setup CBUS Library
    setupCBUS();
 
    // configure the module switch, attached to pin 11, active low
@@ -171,10 +158,6 @@ void setup()
 
    // configure the module LED, attached to pin 12 via a 1K resistor
    moduleLED.setPin(12);
-
-   // end of setup
-   //Serial << F("> ready") << endl
-   //       << endl;
 }
 
 //
@@ -228,11 +211,7 @@ void processModuleSwitchChange()
 
       if (CBUS.sendMessage(&msg))
       {
-         //Serial << F("> sent CBUS message") << endl;
-      }
-      else
-      {
-         //Serial << F("> error sending CBUS message") << endl;
+         // Sent OK
       }
    }
 }
@@ -247,8 +226,6 @@ void eventhandler(uint8_t index, CANFrame *msg)
 {
    // as an example, control an LED
 
-   //Serial << F("> event handler: index = ") << index << F(", opcode = 0x") << _HEX(msg->data[0]) << endl;
-
    // read the value of the first event variable (EV) associated with this learned event
    uint8_t evval = module_config.getEventEVval(index, 1);
    //Serial << F("> EV1 = ") << evval << endl;
@@ -260,27 +237,26 @@ void eventhandler(uint8_t index, CANFrame *msg)
    {
       if (evval == 0)
       {
-         //Serial << F("> switching the LED on") << endl;
          moduleLED.on();
       }
       else if (evval == 1)
       {
-         //Serial << F("> switching the LED to blink") << endl;
          moduleLED.blink();
       }
    }
    else if (msg->data[0] == OPC_ACOF)
    {
-      //Serial << F("> switching the LED off") << endl;
       moduleLED.off();
    }
 }
 
-// MAIN ENTRY 
+// MODULE MAIN ENTRY 
 extern "C" int main(int argc, char* argv[])
 {
+   // Initialize
    setup();
 
+   // Run periodic processing - forever
    while(1)
    {
       loop();

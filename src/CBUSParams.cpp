@@ -37,17 +37,65 @@
 
 */
 
-#include <CBUSParams.h>
+#include "CBUSParams.h"
+#include "cbusdefs.h"
+
+#include <string.h>
 
 uint8_t CBUSParams::params[21] = {};
 
+CBUSParams::CBUSParams(CBUSConfig const &config)
+{
+   params[0] = 20;                   // byte 0 num params = 20
+   params[1] = MANU_MERG;            // byte 1 manf = MERG, 165
+   params[4] = config.EE_MAX_EVENTS; // byte 4 num events
+   params[5] = config.EE_NUM_EVS;    // byte 5 num evs per event
+   params[6] = config.EE_NUM_NVS;    // byte 6 num NVs
+   params[10] = PB_CAN;              // byte 10 CAN implementation of CBUS
+   params[11] = 0x00;
+   params[12] = 0x00;
+   params[13] = 0x00;
+   params[14] = 0x00;
+   initProcessorParams();
+}
+
+void CBUSParams::setVersion(char major, char minor, char beta)
+{
+   params[7] = major; // byte  7 code major version
+   params[2] = minor; // byte  2 code minor version
+   params[20] = beta; // byte 20 code beta version
+}
+
+void CBUSParams::setModuleId(uint8_t id)
+{
+   params[3] = id; // byte 3 module id
+}
+
+void CBUSParams::setFlags(uint8_t flags)
+{
+   params[8] = flags; // byte 8 flags - FLiM, consumer/producer
+}
+
+// Optional: use this to override processor info that is set by default.
+void CBUSParams::setProcessor(uint8_t manufacturer, uint8_t id, char const *name)
+{
+   params[9] = id;               // byte  9 processor id
+   params[19] = manufacturer;    // byte 19 processor manufacturer
+   memcpy(params + 15, name, 4); // byte 15-18 processor version
+}
+
+uint8_t *CBUSParams::getParams()
+{
+   return params;
+}
+
 void CBUSParams::initProcessorParams()
 {
-  params[9] = 50;
-  params[19] = CPUM_ARM;
+   params[9] = 50;        // byte  9 processor id
+   params[19] = CPUM_ARM; // byte 19 processor manufacturer
 
-  params[15] = '?';
-  params[16] = '?';
-  params[17] = '?';
-  params[18] = '?';
+   params[15] = '?'; // byte 15-18 processor version
+   params[16] = '?';
+   params[17] = '?';
+   params[18] = '?';
 }

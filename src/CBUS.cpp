@@ -49,17 +49,6 @@
 void makeHeader_impl(CANFrame *msg, uint8_t id, uint8_t priority = 0x0b);
 
 //
-/// construct a CBUS object with an external CBUSConfig object named "config" that is defined
-/// in user code
-//
-
-CBUSbase::CBUSbase()
-{
-   extern CBUSConfig config;
-   module_config = &config;
-}
-
-//
 /// construct a CBUS object with a CBUSConfig object that the user provides.
 /// note that this CBUSConfig object must have a lifetime longer than the CBUS object.
 //
@@ -212,7 +201,6 @@ void CBUSbase::CANenumeration(void)
 //
 /// initiate the transition from SLiM to FLiM mode
 //
-
 void CBUSbase::initFLiM(void)
 {
    // DEBUG_SERIAL << F("> initiating FLiM negotation") << endl;
@@ -233,7 +221,6 @@ void CBUSbase::initFLiM(void)
 //
 /// revert from FLiM to SLiM mode
 //
-
 void CBUSbase::revertSLiM(void)
 {
    // DEBUG_SERIAL << F("> reverting to SLiM mode") << endl;
@@ -251,7 +238,6 @@ void CBUSbase::revertSLiM(void)
 //
 /// change or re-confirm node number
 //
-
 void CBUSbase::renegotiate(void)
 {
    initFLiM();
@@ -260,7 +246,6 @@ void CBUSbase::renegotiate(void)
 //
 /// assign the two CBUS LED objects
 //
-
 void CBUSbase::setLEDs(CBUSLED green, CBUSLED yellow)
 {
    UI = true;
@@ -271,7 +256,6 @@ void CBUSbase::setLEDs(CBUSLED green, CBUSLED yellow)
 //
 /// assign the CBUS pushbutton switch object
 //
-
 void CBUSbase::setSwitch(CBUSSwitch sw)
 {
    UI = true;
@@ -281,7 +265,6 @@ void CBUSbase::setSwitch(CBUSSwitch sw)
 //
 /// set the CBUS LEDs to indicate the current mode
 //
-
 void CBUSbase::indicateMode(uint8_t mode)
 {
    // DEBUG_SERIAL << F("> indicating mode = ") << mode << endl;
@@ -312,8 +295,9 @@ void CBUSbase::indicateMode(uint8_t mode)
    }
 }
 
+//
 /// main CBUS message processing procedure
-
+//
 void CBUSbase::process(uint8_t num_messages)
 {
    uint8_t remoteCANID = 0, evindex = 0, evval = 0;
@@ -1298,7 +1282,7 @@ bool circular_buffer2::available(void)
 void circular_buffer2::put(const CANFrame *item)
 {
    memcpy((CANFrame *)&_buffer[_head]._item, (const CANFrame *)item, sizeof(CANFrame));
-   _buffer[_head]._item_insert_time = SystemTick::GetMilli(); // micros
+   _buffer[_head]._item_insert_time = SystemTick::GetMicros();
 
    // if the buffer is full, this put will overwrite the oldest item
 
@@ -1336,7 +1320,7 @@ CANFrame *circular_buffer2::get(void)
 }
 
 /// get the insert time of the current buffer tail item
-/// must be called before the item is removed by ::get
+/// must be called before the item is removed by circular_buffer2::get
 
 uint32_t circular_buffer2::insert_time(void)
 {

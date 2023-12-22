@@ -1,7 +1,10 @@
 set(CAN2040_SOURCE can2040/src)
 set(CBUSDEFS cbusdefs)
+set(EXAMPLE example)
 
 add_executable(CBUSPico
+   # Source for CAN2040 PIO based CAN controller
+   ${CAN2040_SOURCE}/can2040.c
    # Sources for CBUSPico libary 
    CBUSLED.cpp
    CBUSSwitch.cpp
@@ -12,8 +15,8 @@ add_executable(CBUSPico
    CBUS.cpp
    ACAN2040.cpp
    CBUSACAN2040.cpp
-   ${CAN2040_SOURCE}/can2040.c
-   CBUS_1in1out.cpp
+   # Example module using libary
+   ${EXAMPLE}/CBUS_1in1out.cpp
 )
 
 target_include_directories(CBUSPico PRIVATE

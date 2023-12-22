@@ -59,11 +59,6 @@ static void cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 /// constructor and destructor
 //
 
-CBUSACAN2040::CBUSACAN2040()
-{
-   initMembers();
-}
-
 CBUSACAN2040::CBUSACAN2040(CBUSConfig *the_config) : CBUSbase(the_config)
 {
    initMembers();
@@ -165,8 +160,6 @@ void CBUSACAN2040::notify_cb(struct can2040 *cd, uint32_t notify, struct can2040
       // Serial.printf("acan2040 cb: unknown event type\n");
       break;
    }
-
-   return;
 }
 
 //
@@ -214,16 +207,6 @@ bool CBUSACAN2040::sendMessage(CANFrame *msg, bool rtr, bool ext, uint8_t priori
       // Serial.printf("error sending message\n");
       return false;
    }
-}
-
-//
-/// display the CAN bus status instrumentation
-//
-
-void CBUSACAN2040::printStatus(void)
-{
-   // Serial.printf("not implemented");
-   return;
 }
 
 //
@@ -298,7 +281,7 @@ bool circular_buffer::available(void)
 void circular_buffer::put(const CANFrame *item)
 {
    memcpy((CANFrame *)&_buffer[_head]._item, (const CANFrame *)item, sizeof(CANFrame));
-   _buffer[_head]._item_insert_time = SystemTick::GetMilli();//micros();
+   _buffer[_head]._item_insert_time = SystemTick::GetMicros();
 
    // if the buffer is full, this put will overwrite the oldest item
 
@@ -313,8 +296,6 @@ void circular_buffer::put(const CANFrame *item)
    _size = size();
    _hwm = (_size > _hwm) ? _size : _hwm;
    ++_puts;
-
-   return;
 }
 
 /// retrieve the next item from the buffer
@@ -340,7 +321,7 @@ CANFrame *circular_buffer::get(void)
 }
 
 /// get the insert time of the current buffer tail item
-/// must be called before the item is removed by ::get
+/// must be called before the item is removed by circular_buffer::get
 
 unsigned long circular_buffer::insert_time(void)
 {
@@ -369,8 +350,6 @@ void circular_buffer::clear(void)
    _tail = 0;
    _full = false;
    _size = 0;
-
-   return;
 }
 
 /// return high water mark

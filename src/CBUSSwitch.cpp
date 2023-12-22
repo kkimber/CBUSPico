@@ -45,7 +45,6 @@
 //
 /// a class to encapsulate a physical pushbutton switch, with non-blocking processing
 //
-
 CBUSSwitch::CBUSSwitch() : m_pin{0x0U},
                            m_pressedState{0x0U},
                            m_currentState{0x0U},
@@ -80,24 +79,9 @@ void CBUSSwitch::setPin(uint8_t pin, bool pressedState = false)
       gpio_set_pulls(m_pin, false, true);
    }
 
-   // Reset internal states to match new pin definition
+   // Reset internal states to match new pin definition and pin state
    reset();
    m_currentState = _readPin(m_pin);
-}
-
-void CBUSSwitch::reset(void)
-{
-   m_lastState = !m_pressedState;
-   m_stateChanged = false;
-   m_lastStateChangeTime = 0x0UL;
-   m_lastStateDuration = 0x0UL;
-   m_prevReleaseTime = 0x0UL;
-   m_prevStateDuration = 0x0UL;
-}
-
-bool CBUSSwitch::_readPin(uint8_t pin)
-{
-   return gpio_get(pin);
 }
 
 void CBUSSwitch::run(void)
@@ -129,6 +113,17 @@ void CBUSSwitch::run(void)
       // no -- state has not changed
       m_stateChanged = false;
    }
+}
+
+void CBUSSwitch::reset(void)
+{
+   // Initialize internal states
+   m_lastState = !m_pressedState;
+   m_stateChanged = false;
+   m_lastStateChangeTime = 0x0UL;
+   m_lastStateDuration = 0x0UL;
+   m_prevReleaseTime = 0x0UL;
+   m_prevStateDuration = 0x0UL;
 }
 
 bool CBUSSwitch::stateChanged(void)
@@ -167,8 +162,14 @@ uint32_t CBUSSwitch::getLastStateChangeTime(void)
    return m_lastStateChangeTime;
 }
 
+/// reset the state duration counter
 void CBUSSwitch::resetCurrentDuration(void)
 {
-   // reset the state duration counter
    m_lastStateChangeTime = SystemTick::GetMilli();
+}
+
+/// Read the GPIO pin level
+bool CBUSSwitch::_readPin(uint8_t pin)
+{
+   return gpio_get(pin);
 }

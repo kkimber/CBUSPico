@@ -74,9 +74,6 @@ void CBUSLongMessage::subscribe(uint8_t *stream_ids, const uint8_t num_stream_id
    _receive_buffer = (uint8_t *)receive_buffer;
    _receive_buffer_len = receive_buff_len;
    _messagehandler = messagehandler;
-
-   // DEBUG_SERIAL << F("> subscribe: num_stream_ids = ") << num_stream_ids << F(", receive_buff_len = ") << receive_buff_len << endl;
-   return;
 }
 
 //
@@ -180,7 +177,6 @@ bool CBUSLongMessage::process(void)
 
 void CBUSLongMessage::processReceivedMessageFragment(const CANFrame *frame)
 {
-
    /// handle a received message fragment
 
    // DEBUG_SERIAL << F("> L: processing received long message packet, message length = ") << _incoming_message_length << F(", rcvd so far = ") << _incoming_bytes_received << endl;
@@ -306,8 +302,6 @@ void CBUSLongMessage::processReceivedMessageFragment(const CANFrame *frame)
       _receive_buffer_index = 0;
       _is_receiving = false;
    }
-
-   return;
 }
 
 //
@@ -318,7 +312,6 @@ void CBUSLongMessage::processReceivedMessageFragment(const CANFrame *frame)
 
 bool CBUSLongMessage::is_sending(void)
 {
-
    return (_send_buffer_index < _send_buffer_len);
 }
 
@@ -328,7 +321,6 @@ bool CBUSLongMessage::is_sending(void)
 
 bool CBUSLongMessage::sendMessageFragment(CANFrame *frame, const uint8_t priority)
 {
-
    // these are common to all messages
    frame->len = 8;
    frame->data[0] = OPC_DTXC;
@@ -343,9 +335,7 @@ bool CBUSLongMessage::sendMessageFragment(CANFrame *frame, const uint8_t priorit
 
 void CBUSLongMessage::setDelay(uint8_t delay_in_millis)
 {
-
    _msg_delay = delay_in_millis;
-   return;
 }
 
 //
@@ -357,9 +347,7 @@ void CBUSLongMessage::setDelay(uint8_t delay_in_millis)
 
 void CBUSLongMessage::setTimeout(uint32_t timeout_in_millis)
 {
-
    _receive_timeout = timeout_in_millis;
-   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -374,7 +362,6 @@ void CBUSLongMessage::setTimeout(uint32_t timeout_in_millis)
 
 bool CBUSLongMessageEx::allocateContexts(uint8_t num_receive_contexts, uint32_t receive_buffer_len, uint8_t num_send_contexts)
 {
-
    uint8_t i;
 
    // DEBUG_SERIAL << F("> receive_context_t * = ") << sizeof(receive_context_t *) << F(", receive_context_t = ") << sizeof(receive_context_t) << endl;
@@ -420,7 +407,6 @@ bool CBUSLongMessageEx::allocateContexts(uint8_t num_receive_contexts, uint32_t 
       _send_context[i]->in_use = false;
    }
 
-   // DEBUG_SERIAL << F("> Lex: allocated send and receive contexts ok") << endl;
    return true;
 }
 
@@ -432,7 +418,6 @@ bool CBUSLongMessageEx::allocateContexts(uint8_t num_receive_contexts, uint32_t 
 
 bool CBUSLongMessageEx::sendLongMessage(const void *msg, const uint32_t msg_len, const uint8_t stream_id, const uint8_t priority)
 {
-
    uint8_t i;
    uint16_t msg_crc = 0;
    CANFrame frame;
@@ -504,7 +489,6 @@ bool CBUSLongMessageEx::sendLongMessage(const void *msg, const uint32_t msg_len,
 
 bool CBUSLongMessageEx::process(void)
 {
-
    bool ret = true;
    uint8_t i;
    CANFrame frame;
@@ -531,7 +515,6 @@ bool CBUSLongMessageEx::process(void)
 
    if (_send_context[context]->in_use && SystemTick::GetMilli() - _send_context[context]->last_fragment_sent >= _msg_delay)
    {
-
       // DEBUG_SERIAL << F("> Lex: processing send context = ") << context << endl;
 
       memset(&frame.data, 0, sizeof(frame.data));
@@ -577,13 +560,9 @@ bool CBUSLongMessageEx::process(void)
 
 void CBUSLongMessageEx::subscribe(uint8_t *stream_ids, const uint8_t num_stream_ids, void (*messagehandler)(void *msg, uint32_t msg_len, uint8_t stream_id, uint8_t status))
 {
-
    _stream_ids = stream_ids;
    _num_stream_ids = num_stream_ids;
    _messagehandler = messagehandler;
-
-   // DEBUG_SERIAL << F("> Lex: subscribe: num_stream_ids = ") << num_stream_ids << endl;
-   return;
 }
 
 //
@@ -593,7 +572,6 @@ void CBUSLongMessageEx::subscribe(uint8_t *stream_ids, const uint8_t num_stream_
 
 uint8_t CBUSLongMessageEx::is_sending(void)
 {
-
    uint8_t i, num_streams;
 
    for (i = 0, num_streams = 0; i < _num_send_contexts; i++)
@@ -613,7 +591,6 @@ uint8_t CBUSLongMessageEx::is_sending(void)
 
 void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
 {
-
    uint8_t i, j, status;
    uint16_t tmpcrc = 0;
 
@@ -682,7 +659,6 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
       {
          if (_receive_context[i]->in_use && _receive_context[i]->receive_stream_id == frame->data[1] && _receive_context[i]->sender_canid == (frame->id & 0x7f))
          {
-            // DEBUG_SERIAL << F("> Lex: found matching receive context = ") << i << endl;
             break;
          }
       }
@@ -690,14 +666,12 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
       // return if not found
       if (i >= _num_receive_contexts)
       {
-         // DEBUG_SERIAL << F("> Lex: did not find matching receive context") << endl;
          return;
       }
 
       // error if out of sequence
       if (frame->data[2] != _receive_context[i]->expected_next_receive_sequence_num)
       {
-         // DEBUG_SERIAL << F("> Lex: ERROR: expected receive sequence num = ") << _receive_context[i]->expected_next_receive_sequence_num << F(" but got = ") << frame->data[2] << endl;
          (void)(*_messagehandler)(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, CBUS_LONG_MESSAGE_SEQUENCE_ERROR);
          _receive_context[i]->in_use = false;
          return;
@@ -706,7 +680,6 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
       // consume up to 5 bytes of message data from this fragment
       for (j = 0; j < 5; j++)
       {
-         // DEBUG_SERIAL << F("> Lex: consuming received data uint8_t = ") << (char)frame->data[j + 3] << endl;
          _receive_context[i]->buffer[_receive_context[i]->receive_buffer_index] = frame->data[j + 3];
          ++_receive_context[i]->receive_buffer_index;
          ++_receive_context[i]->incoming_bytes_received;
@@ -715,17 +688,13 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
          // if we have consumed the entire message, surface it to the user's handler
          if (_receive_context[i]->incoming_bytes_received >= _receive_context[i]->incoming_message_length)
          {
-            // DEBUG_SERIAL << F("> Lex: message data has been fully consumed") << endl;
-
             if (_use_crc && _receive_context[i]->incoming_message_crc != 0)
             {
-               // DEBUG_SERIAL << F("> Lex: calculating CRC16") << endl;
                tmpcrc = crc16((uint8_t *)_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index);
             }
 
             if (_receive_context[i]->incoming_message_crc != tmpcrc)
             {
-               // DEBUG_SERIAL << F("> Lex: message CRC error, expected = ") << _receive_context[i]->incoming_message_crc << F(", calculated = ") << tmpcrc << endl;
                status = CBUS_LONG_MESSAGE_CRC_ERROR;
             }
             else
@@ -741,7 +710,6 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
          }
          else if (_receive_context[i]->receive_buffer_index >= _receive_buffer_len)
          {
-            // DEBUG_SERIAL << F("> Lex: buffer is now full, message truncated") << endl;
             (void)(*_messagehandler)(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, CBUS_LONG_MESSAGE_TRUNCATED);
             _receive_context[i]->in_use = false;
             break;
@@ -751,8 +719,6 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
       // increment the expected next sequence number for this stream context
       ++_receive_context[i]->expected_next_receive_sequence_num;
    }
-
-   return;
 }
 
 //
@@ -761,9 +727,7 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
 
 void CBUSLongMessageEx::use_crc(bool use_crc)
 {
-
    _use_crc = use_crc;
-   return;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -771,7 +735,6 @@ void CBUSLongMessageEx::use_crc(bool use_crc)
 
 uint32_t crc32(const uint8_t *s, size_t n)
 {
-
    uint32_t crc = 0xFFFFFFFF;
 
    for (size_t i = 0; i < n; i++)
@@ -805,7 +768,6 @@ uint32_t crc32(const uint8_t *s, size_t n)
 
 uint16_t crc16(uint8_t *data_p, uint16_t length)
 {
-
    uint8_t i;
    uint16_t data;
    uint16_t crc = 0xffff;
