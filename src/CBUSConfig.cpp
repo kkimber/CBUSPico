@@ -5,6 +5,7 @@
 
 #include "CBUSConfig.h"
 #include "SystemTick.h"
+#include "CBUSUtil.h"
 
 #include <pico/stdlib.h>
 #include <pico/multicore.h>
@@ -18,12 +19,8 @@
 #include <hardware/watchdog.h>
 extern "C" char *sbrk(int incr);
 
-// Replace with C++ constructs
 #include <stdlib.h>
 #include <string.h>
-
-#define lowByte(w) ((uint8_t) ((w) & 0xff))
-#define highByte(w) ((uint8_t) ((w) >> 8))
 
 //
 /// ctor
@@ -144,7 +141,6 @@ void CBUSConfig::setExtEEPROMAddress(uint8_t address, TwoWire *bus)
 
 void CBUSConfig::setFLiM(bool f)
 {
-
    FLiM = f;
    writeEEPROM(0, f);
    return;
@@ -898,6 +894,7 @@ uint32_t CBUSConfig::freeSRAM(void)
    char top;
    return &top - reinterpret_cast<char *>(sbrk(0));
 #endif
+  return 0;
 }
 
 //
@@ -1064,7 +1061,6 @@ void CBUSConfig::setChipEEPROMVal(uint32_t eeaddress, uint8_t val)
 
 uint8_t CBUSConfig::getChipEEPROMVal(uint32_t eeaddress)
 {
-
 #ifdef __SAM3X8E__
    return dueFlashStorage.read(eeaddress);
 #else
@@ -1080,19 +1076,16 @@ uint8_t CBUSConfig::getChipEEPROMVal(uint32_t eeaddress)
 
 void CBUSConfig::setResetFlag(void)
 {
-
    writeEEPROM(5, 99);
 }
 
 void CBUSConfig::clearResetFlag(void)
 {
-
    writeEEPROM(5, 0);
 }
 
 bool CBUSConfig::isResetFlagSet(void)
 {
-
    return (readEEPROM(5) == 99);
 }
 
@@ -1108,7 +1101,6 @@ bool CBUSConfig::isResetFlagSet(void)
 
 void flash_cache_page(const uint8_t page)
 {
-
    const uint32_t address_base = FLASH_AREA_BASE_ADDRESS + (page * FLASH_PAGE_SIZE);
 
    // DEBUG_SERIAL << F("> flash_cache_page, page = ") << page << endl;
@@ -1126,7 +1118,6 @@ void flash_cache_page(const uint8_t page)
 
 bool flash_writeback_page(const uint8_t page)
 {
-
    bool ret = true;
    uint32_t address;
 
@@ -1163,7 +1154,6 @@ bool flash_writeback_page(const uint8_t page)
 
 bool flash_write_bytes(const uint16_t address, const uint8_t *data, const uint16_t number)
 {
-
    bool ret = true;
 
    // DEBUG_SERIAL << F("> flash_write_bytes: address = ") << address << F(", data = ") << *data << F(", length = ") << length << endl;
@@ -1222,7 +1212,6 @@ bool flash_write_bytes(const uint16_t address, const uint8_t *data, const uint16
 
 uint8_t flash_read_byte(uint32_t address)
 {
-
    return Flash.readByte(address);
 }
 
@@ -1232,7 +1221,6 @@ uint8_t flash_read_byte(uint32_t address)
 
 void flash_read_bytes(const uint16_t address, const uint16_t number, uint8_t *dest)
 {
-
    uint32_t base_address = FLASH_AREA_BASE_ADDRESS + address;
 
    for (uint32_t a = 0; a < number; a++)

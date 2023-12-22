@@ -6,13 +6,10 @@
 
 #include "CBUS.h"
 #include "SystemTick.h"
+#include "CBUSUtil.h"
 
 #include <stdlib.h>
 #include <string.h>
-
-#define lowByte(w) ((uint8_t) ((w) & 0xff))
-#define highByte(w) ((uint8_t) ((w) >> 8))
-
 
 uint16_t crc16(uint8_t *data_p, uint16_t length);
 uint32_t crc32(const char *s, size_t n);

@@ -1,18 +1,11 @@
 // CBUS library
 #include "CBUS.h"
 #include "SystemTick.h"
+#include "CBUSUtil.h"
 
 #include <pico/stdlib.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define lowByte(w) ((uint8_t) ((w) & 0xff))
-#define highByte(w) ((uint8_t) ((w) >> 8))
-
-#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
-#define bitSet(value, bit) ((value) |= (1UL << (bit)))
-#define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
-#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
 
 // forward function declarations
 void makeHeader_impl(CANFrame *msg, uint8_t id, uint8_t priority = 0x0b);
@@ -90,7 +83,6 @@ void CBUSbase::setName(unsigned char *mname)
 
 void CBUSbase::setSLiM(void)
 {
-
    bModeChanging = false;
    module_config->setNodeNum(0);
    module_config->setFLiM(false);
@@ -105,7 +97,6 @@ void CBUSbase::setSLiM(void)
 
 inline uint8_t CBUSbase::getCANID(uint32_t header)
 {
-
    return header & 0x7f;
 }
 
@@ -115,7 +106,6 @@ inline uint8_t CBUSbase::getCANID(uint32_t header)
 
 bool CBUSbase::sendWRACK(void)
 {
-
    // send a write acknowledgement response
 
    _msg.len = 3;
@@ -132,7 +122,6 @@ bool CBUSbase::sendWRACK(void)
 
 bool CBUSbase::sendCMDERR(uint8_t cerrno)
 {
-
    // send a command error response
 
    _msg.len = 4;
@@ -150,7 +139,6 @@ bool CBUSbase::sendCMDERR(uint8_t cerrno)
 
 bool CBUSbase::isExt(CANFrame *amsg)
 {
-
    return (amsg->ext);
 }
 
@@ -160,7 +148,6 @@ bool CBUSbase::isExt(CANFrame *amsg)
 
 bool CBUSbase::isRTR(CANFrame *amsg)
 {
-
    return (amsg->rtr);
 }
 
@@ -170,7 +157,6 @@ bool CBUSbase::isRTR(CANFrame *amsg)
 
 void CBUSbase::CANenumeration(void)
 {
-
    // initiate CAN bus enumeration cycle, either due to ENUM opcode, ID clash, or user button press
 
    // DEBUG_SERIAL << F("> beginning self-enumeration cycle") << endl;
@@ -183,9 +169,6 @@ void CBUSbase::CANenumeration(void)
    // send zero-length RTR frame
    _msg.len = 0;
    sendMessage(&_msg, true, false); // fixed arg order in v 1.1.4, RTR - true, ext = false
-
-   // DEBUG_SERIAL << F("> enumeration cycle initiated") << endl;
-   return;
 }
 
 //
@@ -194,7 +177,6 @@ void CBUSbase::CANenumeration(void)
 
 void CBUSbase::initFLiM(void)
 {
-
    // DEBUG_SERIAL << F("> initiating FLiM negotation") << endl;
 
    indicateMode(MODE_CHANGING);
@@ -208,9 +190,6 @@ void CBUSbase::initFLiM(void)
    _msg.data[1] = highByte(module_config->nodeNum);
    _msg.data[2] = lowByte(module_config->nodeNum);
    sendMessage(&_msg);
-
-   // DEBUG_SERIAL << F("> requesting NN with RQNN message for NN = ") << module_config->nodeNum << endl;
-   return;
 }
 
 //
@@ -219,7 +198,6 @@ void CBUSbase::initFLiM(void)
 
 void CBUSbase::revertSLiM(void)
 {
-
    // DEBUG_SERIAL << F("> reverting to SLiM mode") << endl;
 
    // send NNREL message
@@ -230,7 +208,6 @@ void CBUSbase::revertSLiM(void)
 
    sendMessage(&_msg);
    setSLiM();
-   return;
 }
 
 //
@@ -239,7 +216,6 @@ void CBUSbase::revertSLiM(void)
 
 void CBUSbase::renegotiate(void)
 {
-
    initFLiM();
 }
 
@@ -249,12 +225,9 @@ void CBUSbase::renegotiate(void)
 
 void CBUSbase::setLEDs(CBUSLED green, CBUSLED yellow)
 {
-
    UI = true;
    _ledGrn = green;
    _ledYlw = yellow;
-
-   return;
 }
 
 //
@@ -263,7 +236,6 @@ void CBUSbase::setLEDs(CBUSLED green, CBUSLED yellow)
 
 void CBUSbase::setSwitch(CBUSSwitch sw)
 {
-
    UI = true;
    _sw = sw;
 }
@@ -274,7 +246,6 @@ void CBUSbase::setSwitch(CBUSSwitch sw)
 
 void CBUSbase::indicateMode(uint8_t mode)
 {
-
    // DEBUG_SERIAL << F("> indicating mode = ") << mode << endl;
 
    if (UI)
@@ -307,7 +278,6 @@ void CBUSbase::indicateMode(uint8_t mode)
 
 void CBUSbase::process(uint8_t num_messages)
 {
-
    uint8_t remoteCANID = 0, evindex = 0, evval = 0;
    uint32_t nn = 0, en = 0, opc;
 
@@ -322,7 +292,6 @@ void CBUSbase::process(uint8_t num_messages)
 
    if (UI)
    {
-
       // allow LEDs to update
       _ledGrn.run();
       _ledYlw.run();
@@ -345,7 +314,6 @@ void CBUSbase::process(uint8_t num_messages)
 
       if (_sw.stateChanged())
       {
-
          // has switch been released ?
          if (!_sw.isPressed())
          {
@@ -393,7 +361,6 @@ void CBUSbase::process(uint8_t num_messages)
 
    while ((available() || (coe_obj != NULL && coe_obj->available())) && mcount < num_messages)
    {
-
       ++mcount;
 
       // at least one CAN frame is available in either the reception buffer or the COE buffer
@@ -425,7 +392,6 @@ void CBUSbase::process(uint8_t num_messages)
 
       if (framehandler != NULL)
       {
-
          // check if incoming opcode is in the user list, if list length > 0
          if (_num_opcodes > 0)
          {
@@ -484,7 +450,6 @@ void CBUSbase::process(uint8_t num_messages)
       // are we enumerating CANIDs ?
       if (bCANenum && _msg.len == 0)
       {
-
          // store this response in the responses array
          if (remoteCANID > 0)
          {
@@ -503,7 +468,6 @@ void CBUSbase::process(uint8_t num_messages)
 
       if (_msg.len > 0)
       {
-
          uint8_t index;
 
          switch (opc)
@@ -702,7 +666,6 @@ void CBUSbase::process(uint8_t num_messages)
             // received NVRD -- read NV by index
             if (nn == module_config->nodeNum)
             {
-
                uint8_t nvindex = _msg.data[3];
                if (nvindex > module_config->EE_NUM_NVS)
                {
@@ -728,7 +691,6 @@ void CBUSbase::process(uint8_t num_messages)
 
             if (nn == module_config->nodeNum)
             {
-
                if (_msg.data[3] > module_config->EE_NUM_NVS)
                {
                   sendCMDERR(10);
@@ -767,7 +729,6 @@ void CBUSbase::process(uint8_t num_messages)
             // we must be in learn mode
             if (bLearn == true)
             {
-
                // DEBUG_SERIAL << F("> searching for existing event to unlearn") << endl;
 
                // search for this NN and EN pair
@@ -1098,13 +1059,10 @@ void CBUSbase::process(uint8_t num_messages)
    //
    /// end of CBUS message processing
    //
-
-   return;
 }
 
 void CBUSbase::checkCANenum(void)
 {
-
    //
    /// check the 100ms CAN enumeration cycle timer
    //
@@ -1179,7 +1137,6 @@ void CBUSbase::checkCANenum(void)
 
 void CBUSbase::processAccessoryEvent(uint32_t nn, uint32_t en, bool is_on_event)
 {
-
    // try to find a matching stored event -- match on nn, en
    uint8_t index = module_config->findExistingEvent(nn, en);
 
@@ -1219,9 +1176,7 @@ void CBUSbase::consumeOwnEvents(CBUScoe *coe)
 
 void CBUSbase::makeHeader(CANFrame *msg, uint8_t priority)
 {
-
    makeHeader_impl(msg, module_config->CANID, priority);
-   return;
 }
 
 //
@@ -1233,9 +1188,7 @@ void CBUSbase::makeHeader(CANFrame *msg, uint8_t priority)
 
 void makeHeader_impl(CANFrame *msg, uint8_t id, uint8_t priority)
 {
-
    msg->id = (priority << 7) + (id & 0x7f);
-   return;
 }
 
 //
@@ -1244,31 +1197,26 @@ void makeHeader_impl(CANFrame *msg, uint8_t id, uint8_t priority)
 
 CBUScoe::CBUScoe(const uint8_t num_items)
 {
-
    coe_buff = new circular_buffer2(num_items);
 }
 
 CBUScoe::~CBUScoe()
 {
-
    free(coe_buff);
 }
 
 void CBUScoe::put(const CANFrame *msg)
 {
-
    coe_buff->put(msg);
 }
 
 bool CBUScoe::available(void)
 {
-
    return coe_buff->available();
 }
 
 CANFrame CBUScoe::get(void)
 {
-
    CANFrame msg;
    memcpy(&msg, coe_buff->get(), sizeof(CANFrame));
    return msg;
@@ -1282,7 +1230,6 @@ CANFrame CBUScoe::get(void)
 
 circular_buffer2::circular_buffer2(uint8_t num_items)
 {
-
    _head = 0;
    _tail = 0;
    _hwm = 0;
@@ -1304,7 +1251,6 @@ circular_buffer2::~circular_buffer2()
 
 bool circular_buffer2::available(void)
 {
-
    return (_size > 0);
 }
 
@@ -1313,7 +1259,6 @@ bool circular_buffer2::available(void)
 
 void circular_buffer2::put(const CANFrame *item)
 {
-
    memcpy((CANFrame *)&_buffer[_head]._item, (const CANFrame *)item, sizeof(CANFrame));
    _buffer[_head]._item_insert_time = SystemTick::GetMilli(); // micros
 
@@ -1330,15 +1275,12 @@ void circular_buffer2::put(const CANFrame *item)
    _size = size();
    _hwm = (_size > _hwm) ? _size : _hwm;
    ++_puts;
-
-   return;
 }
 
 /// retrieve the next item from the buffer
 
 CANFrame *circular_buffer2::get(void)
 {
-
    CANFrame *p = nullptr;
 
    // should always call ::available first to avoid returning null pointer
@@ -1360,7 +1302,6 @@ CANFrame *circular_buffer2::get(void)
 
 uint32_t circular_buffer2::insert_time(void)
 {
-
    return (_buffer[_tail]._item_insert_time);
 }
 
@@ -1368,7 +1309,6 @@ uint32_t circular_buffer2::insert_time(void)
 
 CANFrame *circular_buffer2::peek(void)
 {
-
    // should always call ::available first to avoid this
 
    if (_size == 0)
@@ -1383,20 +1323,16 @@ CANFrame *circular_buffer2::peek(void)
 
 void circular_buffer2::clear(void)
 {
-
    _head = 0;
    _tail = 0;
    _full = false;
    _size = 0;
-
-   return;
 }
 
 /// return high water mark
 
 uint8_t circular_buffer2::hwm(void)
 {
-
    return _hwm;
 }
 
@@ -1404,7 +1340,6 @@ uint8_t circular_buffer2::hwm(void)
 
 bool circular_buffer2::full(void)
 {
-
    return _full;
 }
 
@@ -1412,7 +1347,6 @@ bool circular_buffer2::full(void)
 
 uint8_t circular_buffer2::size(void)
 {
-
    uint8_t size = _capacity;
 
    if (!_full)
@@ -1435,7 +1369,6 @@ uint8_t circular_buffer2::size(void)
 
 bool circular_buffer2::empty(void)
 {
-
    return (!_full && (_head == _tail));
 }
 
@@ -1443,7 +1376,6 @@ bool circular_buffer2::empty(void)
 
 uint8_t circular_buffer2::free_slots(void)
 {
-
    return (_capacity - _size);
 }
 
@@ -1451,7 +1383,6 @@ uint8_t circular_buffer2::free_slots(void)
 
 uint32_t circular_buffer2::puts(void)
 {
-
    return _puts;
 }
 
@@ -1459,7 +1390,6 @@ uint32_t circular_buffer2::puts(void)
 
 uint32_t circular_buffer2::gets(void)
 {
-
    return _gets;
 }
 
@@ -1467,6 +1397,5 @@ uint32_t circular_buffer2::gets(void)
 
 uint32_t circular_buffer2::overflows(void)
 {
-
    return _overflows;
 }

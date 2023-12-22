@@ -29,6 +29,7 @@ void CBUSSwitch::setPin(uint8_t pin, bool pressedState = false)
    gpio_init(pin);
    gpio_set_dir(pin, GPIO_IN);
 
+   // Setup appropriate pull-up or pull-down on pin
    if (m_pressedState == false)
    {
       // Active low, set pull UP
@@ -40,6 +41,7 @@ void CBUSSwitch::setPin(uint8_t pin, bool pressedState = false)
       gpio_set_pulls(m_pin, false, true);
    }
 
+   // Reset internal states to match new pin definition
    reset();
    m_currentState = _readPin(m_pin);
 }
@@ -76,20 +78,9 @@ void CBUSSwitch::run(void)
       m_lastStateChangeTime = SystemTick::GetMilli();
       m_stateChanged = true;
 
-      if (m_currentState == m_pressedState)
+      // has key been released
+      if (m_currentState != m_pressedState)
       {
-         // DEBUG_SERIAL << F("  -- switch has been pressed") << endl;
-      }
-      else
-      {
-         // DEBUG_SERIAL << F("  -- switch has been released") << endl;
-
-         // double-click detection
-         // two clicks of less than 250ms, less than 500ms apart
-
-         // DEBUG_SERIAL << F("  -- last state duration = ") << m_lastStateDuration << endl;
-         // DEBUG_SERIAL << F("  -- this release = ") << m_lastStateChangeTime << F(", last release = ") << m_prevReleaseTime << endl;
-
          // save release time
          m_prevReleaseTime = m_lastStateChangeTime;
       }
@@ -99,8 +90,6 @@ void CBUSSwitch::run(void)
       // no -- state has not changed
       m_stateChanged = false;
    }
-
-   return;
 }
 
 bool CBUSSwitch::stateChanged(void)
@@ -121,19 +110,19 @@ bool CBUSSwitch::isPressed(void)
    return (m_currentState == m_pressedState);
 }
 
-unsigned long CBUSSwitch::getCurrentStateDuration(void)
+uint32_t CBUSSwitch::getCurrentStateDuration(void)
 {
    // how long has the switch been in its current state ?
    return (SystemTick::GetMilli() - m_lastStateChangeTime);
 }
 
-unsigned long CBUSSwitch::getLastStateDuration(void)
+uint32_t CBUSSwitch::getLastStateDuration(void)
 {
    // how long was the last state active for ?
    return m_lastStateDuration;
 }
 
-unsigned long CBUSSwitch::getLastStateChangeTime(void)
+uint32_t CBUSSwitch::getLastStateChangeTime(void)
 {
    // when was the last state change ?
    return m_lastStateChangeTime;
@@ -143,5 +132,4 @@ void CBUSSwitch::resetCurrentDuration(void)
 {
    // reset the state duration counter
    m_lastStateChangeTime = SystemTick::GetMilli();
-   return;
 }

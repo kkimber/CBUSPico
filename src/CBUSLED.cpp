@@ -14,10 +14,6 @@ CBUSLED::CBUSLED() : m_state{false},
 {
 }
 
-CBUSLED::~CBUSLED()
-{
-}
-
 //  set the pin for this LED
 
 void CBUSLED::setPin(uint8_t pin)
@@ -94,7 +90,7 @@ void CBUSLED::run()
    // single pulse
    if (m_pulse)
    {
-      if (SystemTick::GetMilli() - m_pulseStart >= PULSE_ON_TIME)
+      if ((SystemTick::GetMilli() - m_pulseStart) >= PULSE_ON_TIME)
       {
          m_pulse = false;
          m_state = false;

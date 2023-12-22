@@ -15,14 +15,13 @@ class CBUSLED
 public:
    /// @brief Construct CBUS LED Class Instance
    CBUSLED();
-   virtual ~CBUSLED();
-   void virtual setPin(uint8_t pin);
+   void setPin(uint8_t pin);
    bool getState();
    void on();
    void off();
    void toggle();
    void blink();
-   virtual void run();
+   void run();
    void pulse();
 
 protected:
@@ -32,5 +31,5 @@ protected:
    bool m_pulse;
    uint32_t m_lastTime;
    uint32_t m_pulseStart;
-   virtual void _write(uint8_t pin, bool state);
+   void _write(uint8_t pin, bool state);
 };

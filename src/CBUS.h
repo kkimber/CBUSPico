@@ -1,11 +1,13 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 #include "CBUSLED.h"
 #include "CBUSSwitch.h"
 #include "CBUSConfig.h"
-#include "cbusdefs.h"
+
+#include <cbusdefs.h>
 
 #define SW_TR_HOLD 6000U                  // CBUS push button hold time for SLiM/FLiM transition in millis = 6 seconds
 #define DEFAULT_PRIORITY 0xB              // default CBUS messages priority. 1011 = 2|3 = normal/low
