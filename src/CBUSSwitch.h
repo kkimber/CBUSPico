@@ -61,6 +61,7 @@ public:
 
 private:
    bool _readPin(uint8_t pin);
+   bool m_configured;
    uint8_t m_pin;
    uint8_t m_pressedState;
    uint8_t m_currentState;

@@ -103,7 +103,7 @@ class CBUSACAN2040 : public CBUSbase
 {
 
 public:
-   CBUSACAN2040(CBUSConfig *the_config);
+   CBUSACAN2040(CBUSConfig &config, CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw);
    ~CBUSACAN2040();
 
    // these methods are declared virtual in the base class and must be implemented by the derived class

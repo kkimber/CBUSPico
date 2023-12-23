@@ -108,7 +108,7 @@ class CBUSbase
 {
 
 public:
-   CBUSbase(CBUSConfig *the_config);
+   CBUSbase(CBUSConfig &config, CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw);
 
    // these methods are pure virtual and must be implemented by the derived class
    // as a consequence, it is not possible to create an instance of this class
@@ -136,8 +136,6 @@ public:
    void revertSLiM(void);
    void setSLiM(void);
    void renegotiate(void);
-   void setLEDs(CBUSLED ledGrn, CBUSLED ledYlw);
-   void setSwitch(CBUSSwitch sw);
    void setParams(unsigned char *mparams);
    void setName(unsigned char *mname);
    void checkCANenum(void);
@@ -155,9 +153,9 @@ public:
 
 protected: // protected members become private in derived classes
    CANFrame _msg;
-   CBUSLED _ledGrn, _ledYlw;
-   CBUSSwitch _sw;
-   CBUSConfig *module_config;
+   CBUSLED& _ledGrn, _ledYlw;
+   CBUSSwitch& _sw;
+   CBUSConfig& module_config;
    unsigned char *_mparams;
    unsigned char *_mname;
    void (*eventhandler)(uint8_t index, CANFrame *msg);
@@ -169,7 +167,6 @@ protected: // protected members become private in derived classes
    bool bModeChanging, bCANenum, bLearn;
    uint32_t timeOutTimer, CANenumTime;
    bool enumeration_required;
-   bool UI = false;
 
    CBUSLongMessage *longMessageHandler = nullptr; // CBUS long message object to receive relevant frames
    CBUScoe *coe_obj = nullptr;                    // consume-own-events

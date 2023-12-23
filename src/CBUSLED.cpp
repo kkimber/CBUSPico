@@ -46,7 +46,8 @@
 /// class for individual LED with non-blocking control
 //
 
-CBUSLED::CBUSLED() : m_pin{0x0U},
+CBUSLED::CBUSLED() : m_configured{false},
+                     m_pin{0x0U},
                      m_state{false},
                      m_blink{false},
                      m_pulse{false},
@@ -64,6 +65,8 @@ void CBUSLED::setPin(uint8_t pin)
    gpio_init(pin);
    gpio_set_dir(pin, GPIO_OUT);
    gpio_put(pin, false);
+
+   m_configured = true;
 }
 
 // return the current state, on or off
@@ -145,5 +148,8 @@ void CBUSLED::run()
 
 void CBUSLED::_write(uint8_t pin, bool state)
 {
-   gpio_put(pin, state);
+   if (m_configured)
+   {
+      gpio_put(pin, state);
+   }
 }

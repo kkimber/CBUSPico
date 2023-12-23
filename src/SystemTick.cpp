@@ -49,12 +49,11 @@ SystemTick::SystemTick()
 
 }
 
-//
+///
 /// Get milliseconds since boot counter value
-//
+///
 uint32_t SystemTick::GetMilli(void)
 {
-  // return m_nMilliTicks;
   return to_ms_since_boot(get_absolute_time());
 }
 

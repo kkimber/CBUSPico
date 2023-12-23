@@ -698,7 +698,7 @@ uint32_t CBUSConfig::freeSRAM(void)
 /// manually reset the module to factory defaults
 //
 
-void CBUSConfig::resetModule(CBUSLED ledGrn, CBUSLED ledYlw, CBUSSwitch pbSwitch)
+void CBUSConfig::resetModule(CBUSLED& ledGrn, CBUSLED& ledYlw, CBUSSwitch& pbSwitch)
 {
    /// standard implementation of resetModule()
 

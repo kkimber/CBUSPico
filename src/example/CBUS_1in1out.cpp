@@ -60,10 +60,12 @@ const uint8_t LED_YLW = 9;  // CBUS yellow FLiM LED pin
 const uint8_t SWITCH0 = 10; // CBUS push button switch pin
 
 // CBUS objects
-CBUSConfig module_config;          // configuration object
-CBUSACAN2040 CBUS(&module_config); // CBUS object
-CBUSLED ledGrn, ledYlw;            // two LED objects
-CBUSSwitch pb_switch;              // switch object
+CBUSConfig module_config; // configuration object
+CBUSLED ledGrn, ledYlw;   // two LED objects
+CBUSSwitch sw;            // switch object
+
+// Construct CBUS Object and assign Switch and LED's
+CBUSACAN2040 CBUS(module_config, sw, ledGrn, ledYlw);
 
 // module objects
 CBUSSwitch moduleSwitch; // an example switch as input
@@ -104,27 +106,25 @@ void setupCBUS()
    CBUS.setParams(params.getParams());
    CBUS.setName(mname);
 
-   // set CBUS LED pins and assign to CBUS
+   // set CBUS LED pins 
    ledGrn.setPin(LED_GRN);
    ledYlw.setPin(LED_YLW);
-   CBUS.setLEDs(ledGrn, ledYlw);
 
-   // initialise CBUS switch and assign to CBUS
-   pb_switch.setPin(SWITCH0, false);
-   pb_switch.run();
-   CBUS.setSwitch(pb_switch);
+   // initialise CBUS switch
+   sw.setPin(SWITCH0, false);
+   sw.run();
 
    // module reset - if switch is depressed at startup and module is in SLiM mode
-   if (pb_switch.isPressed() && !module_config.FLiM)
+   if (sw.isPressed() && !module_config.FLiM)
    {
-      //Serial << F("> switch was pressed at startup in SLiM mode") << endl;
-      module_config.resetModule(ledGrn, ledYlw, pb_switch);
+      // Serial << F("> switch was pressed at startup in SLiM mode") << endl;
+      module_config.resetModule(ledGrn, ledYlw, sw);
    }
 
    // opportunity to set default NVs after module reset
    if (module_config.isResetFlagSet())
    {
-      //Serial << F("> module has been reset") << endl;
+      // Serial << F("> module has been reset") << endl;
       module_config.clearResetFlag();
    }
 
@@ -140,7 +140,7 @@ void setupCBUS()
 
    if (!CBUS.begin())
    {
-      // Init OK 
+      // Init OK
    }
 }
 
@@ -228,7 +228,7 @@ void eventhandler(uint8_t index, CANFrame *msg)
 
    // read the value of the first event variable (EV) associated with this learned event
    uint8_t evval = module_config.getEventEVval(index, 1);
-   //Serial << F("> EV1 = ") << evval << endl;
+   // Serial << F("> EV1 = ") << evval << endl;
 
    // set the LED according to the opcode of the received event, if the first EV equals 0
    // we turn on the LED and if the first EV equals 1 we use the blink() method of the LED object as an example
@@ -250,14 +250,14 @@ void eventhandler(uint8_t index, CANFrame *msg)
    }
 }
 
-// MODULE MAIN ENTRY 
-extern "C" int main(int argc, char* argv[])
+// MODULE MAIN ENTRY
+extern "C" int main(int argc, char *argv[])
 {
    // Initialize
    setup();
 
    // Run periodic processing - forever
-   while(1)
+   while (1)
    {
       loop();
    }

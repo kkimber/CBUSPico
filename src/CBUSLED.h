@@ -64,6 +64,7 @@ public:
    void pulse();
 
 private:
+   bool m_configured;
    uint8_t m_pin;
    bool m_state;
    bool m_blink;

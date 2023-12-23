@@ -90,7 +90,7 @@ public:
    void readEvent(uint8_t idx, uint8_t tarr[]);
    void writeEvent(uint8_t index, uint8_t data[]);
    void cleareventEEPROM(uint8_t index);
-   void resetModule(CBUSLED green, CBUSLED yellow, CBUSSwitch sw);
+   void resetModule(CBUSLED& green, CBUSLED& yellow, CBUSSwitch& sw);
    void resetModule(void);
 
    uint8_t readEEPROM(uint32_t eeaddress);

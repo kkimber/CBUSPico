@@ -45,7 +45,8 @@
 //
 /// a class to encapsulate a physical pushbutton switch, with non-blocking processing
 //
-CBUSSwitch::CBUSSwitch() : m_pin{0x0U},
+CBUSSwitch::CBUSSwitch() : m_configured{false},
+                           m_pin{0x0U},
                            m_pressedState{0x0U},
                            m_currentState{0x0U},
                            m_lastState{0x0U},
@@ -78,6 +79,9 @@ void CBUSSwitch::setPin(uint8_t pin, bool pressedState = false)
       // Active high, set pull DOWN
       gpio_set_pulls(m_pin, false, true);
    }
+
+   // Switch has now been configured
+   m_configured = true;
 
    // Reset internal states to match new pin definition and pin state
    reset();
@@ -171,5 +175,11 @@ void CBUSSwitch::resetCurrentDuration(void)
 /// Read the GPIO pin level
 bool CBUSSwitch::_readPin(uint8_t pin)
 {
-   return gpio_get(pin);
+   if (m_configured)
+   {
+      return gpio_get(pin);
+   }
+
+   // TODO check default active state
+   return false;
 }
