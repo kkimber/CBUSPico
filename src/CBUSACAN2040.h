@@ -70,7 +70,7 @@ class circular_buffer
 {
 
 public:
-   circular_buffer(uint8_t num_items);
+   explicit circular_buffer(uint8_t num_items);
    ~circular_buffer();
    bool available(void);
    void put(const CANFrame *cf);
@@ -107,11 +107,11 @@ public:
    ~CBUSACAN2040();
 
    // these methods are declared virtual in the base class and must be implemented by the derived class
-   bool begin();
-   bool available(void);
-   CANFrame getNextMessage(void);
-   bool sendMessage(CANFrame *msg, bool rtr = false, bool ext = false, uint8_t priority = DEFAULT_PRIORITY); // note default arguments
-   void reset(void);
+   bool begin(void) override;
+   bool available(void) override;
+   CANFrame getNextMessage(void) override;
+   bool sendMessage(CANFrame *msg, bool rtr = false, bool ext = false, uint8_t priority = DEFAULT_PRIORITY) override; // note default arguments
+   void reset(void) override;
 
    // these methods are specific to this implementation
    // they are not declared or implemented by the base CBUS class

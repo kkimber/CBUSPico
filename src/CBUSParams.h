@@ -46,7 +46,7 @@
 class CBUSParams
 {
 public:
-   CBUSParams(CBUSConfig const &config);
+   explicit CBUSParams(CBUSConfig const &config);
    void setVersion(char major, char minor, char beta);
    void setModuleId(uint8_t id);
    void setFlags(uint8_t flags);

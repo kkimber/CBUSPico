@@ -59,21 +59,20 @@ static void cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 /// constructor and destructor
 //
 
-CBUSACAN2040::CBUSACAN2040(CBUSConfig& config, CBUSSwitch& sw, CBUSLED& ledGrn, CBUSLED& ledYlw) : CBUSbase(config, sw, ledGrn, ledYlw)
+CBUSACAN2040::CBUSACAN2040(CBUSConfig &config, CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw) : CBUSbase(config, sw, ledGrn, ledYlw),
+                                                                                                   acan2040{nullptr},
+                                                                                                   tx_buffer{nullptr},
+                                                                                                   rx_buffer{nullptr},
+                                                                                                   _gpio_tx{0x0U},
+                                                                                                   _gpio_rx{0x0U},
+                                                                                                   _num_tx_buffers{tx_qsize},
+                                                                                                   _num_rx_buffers{rx_qsize}
 {
    initMembers();
 }
 
 void CBUSACAN2040::initMembers(void)
 {
-   _num_rx_buffers = rx_qsize;
-   _num_tx_buffers = tx_qsize;
-   eventhandler = NULL;
-   eventhandlerex = NULL;
-   framehandler = NULL;
-   _gpio_tx = 0;
-   _gpio_rx = 0;
-
    acan2040p = this;
 }
 

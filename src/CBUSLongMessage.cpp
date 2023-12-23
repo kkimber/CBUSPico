@@ -371,19 +371,19 @@ bool CBUSLongMessageEx::allocateContexts(uint8_t num_receive_contexts, uint32_t 
    _num_send_contexts = num_send_contexts;
 
    // allocate receive contexts
-   if ((_receive_context = (receive_context_t **)malloc(sizeof(receive_context_t *) * _num_receive_contexts)) == NULL)
+   if ((_receive_context = (receive_context_t **)malloc(sizeof(receive_context_t *) * _num_receive_contexts)) == nullptr)
    {
       return false;
    }
 
    for (i = 0; i < _num_receive_contexts; i++)
    {
-      if ((_receive_context[i] = (receive_context_t *)malloc(sizeof(receive_context_t))) == NULL)
+      if ((_receive_context[i] = (receive_context_t *)malloc(sizeof(receive_context_t))) == nullptr)
       {
          return false;
       }
 
-      if ((_receive_context[i]->buffer = (uint8_t *)malloc(receive_buffer_len * sizeof(uint8_t))) == NULL)
+      if ((_receive_context[i]->buffer = (uint8_t *)malloc(receive_buffer_len * sizeof(uint8_t))) == nullptr)
       {
          return false;
       }
@@ -392,14 +392,14 @@ bool CBUSLongMessageEx::allocateContexts(uint8_t num_receive_contexts, uint32_t 
    }
 
    // allocate send contexts - user code provides the buffer when sending
-   if ((_send_context = (send_context_t **)malloc(sizeof(send_context_t *) * _num_send_contexts)) == NULL)
+   if ((_send_context = (send_context_t **)malloc(sizeof(send_context_t *) * _num_send_contexts)) == nullptr)
    {
       return false;
    }
 
    for (i = 0; i < _num_send_contexts; i++)
    {
-      if ((_send_context[i] = (send_context_t *)malloc(sizeof(send_context_t))) == NULL)
+      if ((_send_context[i] = (send_context_t *)malloc(sizeof(send_context_t))) == nullptr)
       {
          return false;
       }

@@ -53,12 +53,30 @@ void makeHeader_impl(CANFrame *msg, uint8_t id, uint8_t priority = 0x0b);
 /// note that this CBUSConfig object must have a lifetime longer than the CBUS object.
 //
 
-CBUSbase::CBUSbase(CBUSConfig &config, CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw) : module_config{config},
-                                                                                 _sw{sw},
-                                                                                 _ledGrn{ledGrn},
-                                                                                 _ledYlw{ledYlw}
+CBUSbase::CBUSbase(CBUSConfig &config, CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw) : _numMsgsSent{0x0L},
+                                                                                           _numMsgsRcvd{0x0UL},
+                                                                                           _msg{},
+                                                                                           module_config{config},
+                                                                                           _sw{sw},
+                                                                                           _ledGrn{ledGrn},
+                                                                                           _ledYlw{ledYlw},
+                                                                                           _mparams{nullptr},
+                                                                                           _mname{nullptr},
+                                                                                           eventhandler{nullptr},
+                                                                                           eventhandlerex{nullptr},
+                                                                                           framehandler{nullptr},
+                                                                                           _opcodes{nullptr},
+                                                                                           _num_opcodes{0x0U},
+                                                                                           enum_responses{},
+                                                                                           bModeChanging{false},
+                                                                                           bCANenum{false},
+                                                                                           bLearn{false},
+                                                                                           timeOutTimer{0x0UL},
+                                                                                           CANenumTime{0x0UL},
+                                                                                           enumeration_required{false},
+                                                                                           longMessageHandler{nullptr},
+                                                                                           coe_obj{nullptr}
 {
-
 }
 
 //
@@ -79,7 +97,7 @@ void CBUSbase::setEventHandler(void (*fptr)(uint8_t index, CANFrame *msg, bool i
 
 //
 /// register the user handler for CAN frames
-/// default args in .h declaration for opcodes array (NULL) and size (0)
+/// default args in .h declaration for opcodes array (nullptr) and size (0)
 //
 
 void CBUSbase::setFrameHandler(void (*fptr)(CANFrame *msg), uint8_t opcodes[], uint8_t num_opcodes)
@@ -291,7 +309,7 @@ void CBUSbase::process(uint8_t num_messages)
    //
    // process switch operations
    //
-   
+
    // allow LEDs to update
    _ledGrn.run();
    _ledYlw.run();
@@ -351,7 +369,6 @@ void CBUSbase::process(uint8_t num_messages)
       {
          // do any switch release processing here
       }
-
    }
 
    // get received CAN frames from buffer
@@ -359,14 +376,14 @@ void CBUSbase::process(uint8_t num_messages)
 
    uint8_t mcount = 0;
 
-   while ((available() || (coe_obj != NULL && coe_obj->available())) && mcount < num_messages)
+   while ((available() || (coe_obj != nullptr && coe_obj->available())) && mcount < num_messages)
    {
       ++mcount;
 
       // at least one CAN frame is available in either the reception buffer or the COE buffer
       // retrieve the next one
 
-      if (coe_obj != NULL && coe_obj->available())
+      if (coe_obj != nullptr && coe_obj->available())
       {
          _msg = coe_obj->get();
       }
@@ -390,7 +407,7 @@ void CBUSbase::process(uint8_t num_messages)
       /// if registered, call the user handler with this new frame
       //
 
-      if (framehandler != NULL)
+      if (framehandler != nullptr)
       {
          // check if incoming opcode is in the user list, if list length > 0
          if (_num_opcodes > 0)
@@ -1015,7 +1032,7 @@ void CBUSbase::process(uint8_t num_messages)
 
          case OPC_DTXC:
             // CBUS long message
-            if (longMessageHandler != NULL)
+            if (longMessageHandler != nullptr)
             {
                longMessageHandler->processReceivedMessageFragment(&_msg);
             }
@@ -1138,11 +1155,11 @@ void CBUSbase::processAccessoryEvent(uint32_t nn, uint32_t en, bool is_on_event)
 
    if (index < module_config.EE_MAX_EVENTS)
    {
-      if (eventhandler != NULL)
+      if (eventhandler != nullptr)
       {
          (void)(*eventhandler)(index, &_msg);
       }
-      else if (eventhandlerex != NULL)
+      else if (eventhandlerex != nullptr)
       {
          (void)(*eventhandlerex)(index, &_msg, is_on_event,
                                  ((module_config.EE_NUM_EVS > 0) ? module_config.getEventEVval(index, 1) : 0));

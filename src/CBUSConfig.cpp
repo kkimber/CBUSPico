@@ -67,9 +67,20 @@ extern "C" char *sbrk(int incr);
 /// ctor
 //
 
-CBUSConfig::CBUSConfig()
+CBUSConfig::CBUSConfig() : EE_EVENTS_START{0x0UL},
+                           EE_MAX_EVENTS{0x0U},
+                           EE_NUM_EVS{0x0U},
+                           EE_BYTES_PER_EVENT{0x0U},
+                           EE_NVS_START{0x0UL},
+                           EE_NUM_NVS{0x0U},
+                           CANID{0x0U},
+                           FLiM{false},
+                           nodeNum{0x0UL},
+                           eeprom_type{EEPROM_INTERNAL},
+                           external_address{0x0U},
+                           evhashtbl{nullptr},
+                           hash_collision{false}
 {
-   eeprom_type = EEPROM_INTERNAL;
 }
 
 //
@@ -83,7 +94,7 @@ void CBUSConfig::begin(void)
    if (eeprom_type == EEPROM_INTERNAL)
    {
       // these devices require an explicit begin with the desired emulated size
-      //EEPROM.begin(4096);
+      // EEPROM.begin(4096);
    }
 
    if (eeprom_type == EEPROM_USES_FLASH)
@@ -103,16 +114,16 @@ void CBUSConfig::begin(void)
 bool CBUSConfig::setEEPROMtype(uint8_t type)
 {
    bool ret = true;
-   uint8_t result;
+   uint8_t result = 0;
    eeprom_type = EEPROM_INTERNAL;
 
    switch (type)
    {
    case EEPROM_EXTERNAL:
       // test accessibility of external EEPROM chip
-//      I2Cbus->begin();
-//      I2Cbus->beginTransmission(external_address);
-//      result = I2Cbus->endTransmission();
+      //      I2Cbus->begin();
+      //      I2Cbus->beginTransmission(external_address);
+      //      result = I2Cbus->endTransmission();
 
       if (result == 0)
       {
@@ -489,7 +500,7 @@ uint8_t CBUSConfig::readEEPROM(uint32_t eeaddress)
 
       if (I2Cbus->available())
          rdata = I2Cbus->read();
-#endif         
+#endif
       break;
 
    case EEPROM_INTERNAL:
@@ -573,7 +584,7 @@ void CBUSConfig::writeEEPROM(uint32_t eeaddress, uint8_t data)
       if (r < 0)
       {
       }
-#endif      
+#endif
       break;
 
    case EEPROM_INTERNAL:
@@ -616,7 +627,7 @@ void CBUSConfig::writeBytesEEPROM(uint32_t eeaddress, uint8_t src[], uint8_t num
       if (r < 0)
       {
       }
-#endif      
+#endif
       break;
 
    case EEPROM_INTERNAL:
@@ -679,7 +690,7 @@ void CBUSConfig::resetEEPROM(void)
 void CBUSConfig::reboot(void)
 {
    // Set watchdog timeout to 100ms and allow to expire
-   watchdog_enable(100, 1); 
+   watchdog_enable(100, 1);
    while (1)
       ;
 }
@@ -698,7 +709,7 @@ uint32_t CBUSConfig::freeSRAM(void)
 /// manually reset the module to factory defaults
 //
 
-void CBUSConfig::resetModule(CBUSLED& ledGrn, CBUSLED& ledYlw, CBUSSwitch& pbSwitch)
+void CBUSConfig::resetModule(CBUSLED &ledGrn, CBUSLED &ledYlw, CBUSSwitch &pbSwitch)
 {
    /// standard implementation of resetModule()
 
@@ -752,7 +763,7 @@ void CBUSConfig::resetModule(void)
    {
       // clear the entire on-chip EEPROM
       // !! note we don't clear the first ten locations (0-9), so that they can be used across resets
-      for (uint32_t j = 10; j < 20/*TODO EEPROM.length()*/; j++)
+      for (uint32_t j = 10; j < 20 /*TODO EEPROM.length()*/; j++)
       {
          setChipEEPROMVal(j, 0xff);
       }
@@ -824,14 +835,14 @@ void CBUSConfig::setChipEEPROMVal(uint32_t eeaddress, uint8_t val)
 {
    // TODO EEPROM.write(eeaddress, val);
 
-   //EEPROM.commit();
+   // EEPROM.commit();
 }
 
 ///
 
 uint8_t CBUSConfig::getChipEEPROMVal(uint32_t eeaddress)
 {
-   return 0;//EEPROM.read(eeaddress);
+   return 0; // EEPROM.read(eeaddress);
 }
 
 //
