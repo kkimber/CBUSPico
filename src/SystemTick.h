@@ -39,6 +39,10 @@
 
 #include <cstdint>
 
+///
+/// Class to encapsulate time and Sys Tick handling
+///
+
 class SystemTick
 {
 public:

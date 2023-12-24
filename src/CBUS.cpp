@@ -53,29 +53,26 @@ void makeHeader_impl(CANFrame *msg, uint8_t id, uint8_t priority = 0x0b);
 /// note that this CBUSConfig object must have a lifetime longer than the CBUS object.
 //
 
-CBUSbase::CBUSbase(CBUSConfig &config, CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw) : _numMsgsSent{0x0L},
-                                                                                           _numMsgsRcvd{0x0UL},
-                                                                                           _msg{},
-                                                                                           module_config{config},
-                                                                                           _sw{sw},
-                                                                                           _ledGrn{ledGrn},
-                                                                                           _ledYlw{ledYlw},
-                                                                                           _mparams{nullptr},
-                                                                                           _mname{nullptr},
-                                                                                           eventhandler{nullptr},
-                                                                                           eventhandlerex{nullptr},
-                                                                                           framehandler{nullptr},
-                                                                                           _opcodes{nullptr},
-                                                                                           _num_opcodes{0x0U},
-                                                                                           enum_responses{},
-                                                                                           bModeChanging{false},
-                                                                                           bCANenum{false},
-                                                                                           bLearn{false},
-                                                                                           timeOutTimer{0x0UL},
-                                                                                           CANenumTime{0x0UL},
-                                                                                           enumeration_required{false},
-                                                                                           longMessageHandler{nullptr},
-                                                                                           coe_obj{nullptr}
+CBUSbase::CBUSbase(CBUSConfig &config) : _numMsgsSent{0x0L},
+                                         _numMsgsRcvd{0x0UL},
+                                         _msg{},
+                                         module_config{config},
+                                         _mparams{nullptr},
+                                         _mname{nullptr},
+                                         eventhandler{nullptr},
+                                         eventhandlerex{nullptr},
+                                         framehandler{nullptr},
+                                         _opcodes{nullptr},
+                                         _num_opcodes{0x0U},
+                                         enum_responses{},
+                                         bModeChanging{false},
+                                         bCANenum{false},
+                                         bLearn{false},
+                                         timeOutTimer{0x0UL},
+                                         CANenumTime{0x0UL},
+                                         enumeration_required{false},
+                                         longMessageHandler{nullptr},
+                                         coe_obj{nullptr}
 {
 }
 
@@ -1179,6 +1176,23 @@ void CBUSbase::setLongMessageHandler(CBUSLongMessage *handler)
 void CBUSbase::consumeOwnEvents(CBUScoe *coe)
 {
    coe_obj = coe;
+}
+
+///
+/// @brief Retrieve internal CBUS UI objects for LED's and FLiM switch so they can be configured
+///        The caller is expected to call CBUSSwitch::setPin() or CBUSLED::setPin() on the returned
+///        objects for each object they wish to configure.
+///        If the switch or LED is not required, then don't call setPin and they will not be used.
+/// 
+/// @param sw Reference to the internal CBUSSwitch object for the FLiM switch
+/// @param ledGrn Reference to the internal CBUSLED object for the Green FLiM LED
+/// @param ledYlw Reference to the internal CBUSLED object for the Yellow FLiM LED
+///
+void CBUSbase::getCBUSUIObjects(CBUSSwitch& sw, CBUSLED& ledGrn, CBUSLED& ledYlw)
+{
+   sw = _sw;
+   ledGrn = _ledGrn;
+   ledYlw = _ledYlw;
 }
 
 //

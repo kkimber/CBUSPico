@@ -41,7 +41,9 @@
 
 #include <cstdint>
 
-// non-blocking switch class
+//
+/// Class to encapsulate a non-blocking switch class
+//
 
 class CBUSSwitch
 {
@@ -60,15 +62,15 @@ public:
    void resetCurrentDuration(void);
 
 private:
-   bool _readPin(uint8_t pin);
    bool m_configured;
    uint8_t m_pin;
-   uint8_t m_pressedState;
-   uint8_t m_currentState;
-   uint8_t m_lastState;
-   uint8_t m_stateChanged;
+   bool m_pressedState;
+   bool m_currentState;
+   bool m_lastState;
+   bool m_stateChanged;
    uint32_t m_lastStateChangeTime;
    uint32_t m_lastStateDuration;
    uint32_t m_prevReleaseTime;
    uint32_t m_prevStateDuration;
+   bool _readPin(void);
 };

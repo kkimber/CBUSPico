@@ -42,10 +42,9 @@
 
 #include <pico/stdlib.h>
 
-//
-/// class for individual LED with non-blocking control
-//
-
+///
+/// Class to control an individual LED, with non-blocking control
+///
 CBUSLED::CBUSLED() : m_configured{false},
                      m_pin{0x0U},
                      m_state{false},
@@ -56,74 +55,93 @@ CBUSLED::CBUSLED() : m_configured{false},
 {
 }
 
-//  set the pin for this LED
-
+///
+/// @brief Set the pin for this LED
+///        configures the pin as a GPIO ouput and sets the output LOW
+///
+/// @param pin Pin number of the pin to assign to this LED
+///
 void CBUSLED::setPin(uint8_t pin)
 {
+   // Assign the pin
    m_pin = pin;
 
+   // Initialize as GPIO output and drive LOW
    gpio_init(pin);
    gpio_set_dir(pin, GPIO_OUT);
    gpio_put(pin, false);
 
+   // This class instance is now configured
    m_configured = true;
 }
 
-// return the current state, on or off
-
+///
+/// @brief Get the current state of the LED output pin
+///
+/// @return true The output pin is HIGH
+/// @return false The output pin is LOW
+///
 bool CBUSLED::getState()
 {
    return m_state;
 }
 
-// turn LED state on
-
-void CBUSLED::on(void)
+///
+/// @brief Turns the LED on
+///
+void CBUSLED::on()
 {
    m_state = true;
    m_blink = false;
 }
 
-// turn LED state off
-
-void CBUSLED::off(void)
+///
+/// @brief Turns the LED off
+///
+void CBUSLED::off()
 {
    m_state = false;
    m_blink = false;
 }
 
-// toggle LED state from on to off or vv
-
-void CBUSLED::toggle(void)
+///
+/// @brief Toggles the current state of the LED from On to Off or vice versa
+///
+void CBUSLED::toggle()
 {
    m_state = !m_state;
 }
 
-// blink LED
-
+///
+/// @brief Sets the LED into blinking mode
+///
 void CBUSLED::blink()
 {
    m_blink = true;
 }
 
-// pulse the LED
-
+///
+/// @brief Sets the LED to pulse (on) once
+///
 void CBUSLED::pulse()
 {
    m_pulse = true;
    m_state = true;
    m_pulseStart = SystemTick::GetMilli();
+
+   // Run now to turn on immediately
    run();
 }
 
-// actually operate the LED dependent upon its current state
-// must be called frequently from loop() if the LED is set to blink or pulse
-
+///
+/// @brief Process the LED based on its configured state,
+///        must be called frequently if the LED is set to blink or pulse
+///
 void CBUSLED::run()
 {
+   // blinking
    if (m_blink)
    {
-      // blinking
       if ((SystemTick::GetMilli() - m_lastTime) >= BLINK_RATE)
       {
          toggle();
@@ -141,15 +159,17 @@ void CBUSLED::run()
       }
    }
 
-   _write(m_pin, m_state);
+   // Update the pin state
+   _write();
 }
 
-// write to the physical pin
-
-void CBUSLED::_write(uint8_t pin, bool state)
+///
+/// @brief Output the current state to the physical pin
+///
+void CBUSLED::_write()
 {
    if (m_configured)
    {
-      gpio_put(pin, state);
+      gpio_put(m_pin, m_state);
    }
 }

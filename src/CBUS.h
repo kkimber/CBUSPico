@@ -108,7 +108,7 @@ class CBUSbase
 {
 
 public:
-   CBUSbase(CBUSConfig &config, CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw);
+   CBUSbase(CBUSConfig &config);
 
    // these methods are pure virtual and must be implemented by the derived class
    // as a consequence, it is not possible to create an instance of this class
@@ -145,12 +145,15 @@ public:
    void setLongMessageHandler(CBUSLongMessage *handler);
    void consumeOwnEvents(CBUScoe *coe);
 
+   void getCBUSUIObjects(CBUSSwitch& sw, CBUSLED& ledGrn, CBUSLED& ledYlw);
+
    uint32_t _numMsgsSent, _numMsgsRcvd;
 
 protected: // protected members become private in derived classes
    CANFrame _msg;
-   CBUSLED &_ledGrn, _ledYlw;
-   CBUSSwitch &_sw;
+   CBUSLED _ledGrn;
+   CBUSLED _ledYlw;
+   CBUSSwitch _sw;
    CBUSConfig &module_config;
    unsigned char *_mparams;
    unsigned char *_mname;

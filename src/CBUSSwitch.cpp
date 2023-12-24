@@ -42,25 +42,32 @@
 
 #include <pico/stdlib.h>
 
-//
-/// a class to encapsulate a physical pushbutton switch, with non-blocking processing
-//
+///
+/// @brief A class to encapsulate a physical pushbutton switch, with non-blocking processing
+///
 CBUSSwitch::CBUSSwitch() : m_configured{false},
                            m_pin{0x0U},
-                           m_pressedState{0x0U},
-                           m_currentState{0x0U},
-                           m_lastState{0x0U},
-                           m_stateChanged{0x0U},
+                           m_pressedState{false},
+                           m_currentState{true},
+                           m_lastState{false},
+                           m_stateChanged{false},
                            m_lastStateChangeTime{0x0UL},
                            m_lastStateDuration{0x0UL},
                            m_prevReleaseTime{0x0UL},
                            m_prevStateDuration{0x0UL}
-
 {
 }
 
+///
+/// @brief Set the pin for this Switch, defines if the button is active HIGH or LOW
+///        configures the pin as a GPIO input and sets a suitable pull (UP or DOWN)
+///
+/// @param pin Pin number of the pin to assign to this Switch
+/// @param pressedState active state of the pin, true = press = HIGH, false for LOW, default is LOW
+///
 void CBUSSwitch::setPin(uint8_t pin, bool pressedState = false)
 {
+   // Set the pin and active state
    m_pin = pin;
    m_pressedState = pressedState;
 
@@ -83,17 +90,20 @@ void CBUSSwitch::setPin(uint8_t pin, bool pressedState = false)
    // Switch has now been configured
    m_configured = true;
 
-   // Reset internal states to match new pin definition and pin state
+   // Reset internal states to match new pin definition and read current pin state
    reset();
-   m_currentState = _readPin(m_pin);
+   m_currentState = _readPin();
 }
 
-void CBUSSwitch::run(void)
+///
+/// @brief Process the Switch, must be called frequently
+///
+void CBUSSwitch::run()
 {
    // check for state change
 
    // read the pin
-   m_currentState = _readPin(m_pin);
+   m_currentState = _readPin();
 
    // has state changed ?
    if (m_currentState != m_lastState)
@@ -119,7 +129,10 @@ void CBUSSwitch::run(void)
    }
 }
 
-void CBUSSwitch::reset(void)
+///
+/// @brief Reset the internal states of the Switch
+///
+void CBUSSwitch::reset()
 {
    // Initialize internal states
    m_lastState = !m_pressedState;
@@ -130,56 +143,99 @@ void CBUSSwitch::reset(void)
    m_prevStateDuration = 0x0UL;
 }
 
-bool CBUSSwitch::stateChanged(void)
+///
+/// @brief Determine if the state of the switch has changed
+///
+/// @return true The state of the switch has changed
+/// @return false The state of the switch has no changed
+///
+bool CBUSSwitch::stateChanged()
 {
    // has switch state changed ?
    return m_stateChanged;
 }
 
-bool CBUSSwitch::getState(void)
+///
+/// @brief Get the current state of the switch pin
+///
+/// @return true The pin is logical HIGH
+/// @return false The pin is logical LOW
+///
+bool CBUSSwitch::getState()
 {
    // return the current switch state read
    return m_currentState;
 }
 
-bool CBUSSwitch::isPressed(void)
+///
+/// @brief Determine if the Switch has been detected as Pressed
+///
+/// @return true The Switch is Pressed
+/// @return false The Switch is not Pressed
+///
+bool CBUSSwitch::isPressed()
 {
    // is the switch pressed ?
    return (m_currentState == m_pressedState);
 }
 
-uint32_t CBUSSwitch::getCurrentStateDuration(void)
+///
+/// @brief Determine how long the Switch has been in its current state
+///
+/// @return uint32_t Duration in the current state, in milliseconds
+///
+uint32_t CBUSSwitch::getCurrentStateDuration()
 {
    // how long has the switch been in its current state ?
    return (SystemTick::GetMilli() - m_lastStateChangeTime);
 }
 
-uint32_t CBUSSwitch::getLastStateDuration(void)
+///
+/// @brief Determine how long the Switch was in its previous state
+///
+/// @return uint32_t Duration in previous state, in milliseconds
+///
+uint32_t CBUSSwitch::getLastStateDuration()
 {
    // how long was the last state active for ?
    return m_lastStateDuration;
 }
 
-uint32_t CBUSSwitch::getLastStateChangeTime(void)
+///
+/// @brief Determine when the Switch last changed state
+///
+/// @return uint32_t Timestamp of the last state change, in milliseconds since boot
+///
+uint32_t CBUSSwitch::getLastStateChangeTime()
 {
    // when was the last state change ?
    return m_lastStateChangeTime;
 }
 
-/// reset the state duration counter
-void CBUSSwitch::resetCurrentDuration(void)
+///
+/// @brief Reset the timestamp of the last state change
+///
+///
+void CBUSSwitch::resetCurrentDuration()
 {
    m_lastStateChangeTime = SystemTick::GetMilli();
 }
 
-/// Read the GPIO pin level
-bool CBUSSwitch::_readPin(uint8_t pin)
+///
+/// @brief Read the phyical pin state
+///        If the pin is not configured it will return true
+///
+/// @return true The pin is logical HIGH
+/// @return false The pin is logical LOW
+///
+bool CBUSSwitch::_readPin()
 {
+   // If configured, read the physical pin state
    if (m_configured)
    {
-      return gpio_get(pin);
+      return gpio_get(m_pin);
    }
 
-   // TODO check default active state
-   return false;
+   // Unconfigured, return true, as default state is active LOW
+   return true;
 }

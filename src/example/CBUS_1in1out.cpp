@@ -55,17 +55,18 @@ const char VER_MIN = 'a';     // code minor version
 const uint8_t VER_BETA = 0;   // code beta sub-version
 const uint8_t MODULE_ID = 99; // CBUS module type
 
-const uint8_t LED_GRN = 8;  // CBUS green SLiM LED pin
-const uint8_t LED_YLW = 9;  // CBUS yellow FLiM LED pin
-const uint8_t SWITCH0 = 10; // CBUS push button switch pin
+const uint8_t LED_GRN = 21; // CBUS green SLiM LED pin
+const uint8_t LED_YLW = 20; // CBUS yellow FLiM LED pin
+const uint8_t SWITCH0 = 17; // CBUS push button switch pin
+
+const uint8_t CAN_RX = 11; // CAN2040 Rx pin
+const uint8_t CAN_TX = 12; // CAN2040 Tx pin
 
 // CBUS objects
 CBUSConfig module_config; // configuration object
-CBUSLED ledGrn, ledYlw;   // two LED objects
-CBUSSwitch sw;            // switch object
 
-// Construct CBUS Object and assign Switch and LED's
-CBUSACAN2040 CBUS(module_config, sw, ledGrn, ledYlw);
+// Construct CBUS Object and assign the module configuration
+CBUSACAN2040 CBUS(module_config);
 
 // module objects
 CBUSSwitch moduleSwitch; // an example switch as input
@@ -106,7 +107,13 @@ void setupCBUS()
    CBUS.setParams(params.getParams());
    CBUS.setName(mname);
 
-   // set CBUS LED pins 
+   // Get the internal CBUS UI objects
+   CBUSLED ledGrn;
+   CBUSLED ledYlw;
+   CBUSSwitch sw;
+   CBUS.getCBUSUIObjects(sw, ledGrn, ledYlw);
+
+   // set CBUS LED pins
    ledGrn.setPin(LED_GRN);
    ledYlw.setPin(LED_YLW);
 
@@ -135,8 +142,8 @@ void setupCBUS()
    CBUS.indicateMode(module_config.FLiM);
 
    // configure and start CAN bus and CBUS message processing
-   CBUS.setNumBuffers(16, 4); // more buffers = more memory used, fewer = less
-   CBUS.setPins(1, 2);        // select pins for CAN tx and rx
+   CBUS.setNumBuffers(16, 4);    // more buffers = more memory used, fewer = less
+   CBUS.setPins(CAN_TX, CAN_RX); // select pins for CAN tx and rx
 
    if (!CBUS.begin())
    {

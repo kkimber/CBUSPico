@@ -59,7 +59,7 @@ static void cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 /// constructor and destructor
 //
 
-CBUSACAN2040::CBUSACAN2040(CBUSConfig &config, CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw) : CBUSbase(config, sw, ledGrn, ledYlw),
+CBUSACAN2040::CBUSACAN2040(CBUSConfig &config) : CBUSbase(config),
                                                                                                    acan2040{nullptr},
                                                                                                    tx_buffer{nullptr},
                                                                                                    rx_buffer{nullptr},
