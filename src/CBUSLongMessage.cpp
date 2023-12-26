@@ -356,6 +356,25 @@ void CBUSLongMessage::setTimeout(uint32_t timeout_in_millis)
 //// extended support for multiple concurrent long messages
 //
 
+CBUSLongMessageEx::~CBUSLongMessageEx()
+{
+   for (int i = 0; i < _num_receive_contexts; i++)
+   {
+      if (_receive_context[i])
+      {
+         free(_receive_context[i]);
+      }
+   }
+
+   for (int i = 0; i < _num_send_contexts; i++)
+   {
+      if (_send_context[i])
+      {
+         free(_send_context[i]);
+      }
+   }
+}
+
 //
 /// allocate memory for receive and send contexts
 //

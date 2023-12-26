@@ -41,8 +41,9 @@
 #include "CBUSACAN2040.h"
 #include "SystemTick.h"
 
-#include <stdlib.h>
-#include <string.h>
+#include <new>
+#include <cstdlib>
+#include <cstring>
 
 #include <RP2040.h>
 
@@ -60,13 +61,13 @@ static void cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 //
 
 CBUSACAN2040::CBUSACAN2040(CBUSConfig &config) : CBUSbase(config),
-                                                                                                   acan2040{nullptr},
-                                                                                                   tx_buffer{nullptr},
-                                                                                                   rx_buffer{nullptr},
-                                                                                                   _gpio_tx{0x0U},
-                                                                                                   _gpio_rx{0x0U},
-                                                                                                   _num_tx_buffers{tx_qsize},
-                                                                                                   _num_rx_buffers{rx_qsize}
+                                                 acan2040{nullptr},
+                                                 tx_buffer{nullptr},
+                                                 rx_buffer{nullptr},
+                                                 _gpio_tx{0x0U},
+                                                 _gpio_rx{0x0U},
+                                                 _num_tx_buffers{tx_qsize},
+                                                 _num_rx_buffers{rx_qsize}
 {
    initMembers();
 }
@@ -78,6 +79,23 @@ void CBUSACAN2040::initMembers(void)
 
 CBUSACAN2040::~CBUSACAN2040()
 {
+   if (rx_buffer)
+   {
+      delete rx_buffer;
+      rx_buffer = nullptr;
+   }
+
+   if (tx_buffer)
+   {
+      delete tx_buffer;
+      tx_buffer = nullptr;
+   }
+
+   if (acan2040)
+   {
+      delete acan2040;
+      acan2040 = nullptr;
+   }
 }
 
 //
@@ -88,11 +106,18 @@ CBUSACAN2040::~CBUSACAN2040()
 bool CBUSACAN2040::begin()
 {
    // allocate tx and tx buffers -- tx is currently unused
-   rx_buffer = new circular_buffer(_num_rx_buffers);
-   tx_buffer = new circular_buffer(_num_tx_buffers);
+   rx_buffer = new (std::nothrow) CBUSCircularBuffer(_num_rx_buffers);
+   tx_buffer = new (std::nothrow) CBUSCircularBuffer(_num_tx_buffers);
 
    acan2040 = new ACAN2040(0, _gpio_tx, _gpio_rx, CANBITRATE, SystemCoreClock, cb);
+
+   if (!rx_buffer || !tx_buffer || !acan2040)
+   {
+      return false;
+   }
+
    acan2040->begin();
+
    return true;
 }
 
@@ -106,6 +131,11 @@ bool CBUSACAN2040::begin()
 
 bool CBUSACAN2040::available(void)
 {
+   if (!rx_buffer)
+   {
+      return false;
+   }
+
    return rx_buffer->available();
 }
 
@@ -116,9 +146,16 @@ bool CBUSACAN2040::available(void)
 CANFrame CBUSACAN2040::getNextMessage(void)
 {
    CANFrame cf;
+   
+   if (!rx_buffer)
+   {
+      return cf;
+   }
+   
+   cf = *rx_buffer->get();
 
-   ++_numMsgsRcvd;
-   memcpy((CANFrame *)&cf, rx_buffer->get(), sizeof(CANFrame));
+   ++m_numMsgsRcvd;
+
    return cf;
 }
 
@@ -135,18 +172,21 @@ void CBUSACAN2040::notify_cb(struct can2040 *cd, uint32_t notify, struct can2040
    case CAN2040_NOTIFY_RX:
       // Serial.printf("acan2040 cb: message received\n");
 
-      _msg.id = amsg->id;
-      _msg.len = amsg->dlc;
+      m_msg.id = amsg->id;
+      m_msg.len = amsg->dlc;
 
-      for (uint8_t i = 0; i < _msg.len && i < 8; i++)
+      for (uint8_t i = 0; i < m_msg.len && i < 8; i++)
       {
-         _msg.data[i] = amsg->data[i];
+         m_msg.data[i] = amsg->data[i];
       }
 
-      _msg.rtr = amsg->id & CAN2040_ID_RTR;
-      _msg.ext = amsg->id & CAN2040_ID_EFF;
+      m_msg.rtr = amsg->id & CAN2040_ID_RTR;
+      m_msg.ext = amsg->id & CAN2040_ID_EFF;
 
-      rx_buffer->put(&_msg);
+      if (rx_buffer)
+      {
+         rx_buffer->put(&m_msg);
+      }
       break;
 
    case CAN2040_NOTIFY_TX:
@@ -198,12 +238,10 @@ bool CBUSACAN2040::sendMessage(CANFrame *msg, bool rtr, bool ext, uint8_t priori
 
    if (acan2040->send_message(&tx_msg))
    {
-      // Serial.printf("ok\n");
       return true;
    }
    else
    {
-      // Serial.printf("error sending message\n");
       return false;
    }
 }
@@ -214,9 +252,24 @@ bool CBUSACAN2040::sendMessage(CANFrame *msg, bool rtr, bool ext, uint8_t priori
 
 void CBUSACAN2040::reset(void)
 {
-   delete rx_buffer;
-   delete tx_buffer;
-   delete acan2040;
+   if (rx_buffer)
+   {
+      delete rx_buffer;
+      rx_buffer = nullptr;
+   }
+
+   if (rx_buffer)
+   {
+      delete tx_buffer;
+      tx_buffer = nullptr;
+   }
+   
+   if (acan2040)
+   {
+      delete acan2040;
+      acan2040 = nullptr;
+   }
+
    begin();
 }
 
@@ -240,184 +293,4 @@ void CBUSACAN2040::setNumBuffers(uint8_t num_rx_buffers, uint8_t num_tx_buffers)
 {
    _num_rx_buffers = num_rx_buffers;
    _num_tx_buffers = num_tx_buffers;
-}
-
-///
-/// a circular buffer class
-///
-
-/// constructor and destructor
-
-circular_buffer::circular_buffer(uint8_t num_items)
-{
-   _head = 0;
-   _tail = 0;
-   _hwm = 0;
-   _capacity = num_items;
-   _size = 0;
-   _puts = 0;
-   _gets = 0;
-   _overflows = 0;
-   _full = false;
-   _buffer = (buffer_entry_t *)malloc(num_items * sizeof(buffer_entry_t));
-}
-
-circular_buffer::~circular_buffer()
-{
-   free(_buffer);
-}
-
-/// if buffer has one or more stored items
-
-bool circular_buffer::available(void)
-{
-   return (_size > 0);
-}
-
-/// store an item to the buffer - overwrite oldest item if buffer is full
-/// only called from an interrupt context so we don't need to worry about subsequent interrupts
-
-void circular_buffer::put(const CANFrame *item)
-{
-   memcpy((CANFrame *)&_buffer[_head]._item, (const CANFrame *)item, sizeof(CANFrame));
-   _buffer[_head]._item_insert_time = SystemTick::GetMicros();
-
-   // if the buffer is full, this put will overwrite the oldest item
-
-   if (_full)
-   {
-      _tail = (_tail + 1) % _capacity;
-      ++_overflows;
-   }
-
-   _head = (_head + 1) % _capacity;
-   _full = _head == _tail;
-   _size = size();
-   _hwm = (_size > _hwm) ? _size : _hwm;
-   ++_puts;
-}
-
-/// retrieve the next item from the buffer
-
-CANFrame *circular_buffer::get(void)
-{
-   CANFrame *p = nullptr;
-
-   // should always call ::available first to avoid returning null pointer
-
-   // protect against changes to the buffer by suspending interrupts
-
-   if (_size > 0)
-   {
-      p = &_buffer[_tail]._item;
-      _full = false;
-      _tail = (_tail + 1) % _capacity;
-      _size = size();
-      ++_gets;
-   }
-
-   return p;
-}
-
-/// get the insert time of the current buffer tail item
-/// must be called before the item is removed by circular_buffer::get
-
-unsigned long circular_buffer::insert_time(void)
-{
-   return (_buffer[_tail]._item_insert_time);
-}
-
-/// peek at the next item in the buffer without removing it
-
-CANFrame *circular_buffer::peek(void)
-{
-   // should always call ::available first to avoid this
-
-   if (_size == 0)
-   {
-      return nullptr;
-   }
-
-   return (&_buffer[_tail]._item);
-}
-
-/// clear all items
-
-void circular_buffer::clear(void)
-{
-   _head = 0;
-   _tail = 0;
-   _full = false;
-   _size = 0;
-}
-
-/// return high water mark
-
-uint8_t circular_buffer::hwm(void)
-{
-   return _hwm;
-}
-
-/// return full indicator
-
-bool circular_buffer::full(void)
-{
-   return _full;
-}
-
-/// recalculate number of items in the buffer
-
-uint8_t circular_buffer::size(void)
-{
-   uint8_t size = _capacity;
-
-   if (!_full)
-   {
-      if (_head >= _tail)
-      {
-         size = _head - _tail;
-      }
-      else
-      {
-         size = _capacity + _head - _tail;
-      }
-   }
-
-   _size = size;
-   return _size;
-}
-
-/// return empty indicator
-
-bool circular_buffer::empty(void)
-{
-   return (!_full && (_head == _tail));
-}
-
-/// return number of free slots
-
-uint8_t circular_buffer::free_slots(void)
-{
-   return (_capacity - _size);
-}
-
-/// number of puts
-
-unsigned int circular_buffer::puts(void)
-{
-   return _puts;
-}
-
-/// number of gets
-
-unsigned int circular_buffer::gets(void)
-{
-   return _gets;
-}
-
-/// number of overflows
-
-unsigned int circular_buffer::overflows(void)
-{
-   return _overflows;
 }

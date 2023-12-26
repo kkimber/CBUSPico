@@ -43,6 +43,10 @@
 
 #include <cstdint>
 
+//
+/// A class to manage setting and storage of CBUS module parameters
+//
+
 class CBUSParams
 {
 public:
@@ -51,12 +55,12 @@ public:
    void setModuleId(uint8_t id);
    void setFlags(uint8_t flags);
    void setProcessor(uint8_t manufacturer, uint8_t id, char const *name);
-   uint8_t *getParams();
+   uint8_t *getParams(void);
 
 private:
    // Initializes processor specific parameters
-   static void initProcessorParams();
+   static void initProcessorParams(void);
 
    // Memory for the params is allocated on global memory and handed over to CBUS.setParams().
-   static uint8_t params[21];
+   static uint8_t m_params[21];
 };

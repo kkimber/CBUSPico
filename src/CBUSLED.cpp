@@ -45,6 +45,7 @@
 ///
 /// Class to control an individual LED, with non-blocking control
 ///
+
 CBUSLED::CBUSLED() : m_configured{false},
                      m_pin{0x0U},
                      m_state{false},

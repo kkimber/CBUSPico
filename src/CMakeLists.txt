@@ -11,6 +11,7 @@ add_executable(CBUSPico
    CBUSConfig.cpp
    CBUSParams.cpp
    SystemTick.cpp
+   CBUSCircularBuffer.cpp
    CBUSLongMessage.cpp
    CBUS.cpp
    ACAN2040.cpp

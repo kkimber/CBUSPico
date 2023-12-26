@@ -44,9 +44,9 @@
 #define BLINK_RATE 500  ///< flash at 1Hz, 500mS on, 500mS off
 #define PULSE_ON_TIME 5 ///< pulse on duration
 
-///
+//
 /// class to encapsulate a non-blocking LED
-///
+//
 
 class CBUSLED
 {

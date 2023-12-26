@@ -43,8 +43,9 @@
 #include <pico/stdlib.h>
 
 ///
-/// @brief A class to encapsulate a physical pushbutton switch, with non-blocking processing
+/// A class to encapsulate a physical pushbutton switch, with non-blocking processing
 ///
+
 CBUSSwitch::CBUSSwitch() : m_configured{false},
                            m_pin{0x0U},
                            m_pressedState{false},

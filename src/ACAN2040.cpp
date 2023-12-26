@@ -70,10 +70,19 @@ void ACAN2040::begin()
    can2040_setup(&m_cbus, m_pio_num);
    can2040_callback_config(&m_cbus, m_callback);
 
-   // enable irqs
-   irq_set_exclusive_handler(PIO0_IRQ_0_IRQn, PIOx_IRQHandler);
-   NVIC_SetPriority(PIO0_IRQ_0_IRQn, 1);
-   NVIC_EnableIRQ(PIO0_IRQ_0_IRQn);
+   // enable irqs based on selected PIO
+   if (m_pio_num == 0)
+   {
+      irq_set_exclusive_handler(PIO0_IRQ_0_IRQn, PIOx_IRQHandler);
+      NVIC_SetPriority(PIO0_IRQ_0_IRQn, 1);
+      NVIC_EnableIRQ(PIO0_IRQ_0_IRQn);
+   }
+   else
+   {
+      irq_set_exclusive_handler(PIO1_IRQ_0_IRQn, PIOx_IRQHandler);
+      NVIC_SetPriority(PIO1_IRQ_0_IRQn, 1);
+      NVIC_EnableIRQ(PIO1_IRQ_0_IRQn);
+   }
 
    // start canbus
    can2040_start(&m_cbus, m_sys_clock, m_bitrate, m_gpio_rx, m_gpio_tx);

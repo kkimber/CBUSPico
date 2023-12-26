@@ -37,16 +37,79 @@
 
 */
 
+#pragma once
+
 #include <cstdint>
 
 //
-/// Class to encapsulate time and Sys Tick handling
+/// Class to hold a CAN/CBUS frame
 //
 
-class SystemTick
+class CANFrame
 {
+
 public:
-   SystemTick();
-   static uint32_t GetMilli(void);
-   static uint32_t GetMicros(void);
+   /// Constructor to initialize members
+   CANFrame();
+   /// CAN Frame ID
+   uint32_t id;
+   /// CAN Frame EXT flag
+   bool ext;
+   /// CAN Frame RTR flag
+   bool rtr;
+   /// CAN Frame length
+   uint8_t len;
+   /// CAN Frame raw data
+   uint8_t data[8];
+};
+
+/// A buffer item type for holding CAN/CBUS frames in the circular buffer
+
+typedef struct
+{
+   uint32_t _item_insert_time;
+   CANFrame _item;
+} cbus_frame_buffer_t;
+
+//
+/// A circular buffer class for holding CAN/CBUS Messages
+//
+
+class CBUSCircularBuffer
+{
+
+public:
+   explicit CBUSCircularBuffer(uint8_t num_items);
+   ~CBUSCircularBuffer();
+   CBUSCircularBuffer &operator=(const CBUSCircularBuffer &) = delete; // Delete assignment operator to prevent possible memleak
+   CBUSCircularBuffer &operator=(CBUSCircularBuffer &) = delete;
+   CBUSCircularBuffer(const CBUSCircularBuffer &) = delete; // Do the same for the default copy constructor
+   CBUSCircularBuffer(CBUSCircularBuffer &) = delete;
+
+   bool available(void);
+   void put(const CANFrame *cf);
+   CANFrame *peek(void);
+   CANFrame *get(void);
+   uint32_t insert_time(void);
+   bool full(void);
+   void clear(void);
+   bool empty(void);
+   uint8_t size(void);
+   uint8_t free_slots(void);
+   uint32_t puts(void);
+   uint32_t gets(void);
+   uint8_t hwm(void);
+   uint32_t overflows(void);
+
+private:
+   bool m_full;
+   uint8_t m_head;
+   uint8_t m_tail;
+   uint8_t m_capacity;
+   uint8_t m_size;
+   uint8_t m_hwm;
+   uint32_t m_puts;
+   uint32_t m_gets;
+   uint32_t m_overflows;
+   cbus_frame_buffer_t *m_buffer;
 };

@@ -45,29 +45,30 @@
 #include "CBUSLED.h"
 #include "CBUSSwitch.h"
 #include "CBUSConfig.h"
+#include "CBUSCircularBuffer.h"
 
 #include <cbusdefs.h>
 
-#define SW_TR_HOLD 6000U                  // CBUS push button hold time for SLiM/FLiM transition in millis = 6 seconds
-#define DEFAULT_PRIORITY 0xB              // default CBUS messages priority. 1011 = 2|3 = normal/low
-#define LONG_MESSAGE_DEFAULT_DELAY 20     // delay in milliseconds between sending successive long message fragments
-#define LONG_MESSAGE_RECEIVE_TIMEOUT 5000 // timeout waiting for next long message packet
-#define NUM_EX_CONTEXTS 4                 // number of send and receive contexts for extended implementation = number of concurrent messages
-#define EX_BUFFER_LEN 64                  // size of extended send and receive buffers
+#define SW_TR_HOLD 6000U                  ///< CBUS push button hold time for SLiM/FLiM transition in millis = 6 seconds
+#define DEFAULT_PRIORITY 0xB              ///< default CBUS messages priority. 1011 = 2|3 = normal/low
+#define LONG_MESSAGE_DEFAULT_DELAY 20     ///< delay in milliseconds between sending successive long message fragments
+#define LONG_MESSAGE_RECEIVE_TIMEOUT 5000 ///< timeout waiting for next long message packet
+#define NUM_EX_CONTEXTS 4                 ///< number of send and receive contexts for extended implementation = number of concurrent messages
+#define EX_BUFFER_LEN 64                  ///< size of extended send and receive buffers
 
 //
-/// CBUS modes
+/// Enumeration of CBUS modes
 //
 
 enum
 {
-   MODE_SLIM = 0,
-   MODE_FLIM = 1,
-   MODE_CHANGING = 2
+   MODE_SLIM = 0,    ///< Module is in SLiM mode
+   MODE_FLIM = 1,    ///< Module is in FLiM mode
+   MODE_CHANGING = 2 ///< Module mode is in the process of being changed
 };
 
 //
-/// CBUS long message status codes
+/// Enumeration CBUS long message status codes
 //
 
 enum
@@ -80,29 +81,14 @@ enum
    CBUS_LONG_MESSAGE_TRUNCATED
 };
 
-//
-/// CAN/CBUS message type
-//
-
-class CANFrame
-{
-
-public:
-   uint32_t id;
-   bool ext;
-   bool rtr;
-   uint8_t len;
-   uint8_t data[8] = {};
-};
-
-//
-/// an abstract class to encapsulate CAN bus and CBUS processing
-/// it must be implemented by a derived subclass
-//
-
-// forward references
+// forward declations
 class CBUSLongMessage;
 class CBUScoe;
+
+//
+/// @brief An abstract class to encapsulate CAN bus and CBUS processing for a CBUS module,
+/// it must be implemented by a derived subclass
+//
 
 class CBUSbase
 {
@@ -145,16 +131,16 @@ public:
    void setLongMessageHandler(CBUSLongMessage *handler);
    void consumeOwnEvents(CBUScoe *coe);
 
-   void getCBUSUIObjects(CBUSSwitch& sw, CBUSLED& ledGrn, CBUSLED& ledYlw);
+   void getCBUSUIObjects(CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw);
 
-   uint32_t _numMsgsSent, _numMsgsRcvd;
+   uint32_t m_numMsgsSent, m_numMsgsRcvd;
 
 protected: // protected members become private in derived classes
-   CANFrame _msg;
-   CBUSLED _ledGrn;
-   CBUSLED _ledYlw;
-   CBUSSwitch _sw;
-   CBUSConfig &module_config;
+   CANFrame m_msg;
+   CBUSLED m_ledGrn;
+   CBUSLED m_ledYlw;
+   CBUSSwitch m_sw;
+   CBUSConfig &m_moduleConfig;
    unsigned char *_mparams;
    unsigned char *_mname;
    void (*eventhandler)(uint8_t index, CANFrame *msg);
@@ -162,18 +148,18 @@ protected: // protected members become private in derived classes
    void (*framehandler)(CANFrame *msg);
    uint8_t *_opcodes;
    uint8_t _num_opcodes;
-   uint8_t enum_responses[16]; // 128 bits for storing CAN ID enumeration results
-   bool bModeChanging, bCANenum, bLearn;
+   uint8_t m_enumResponses[16]; // 128 bits for storing CAN ID enumeration results
+   bool m_bModeChanging, m_bCANenum, m_bLearn;
    uint32_t timeOutTimer, CANenumTime;
-   bool enumeration_required;
+   bool m_bEnumerationRequired;
 
    CBUSLongMessage *longMessageHandler; // CBUS long message object to receive relevant frames
-   CBUScoe *coe_obj;                    // consume-own-events
+   CBUScoe *m_coeObj;                   // consume-own-events
 };
 
 //
-/// a basic class to send and receive CBUS long messages per MERG RFC 0005
-/// handles a single message, sending and receiving
+/// @brief A basic class to send and receive CBUS long messages per MERG RFC 0005,
+/// handles a single message, sending and receiving,
 /// suitable for small microcontrollers with limited memory
 //
 
@@ -206,7 +192,7 @@ protected:
 
 //// extended support for multiple concurrent long messages
 
-// send and receive contexts
+/// Receive context for long messsages
 
 typedef struct _receive_context_t
 {
@@ -216,6 +202,8 @@ typedef struct _receive_context_t
    uint32_t receive_buffer_index, incoming_bytes_received, incoming_message_length, expected_next_receive_sequence_num, incoming_message_crc;
    uint32_t last_fragment_received;
 } receive_context_t;
+
+/// Send context for long messages
 
 typedef struct _send_context_t
 {
@@ -227,7 +215,7 @@ typedef struct _send_context_t
 } send_context_t;
 
 //
-/// a derived class to extend the base long message class to handle multiple concurrent messages, sending and receiving
+/// A derived class to extend the base long message class to handle multiple concurrent messages, sending and receiving
 //
 
 class CBUSLongMessageEx : public CBUSLongMessage
@@ -236,6 +224,7 @@ class CBUSLongMessageEx : public CBUSLongMessage
 public:
    explicit CBUSLongMessageEx(CBUSbase *cbus_object_ptr)
        : CBUSLongMessage(cbus_object_ptr) {} // derived class constructor calls the base class constructor
+   ~CBUSLongMessageEx();
 
    bool allocateContexts(uint8_t num_receive_contexts = NUM_EX_CONTEXTS, uint32_t receive_buffer_len = EX_BUFFER_LEN, uint8_t num_send_contexts = NUM_EX_CONTEXTS);
    bool sendLongMessage(const void *msg, const uint32_t msg_len, const uint8_t stream_id, const uint8_t priority = DEFAULT_PRIORITY);
@@ -253,48 +242,8 @@ private:
 };
 
 //
-/// a circular buffer class
+/// A class to manage consuming-own-CBUS events
 //
-
-// buffer item type
-
-typedef struct _buffer_entry2
-{
-   uint32_t _item_insert_time;
-   CANFrame _item;
-} buffer_entry2_t;
-
-//
-
-class circular_buffer2
-{
-
-public:
-   explicit circular_buffer2(uint8_t num_items);
-   ~circular_buffer2();
-   bool available(void);
-   void put(const CANFrame *cf);
-   CANFrame *peek(void);
-   CANFrame *get(void);
-   uint32_t insert_time(void);
-   bool full(void);
-   void clear(void);
-   bool empty(void);
-   uint8_t size(void);
-   uint8_t free_slots(void);
-   uint32_t puts();
-   uint32_t gets();
-   uint8_t hwm(void);
-   uint32_t overflows(void);
-
-private:
-   bool _full;
-   uint8_t _head, _tail, _capacity, _size, _hwm;
-   uint32_t _puts, _gets, _overflows;
-   buffer_entry2_t *_buffer;
-};
-
-// consume-own-events class
 
 class CBUScoe
 {
@@ -303,11 +252,13 @@ public:
    CBUScoe(const uint8_t num_items = 4);
    ~CBUScoe();
    CBUScoe &operator=(const CBUScoe &) = delete; // Delete assignment operator to prevent possible memleak
-   CBUScoe(const CBUScoe &) = delete;            // Do the same for the default copy constructor
+   CBUScoe &operator=(CBUScoe &) = delete;
+   CBUScoe(const CBUScoe &) = delete; // Do the same for the default copy constructor
+   CBUScoe(CBUScoe &) = delete;
    void put(const CANFrame *msg);
    CANFrame get(void);
    bool available(void);
 
 private:
-   circular_buffer2 *coe_buff;
+   CBUSCircularBuffer *coe_buff;
 };
