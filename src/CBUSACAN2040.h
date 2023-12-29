@@ -49,8 +49,8 @@
 
 static const uint8_t tx_qsize = 8;           ///< Transmit queue size
 static const uint8_t rx_qsize = 32;          ///< Receive queue size
-static const uint8_t tx_pin = 1;             ///< CAN Tx pin number
-static const uint8_t rx_pin = 2;             ///< CAN Rx pin number
+static const uint8_t tx_pin = 12;            ///< Default CAN Tx pin number
+static const uint8_t rx_pin = 11;            ///< Default CAN Rx pin number
 static const uint32_t CANBITRATE = 125000UL; ///< 125Kb/s - fixed for CBUS
 
 //

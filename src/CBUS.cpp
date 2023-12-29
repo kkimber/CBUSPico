@@ -134,7 +134,7 @@ void CBUSbase::setSLiM(void)
    m_moduleConfig.setFLiM(false);
    m_moduleConfig.setCANID(0);
 
-   indicateMode(m_moduleConfig.FLiM);
+   indicateFLiMMode(m_moduleConfig.FLiM);
 }
 
 //
@@ -287,6 +287,11 @@ void CBUSbase::indicateMode(uint8_t mode)
    default:
       break;
    }
+}
+
+void CBUSbase::indicateFLiMMode(bool bFLiM)
+{
+   indicateMode(bFLiM ? MODE_FLIM : MODE_SLIM);
 }
 
 //
@@ -607,7 +612,7 @@ void CBUSbase::process(uint8_t num_messages)
                // we are now in FLiM mode - update the configuration
                m_bModeChanging = false;
                m_moduleConfig.setFLiM(true);
-               indicateMode(m_moduleConfig.FLiM);
+               indicateFLiMMode(m_moduleConfig.FLiM);
 
                // enumerate the CAN bus to allocate a free CAN ID
                CANenumeration();
@@ -1059,7 +1064,7 @@ void CBUSbase::process(uint8_t num_messages)
    {
 
       // DEBUG_SERIAL << F("> timeout expired, FLiM = ") << FLiM << F(", mode change = ") << bModeChanging << endl;
-      indicateMode(m_moduleConfig.FLiM);
+      indicateFLiMMode(m_moduleConfig.FLiM);
       m_bModeChanging = false;
    }
 
@@ -1180,20 +1185,36 @@ void CBUSbase::consumeOwnEvents(CBUScoe *coe)
 }
 
 ///
-/// @brief Retrieve internal CBUS UI objects for LED's and FLiM switch so they can be configured
-///        The caller is expected to call CBUSSwitch::setPin() or CBUSLED::setPin() on the returned
-///        objects for each object they wish to configure.
-///        If the switch or LED is not required, then don't call setPin and they will not be used.
-/// 
-/// @param sw Reference to the internal CBUSSwitch object for the FLiM switch
-/// @param ledGrn Reference to the internal CBUSLED object for the Green FLiM LED
-/// @param ledYlw Reference to the internal CBUSLED object for the Yellow FLiM LED
+/// @brief Retrieve internal CBUS Yellow LED UI object it can be configured
+///        The caller is expected to call CBUSLED::setPin() on the returned object
 ///
-void CBUSbase::getCBUSUIObjects(CBUSSwitch& sw, CBUSLED& ledGrn, CBUSLED& ledYlw)
+/// @return Reference to the internal CBUSLED object for the Yellow FLiM LED
+///
+CBUSLED& CBUSbase::getCBUSYellowLED()
 {
-   sw = m_sw;
-   ledGrn = m_ledGrn;
-   ledYlw = m_ledYlw;
+   return m_ledYlw;
+}
+
+///
+/// @brief Retrieve internal CBUS Green LED UI object it can be configured
+///        The caller is expected to call CBUSLED::setPin() on the returned object
+///
+/// @return Reference to the internal CBUSLED object for the Green FLiM LED
+///
+CBUSLED& CBUSbase::getCBUSGreenLED()
+{
+   return m_ledGrn;
+}
+
+///
+/// @brief Retrieve internal CBUS Switch UI object it can be configured
+///        The caller is expected to call CBUSSwitch::setPin() on the returned object
+///
+/// @return Reference to the internal CBUSSwitch object for the FLiM switch
+///
+CBUSSwitch& CBUSbase::getCBUSSwitch()
+{
+   return m_sw;
 }
 
 //

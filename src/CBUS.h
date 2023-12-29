@@ -122,6 +122,7 @@ public:
    void setName(unsigned char *mname);
    void checkCANenum(void);
    void indicateMode(uint8_t mode);
+   void indicateFLiMMode(bool bFLiM);
    void setEventHandler(void (*fptr)(uint8_t index, CANFrame *msg));
    void setEventHandler(void (*fptr)(uint8_t index, CANFrame *msg, bool ison, uint8_t evval));
    void setFrameHandler(void (*fptr)(CANFrame *msg), uint8_t *opcodes = nullptr, uint8_t num_opcodes = 0);
@@ -131,7 +132,9 @@ public:
    void setLongMessageHandler(CBUSLongMessage *handler);
    void consumeOwnEvents(CBUScoe *coe);
 
-   void getCBUSUIObjects(CBUSSwitch &sw, CBUSLED &ledGrn, CBUSLED &ledYlw);
+   CBUSLED& getCBUSYellowLED(void);
+   CBUSLED& getCBUSGreenLED(void);
+   CBUSSwitch& getCBUSSwitch(void);
 
    uint32_t m_numMsgsSent, m_numMsgsRcvd;
 
