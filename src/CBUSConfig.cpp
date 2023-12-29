@@ -689,10 +689,8 @@ void CBUSConfig::resetEEPROM(void)
 
 void CBUSConfig::reboot(void)
 {
-   // Set watchdog timeout to 100ms and allow to expire
-   watchdog_enable(100, 1);
-   while (1)
-      ;
+   // Reset now via the watchdog
+   watchdog_reboot(0x0UL, 0x0UL, 0x0UL);
 }
 
 //
@@ -842,7 +840,7 @@ void CBUSConfig::setChipEEPROMVal(uint32_t eeaddress, uint8_t val)
 
 uint8_t CBUSConfig::getChipEEPROMVal(uint32_t eeaddress)
 {
-   return 0; // EEPROM.read(eeaddress);
+   return 0xFF; // TODO fake empty EEPROM for now //EEPROM.read(eeaddress);
 }
 
 //

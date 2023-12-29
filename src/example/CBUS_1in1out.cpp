@@ -57,13 +57,13 @@ const char VER_MIN = 'a';     // code minor version
 const uint8_t VER_BETA = 0;   // code beta sub-version
 const uint8_t MODULE_ID = 99; // CBUS module type
 
-// TODO map to HW
-const uint8_t LED_GRN = 6;//21; // CBUS green SLiM LED pin
-const uint8_t LED_YLW = 25;// LED 20; // CBUS yellow FLiM LED pin
-const uint8_t SWITCH0 = 0;// swA //17; // CBUS push button switch pin
+// Map CBUS LED's switch to HW
+const uint8_t LED_GRN = 21; // CBUS green SLiM LED pin
+const uint8_t LED_YLW = 20; // CBUS yellow FLiM LED pin
+const uint8_t SWITCH0 = 17; // CBUS push button switch pin
 
 const uint8_t CAN_RX = 11; // CAN2040 Rx pin
-const uint8_t CAN_TX = 8;//12; // CAN2040 Tx pin
+const uint8_t CAN_TX = 12; // CAN2040 Tx pin
 
 // CBUS objects
 CBUSConfig module_config; // configuration object
@@ -120,20 +120,18 @@ void setupCBUS()
    ledYlw.setPin(LED_YLW);
 
    // initialise CBUS switch
-   sw.setPin(SWITCH0, true);
+   sw.setPin(SWITCH0, false);
    sw.run();
 
    // module reset - if switch is depressed at startup and module is in SLiM mode
    if (sw.isPressed() && !module_config.FLiM)
    {
-      // Serial << F("> switch was pressed at startup in SLiM mode") << endl;
       module_config.resetModule(ledGrn, ledYlw, sw);
    }
 
    // opportunity to set default NVs after module reset
    if (module_config.isResetFlagSet())
    {
-      // Serial << F("> module has been reset") << endl;
       module_config.clearResetFlag();
    }
 
@@ -162,11 +160,11 @@ void setup()
    // Setup CBUS Library
    setupCBUS();
 
-   // configure the module switch, attached to pin 11, active low
-   moduleSwitch.setPin(11, true);
+   // configure the module switch, attached to IO1 / pin 11, active low
+   moduleSwitch.setPin(2, false);
 
-   // configure the module LED, attached to pin 12 via a 1K resistor
-   moduleLED.setPin(7);
+   // configure the module LED, attached to Red LED / pin 22 via a 1K resistor
+   moduleLED.setPin(22);
 }
 
 //
@@ -193,8 +191,6 @@ void loop()
    //
 
    processModuleSwitchChange();
-
-   // bottom of loop()
 }
 
 //
@@ -237,7 +233,6 @@ void eventhandler(uint8_t index, CANFrame *msg)
 
    // read the value of the first event variable (EV) associated with this learned event
    uint8_t evval = module_config.getEventEVval(index, 1);
-   // Serial << F("> EV1 = ") << evval << endl;
 
    // set the LED according to the opcode of the received event, if the first EV equals 0
    // we turn on the LED and if the first EV equals 1 we use the blink() method of the LED object as an example
@@ -261,41 +256,10 @@ void eventhandler(uint8_t index, CANFrame *msg)
 
 // MODULE MAIN ENTRY
 
-bool swState = false;
-uint32_t lastDuration = 0x0UL;
-
 extern "C" int main(int argc, char *argv[])
 {
+   // Init stdio lib (only really required if UART logging etc.)
    stdio_init_all();
-   
-#if 0
-   // TEMP LED Test code
-   CBUSLED onBoardLED;
-   onBoardLED.setPin(25);
-
-   onBoardLED.on();
-   onBoardLED.run();
-   onBoardLED.off();
-   onBoardLED.run();
-
-   // TEMP Switch Test code
-   CBUSSwitch swA;
-   swA.setPin(0, true);
-
-   while(1)
-   {
-      swA.run();
-      swState = swA.isPressed();
-      if (swA.stateChanged())
-      {
-         lastDuration = swA.getLastStateDuration();
-      }
-
-      sleep_ms(1);
-   }
-
-   return 0;
-#endif
 
    // Initialize
    setup();
@@ -304,6 +268,6 @@ extern "C" int main(int argc, char *argv[])
    while (1)
    {
       loop();
-      sleep_ms(10);
+      sleep_ms(1);
    }
 }
