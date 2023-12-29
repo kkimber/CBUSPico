@@ -3,15 +3,6 @@
 
 #include <new>
 
-/// CANFrame constructor to initialize members
-CANFrame::CANFrame() : id{},
-                       ext{},
-                       rtr{},
-                       len{},
-                       data{} {
-
-                       };
-
 ///
 /// A circular buffer class for CBUS messages
 ///

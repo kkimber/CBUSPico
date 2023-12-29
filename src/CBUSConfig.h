@@ -67,6 +67,7 @@ class CBUSConfig
 
 public:
    CBUSConfig();
+   ~CBUSConfig();
    void begin(void);
 
    uint8_t findExistingEvent(uint32_t nn, uint32_t en);

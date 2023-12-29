@@ -132,9 +132,9 @@ public:
    void setLongMessageHandler(CBUSLongMessage *handler);
    void consumeOwnEvents(CBUScoe *coe);
 
-   CBUSLED& getCBUSYellowLED(void);
-   CBUSLED& getCBUSGreenLED(void);
-   CBUSSwitch& getCBUSSwitch(void);
+   CBUSLED &getCBUSYellowLED(void);
+   CBUSLED &getCBUSGreenLED(void);
+   CBUSSwitch &getCBUSSwitch(void);
 
    uint32_t m_numMsgsSent, m_numMsgsRcvd;
 
@@ -183,13 +183,29 @@ protected:
    bool sendMessageFragment(CANFrame *frame, const uint8_t priority);
 
    bool _is_receiving = false;
-   uint8_t *_send_buffer, *_receive_buffer;
-   uint8_t _send_stream_id = 0, _receive_stream_id = 0, *_stream_ids = nullptr, _num_stream_ids = 0, _send_priority = DEFAULT_PRIORITY, _msg_delay = LONG_MESSAGE_DEFAULT_DELAY, _sender_canid = 0;
-   uint32_t _send_buffer_len = 0, _incoming_message_length = 0, _receive_buffer_len = 0, _receive_buffer_index = 0, _send_buffer_index = 0, _incoming_message_crc = 0,
-            _incoming_bytes_received = 0, _receive_timeout = LONG_MESSAGE_RECEIVE_TIMEOUT, _send_sequence_num = 0, _expected_next_receive_sequence_num = 0;
-   uint32_t _last_fragment_sent = 0UL, _last_fragment_received = 0UL;
+   uint8_t *_send_buffer = nullptr;
+   uint8_t *_receive_buffer = nullptr;
+   uint8_t _send_stream_id = 0;
+   uint8_t _receive_stream_id = 0;
+   uint8_t *_stream_ids = nullptr;
+   uint8_t _num_stream_ids = 0;
+   uint8_t _send_priority = DEFAULT_PRIORITY;
+   uint8_t _msg_delay = LONG_MESSAGE_DEFAULT_DELAY;
+   uint8_t _sender_canid = 0;
+   uint32_t _send_buffer_len = 0;
+   uint32_t _incoming_message_length = 0;
+   uint32_t _receive_buffer_len = 0;
+   uint32_t _receive_buffer_index = 0;
+   uint32_t _send_buffer_index = 0;
+   uint32_t _incoming_message_crc = 0;
+   uint32_t _incoming_bytes_received = 0;
+   uint32_t _receive_timeout = LONG_MESSAGE_RECEIVE_TIMEOUT;
+   uint32_t _send_sequence_num = 0;
+   uint32_t _expected_next_receive_sequence_num = 0;
+   uint32_t _last_fragment_sent = 0UL;
+   uint32_t _last_fragment_received = 0UL;
 
-   void (*_messagehandler)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status); // user callback function to receive long message fragments
+   void (*_messagehandler)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status) = {}; // user callback function to receive long message fragments
    CBUSbase *_cbus_object_ptr;
 };
 

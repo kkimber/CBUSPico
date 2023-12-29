@@ -50,17 +50,17 @@ class CANFrame
 
 public:
    /// Constructor to initialize members
-   CANFrame();
+   CANFrame() {};
    /// CAN Frame ID
-   uint32_t id;
+   uint32_t id = {};
    /// CAN Frame EXT flag
-   bool ext;
+   bool ext = {};
    /// CAN Frame RTR flag
-   bool rtr;
+   bool rtr = {};
    /// CAN Frame length
-   uint8_t len;
+   uint8_t len = {};
    /// CAN Frame raw data
-   uint8_t data[8];
+   uint8_t data[8] = {};
 };
 
 /// A buffer item type for holding CAN/CBUS frames in the circular buffer

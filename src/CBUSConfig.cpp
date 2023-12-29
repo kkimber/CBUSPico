@@ -57,8 +57,9 @@
 #include <hardware/sync.h>
 #include <hardware/watchdog.h>
 
-#include <stdlib.h>
-#include <string.h>
+#include <new>
+#include <cstdlib>
+#include <cstring>
 
 // For detecting free memory
 extern "C" char *sbrk(int incr);
@@ -81,6 +82,15 @@ CBUSConfig::CBUSConfig() : EE_EVENTS_START{0x0UL},
                            evhashtbl{nullptr},
                            hash_collision{false}
 {
+}
+
+CBUSConfig::~CBUSConfig()
+{
+   if (evhashtbl)
+   {
+      delete [] evhashtbl;
+      evhashtbl = nullptr;
+   }
 }
 
 //
@@ -125,15 +135,15 @@ bool CBUSConfig::setEEPROMtype(uint8_t type)
       //      I2Cbus->beginTransmission(external_address);
       //      result = I2Cbus->endTransmission();
 
-      if (result == 0)
+      //if (result == 0)
       {
          eeprom_type = type;
       }
-      else
-      {
-         eeprom_type = EEPROM_INTERNAL;
-         ret = false;
-      }
+   //   else
+   //   {
+   //      eeprom_type = EEPROM_INTERNAL;
+   //      ret = false;
+   //   }
       break;
 
    case EEPROM_USES_FLASH:
@@ -354,7 +364,18 @@ void CBUSConfig::makeEvHashTable(void)
    uint8_t evarray[4];
    const uint8_t unused_entry[4] = {0xff, 0xff, 0xff, 0xff};
 
-   evhashtbl = (uint8_t *)malloc(EE_MAX_EVENTS * sizeof(uint8_t));
+   // Delete any previously allocated hash table
+   if (evhashtbl != nullptr)
+   {
+      delete [] evhashtbl;
+   }
+
+   evhashtbl = new (std::nothrow) uint8_t[EE_MAX_EVENTS];
+
+   if (!evhashtbl)
+   {
+      while (1){}; // TODO need debug trap for out of memory
+   }
 
    for (uint8_t idx = 0; idx < EE_MAX_EVENTS; idx++)
    {
