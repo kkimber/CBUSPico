@@ -58,7 +58,7 @@ jobs:
     - name: Add artifacts to publish
       run: |
         cd downloads
-        ls ${{github.workspace}}/build/
+        ls ${{github.workspace}}/build/src
         #cp   ${{github.workspace}}/build/src/CBUSPico.bin .
         #cp   ${{github.workspace}}/build/src/CBUSPico.u2f .
         #cp   ${{github.workspace}}/build/src/CBUSPico.elf .
