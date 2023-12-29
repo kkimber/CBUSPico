@@ -37,6 +37,9 @@ jobs:
       working-directory: ${{github.workspace}}/pico-sdk
       run: git submodule update --init        
 
+    - name: Get ARM toolchain
+      uses: carlosperate/arm-none-eabi-gcc-action@v1
+
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
       # access regardless of the host operating system
