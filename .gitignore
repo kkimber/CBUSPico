@@ -3,7 +3,9 @@ _deps
 cmake-*
 build
 .DS_Store
+cov-int
 *.pdf
+*.tgz
 CBUSPico-cppcheck-build-dir
 
 ### VisualStudioCode ###
