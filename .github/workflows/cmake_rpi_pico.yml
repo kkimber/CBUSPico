@@ -51,3 +51,22 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/CBUSPico/build --config ${{env.BUILD_TYPE}}
 
+    - name: Create a temporary artifact downloads folder
+      working-directory: ${{github.workspace}}    
+      run: mkdir downloads
+        
+    - name: Add artifacts to publish
+      run: |
+        cd downloads
+        cp   ${{github.workspace}}/CBUSPico/build/src/CBUSPico.bin        
+        cp   ${{github.workspace}}/CBUSPico/build/src/CBUSPico.u2f
+        cp   ${{github.workspace}}/CBUSPico/build/src/CBUSPico.elf
+        cp   ${{github.workspace}}/CBUSPico/build/src/CBUSPico.elf.map
+        cd ..
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with: 
+        name: assets-for-download
+        path: downloads      
+
