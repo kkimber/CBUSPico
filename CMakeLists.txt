@@ -18,8 +18,7 @@ pico_sdk_init()
 add_subdirectory(src)
 
 # Look for the Doxygen package
-find_package(Doxygen
-   REQUIRED dot)
+find_package(Doxygen)
 
 # Build documentation
 if (DOXYGEN_FOUND)
