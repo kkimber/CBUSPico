@@ -40,9 +40,9 @@
 // CBUS library header files
 
 #include "CBUSACAN2040.h" // CAN controller and CBUS class
-#include "CBUSSwitch.h"   // pushbutton switch
+#include "CBUSSwitch.h"   // CBUS FLiM pushbutton switch
 #include "CBUSLED.h"      // CBUS LEDs
-#include "CBUSConfig.h"   // module configuration
+#include "CBUSConfig.h"   // CBUS module configuration
 #include "CBUSParams.h"   // CBUS parameters
 #include "cbusdefs.h"     // MERG CBUS constants
 #include "CBUSUtil.h"     // Utility macros
@@ -50,20 +50,20 @@
 #include <cstdio>
 #include <pico/stdlib.h>
 
-
 // constants
-const uint8_t VER_MAJ = 1;    // code major version
-const char VER_MIN = 'a';     // code minor version
-const uint8_t VER_BETA = 0;   // code beta sub-version
-const uint8_t MODULE_ID = 99; // CBUS module type
+constexpr uint8_t VER_MAJ = 1;   // code major version
+constexpr char VER_MIN = 'a';    // code minor version
+constexpr uint8_t VER_BETA = 0;  // code beta sub-version
+constexpr uint8_t MODULEID = 99; // CBUS module type
 
 // Map CBUS LED's switch to HW
-const uint8_t LED_GRN = 21; // CBUS green SLiM LED pin
-const uint8_t LED_YLW = 20; // CBUS yellow FLiM LED pin
-const uint8_t SWITCH0 = 17; // CBUS push button switch pin
+constexpr uint8_t LED_GRN = 21; // CBUS Green SLiM LED pin
+constexpr uint8_t LED_YLW = 20; // CBUS Yellow FLiM LED pin
+constexpr uint8_t SWITCH0 = 17; // CBUS FLiM push button switch pin
 
-const uint8_t CAN_RX = 11; // CAN2040 Rx pin
-const uint8_t CAN_TX = 12; // CAN2040 Tx pin
+// Map CAN2040 Tx and Rx pins
+constexpr uint8_t CAN_RX = 11; // CAN2040 Rx pin
+constexpr uint8_t CAN_TX = 12; // CAN2040 Tx pin
 
 // CBUS objects
 CBUSConfig module_config; // configuration object
@@ -89,21 +89,21 @@ void processModuleSwitchChange(void);
 void setupCBUS()
 {
    // set config layout parameters
-   module_config.EE_NVS_START = 10;
-   module_config.EE_NUM_NVS = 10;
-   module_config.EE_EVENTS_START = 20;
-   module_config.EE_MAX_EVENTS = 32;
-   module_config.EE_NUM_EVS = 1;
+   module_config.EE_NVS_START = 10;    // Offset start of Node Variables
+   module_config.EE_NUM_NVS = 10;      // Number of Node Variables
+   module_config.EE_EVENTS_START = 20; // Offset start of Events
+   module_config.EE_MAX_EVENTS = 32;   // Maximum number of events
+   module_config.EE_NUM_EVS = 1;       // Number of Event Variables per event
    module_config.EE_BYTES_PER_EVENT = (module_config.EE_NUM_EVS + 4);
 
    // initialise and load configuration
-   module_config.setEEPROMtype(EEPROM_INTERNAL);
+   module_config.setEEPROMtype(EEPROM_TYPE::EEPROM_USES_FLASH);
    module_config.begin();
 
    // set module parameters
    CBUSParams params(module_config);
    params.setVersion(VER_MAJ, VER_MIN, VER_BETA);
-   params.setModuleId(MODULE_ID);
+   params.setModuleId(MODULEID);
    params.setFlags(PF_FLiM | PF_COMBI);
 
    // assign to CBUS
@@ -111,9 +111,9 @@ void setupCBUS()
    CBUS.setName(mname);
 
    // Get the internal CBUS UI objects
-   CBUSLED& ledGrn = CBUS.getCBUSGreenLED();
-   CBUSLED& ledYlw = CBUS.getCBUSYellowLED();
-   CBUSSwitch& sw = CBUS.getCBUSSwitch();
+   CBUSLED &ledGrn = CBUS.getCBUSGreenLED();
+   CBUSLED &ledYlw = CBUS.getCBUSYellowLED();
+   CBUSSwitch &sw = CBUS.getCBUSSwitch();
 
    // set CBUS LED pins
    ledGrn.setPin(LED_GRN);
@@ -209,8 +209,8 @@ void processModuleSwitchChange()
       msg.id = module_config.CANID;
       msg.len = 5;
       msg.data[0] = (moduleSwitch.isPressed() ? OPC_ACON : OPC_ACOF);
-      msg.data[1] = highByte(module_config.nodeNum);
-      msg.data[2] = lowByte(module_config.nodeNum);
+      msg.data[1] = highByte(module_config.NODE_NUM);
+      msg.data[2] = lowByte(module_config.NODE_NUM);
       msg.data[3] = 0;
       msg.data[4] = 1; // event number (EN) = 1
 

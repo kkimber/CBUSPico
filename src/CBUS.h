@@ -118,7 +118,7 @@ public:
    void revertSLiM(void);
    void setSLiM(void);
    void renegotiate(void);
-   void setParams(unsigned char *mparams);
+   void setParams(uint8_t *mparams);
    void setName(unsigned char *mname);
    void checkCANenum(void);
    void indicateMode(uint8_t mode);
@@ -144,7 +144,7 @@ protected: // protected members become private in derived classes
    CBUSLED m_ledYlw;
    CBUSSwitch m_sw;
    CBUSConfig &m_moduleConfig;
-   unsigned char *_mparams;
+   uint8_t *m_mparams;
    unsigned char *_mname;
    void (*eventhandler)(uint8_t index, CANFrame *msg);
    void (*eventhandlerex)(uint8_t index, CANFrame *msg, bool evOn, uint8_t evVal);

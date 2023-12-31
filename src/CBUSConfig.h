@@ -41,21 +41,24 @@
 
 #include <cstdint>
 
+#include <hardware/i2c.h>
+#include <hardware/flash.h>
+
 // Forward declations
 class CBUSLED;
 class CBUSSwitch;
 
 // in-memory hash table
-static const uint8_t EE_HASH_BYTES = 4;
-static const uint8_t HASH_LENGTH = 128;
+constexpr uint8_t EE_HASH_BYTES = 4;
+constexpr uint8_t HASH_LENGTH = 128;
 
-static const uint8_t EEPROM_I2C_ADDR = 0x50;
+/// Default I2C address of the external EEPROM
+constexpr uint8_t EEPROM_I2C_ADDR = 0x50;
 
-enum
+enum class EEPROM_TYPE
 {
-   EEPROM_INTERNAL = 0,
-   EEPROM_EXTERNAL = 1,
-   EEPROM_USES_FLASH
+   EEPROM_USES_FLASH,  ///< Use Pico QPSI flash as a pseudo EEPROM
+   EEPROM_EXTERNAL_I2C ///< Use an external I2C EEPROM
 };
 
 //
@@ -68,11 +71,19 @@ class CBUSConfig
 public:
    CBUSConfig();
    ~CBUSConfig();
+
+   // Initialization
    void begin(void);
 
+   // Concurrency support
+   void disableIRQs(void);
+   void enableIRQs(void);
+
+   // Event management
    uint8_t findExistingEvent(uint32_t nn, uint32_t en);
    uint8_t findEventSpace(void);
 
+   // Event table and hash table management
    uint8_t getEvTableEntry(uint8_t tindex);
    uint8_t numEvents(void);
    uint8_t makeHash(uint8_t tarr[]);
@@ -84,38 +95,47 @@ public:
    uint8_t getEventEVval(uint8_t idx, uint8_t evnum);
    void writeEventEV(uint8_t idx, uint8_t evnum, uint8_t evval);
 
+   // Node Variable management
    uint8_t readNV(uint8_t idx);
    void writeNV(uint8_t idx, uint8_t val);
    void loadNVs(void);
 
+   // Event management
    void readEvent(uint8_t idx, uint8_t tarr[]);
    void writeEvent(uint8_t index, uint8_t data[]);
    void cleareventEEPROM(uint8_t index);
    void resetModule(CBUSLED& green, CBUSLED& yellow, CBUSSwitch& sw);
    void resetModule(void);
 
+   // EEPROM support
    uint8_t readEEPROM(uint32_t eeaddress);
    void writeEEPROM(uint32_t eeaddress, uint8_t data);
    uint8_t readBytesEEPROM(uint32_t eeaddress, uint8_t nbytes, uint8_t dest[]);
    void writeBytesEEPROM(uint32_t eeaddress, uint8_t src[], uint8_t numbytes);
    void resetEEPROM(void);
 
+   // CBUS Addressing
    void setCANID(uint8_t canid);
    void setFLiM(bool f);
    void setNodeNum(uint32_t nn);
 
+   // Module reset management
    void setResetFlag(void);
    void clearResetFlag(void);
    bool isResetFlagSet(void);
 
+   // Flash EEPROM emulation
    uint8_t getChipEEPROMVal(uint32_t eeaddress);
    void setChipEEPROMVal(uint32_t eeaddress, uint8_t val);
+   void flushToFlash(void);
 
-   bool setEEPROMtype(uint8_t type);
-  // void setExtEEPROMAddress(uint8_t address, TwoWire *bus = &Wire);
+   // EEPROM addressing
+   bool setEEPROMtype(EEPROM_TYPE type);
+   void setExtEEPROMAddress(uint8_t address);
    uint32_t freeSRAM(void);
    void reboot(void);
 
+   /// Externally accessed variables @todo should be private with accessors !
    uint32_t EE_EVENTS_START;
    uint8_t EE_MAX_EVENTS;
    uint8_t EE_NUM_EVS;
@@ -125,9 +145,16 @@ public:
 
    uint8_t CANID;
    bool FLiM;
-   uint32_t nodeNum;
-   uint8_t eeprom_type;
-   uint8_t external_address;
-   uint8_t *evhashtbl;
-   bool hash_collision;
+   uint32_t NODE_NUM;
+
+private:
+   uint32_t m_intrStatus;
+   EEPROM_TYPE m_eepromType;
+   uint8_t m_externalAddress;
+   i2c_inst_t *m_i2cBus;
+   uint8_t *m_evhashtbl;
+   bool m_bHashCollisions;
+   bool m_bFlashModified;
+   bool m_bFlashZeroToOne;
+   uint8_t m_flashBuf[FLASH_SECTOR_SIZE];
 };
