@@ -51,19 +51,19 @@
 #include <pico/stdlib.h>
 
 // constants
-constexpr uint8_t VER_MAJ = 1;   // code major version
-constexpr char VER_MIN = 'a';    // code minor version
-constexpr uint8_t VER_BETA = 0;  // code beta sub-version
-constexpr uint8_t MODULEID = 99; // CBUS module type
+constexpr uint8_t VER_MAJ = 1;   ///< module code major version
+constexpr char VER_MIN = 'a';    ///< module code minor version
+constexpr uint8_t VER_BETA = 0;  ///< module code beta sub-version
+constexpr uint8_t MODULEID = 99; ///< CBUS module type
 
 // Map CBUS LED's switch to HW
-constexpr uint8_t LED_GRN = 21; // CBUS Green SLiM LED pin
-constexpr uint8_t LED_YLW = 20; // CBUS Yellow FLiM LED pin
-constexpr uint8_t SWITCH0 = 17; // CBUS FLiM push button switch pin
+constexpr uint8_t LED_GRN = 21; ///< CBUS Green SLiM LED pin
+constexpr uint8_t LED_YLW = 20; ///< CBUS Yellow FLiM LED pin
+constexpr uint8_t SWITCH0 = 17; ///< CBUS FLiM push button switch pin
 
 // Map CAN2040 Tx and Rx pins
-constexpr uint8_t CAN_RX = 11; // CAN2040 Rx pin
-constexpr uint8_t CAN_TX = 12; // CAN2040 Tx pin
+constexpr uint8_t CAN_RX = 11; ///< CAN2040 Rx pin
+constexpr uint8_t CAN_TX = 12; ///< CAN2040 Tx pin
 
 // CBUS objects
 CBUSConfig module_config; // configuration object
@@ -124,7 +124,7 @@ void setupCBUS()
    sw.run();
 
    // module reset - if switch is depressed at startup and module is in SLiM mode
-   if (sw.isPressed() && !module_config.FLiM)
+   if (sw.isPressed() && !module_config.getFLiM())
    {
       module_config.resetModule(ledGrn, ledYlw, sw);
    }
@@ -139,7 +139,7 @@ void setupCBUS()
    CBUS.setEventHandler(eventhandler);
 
    // set CBUS LEDs to indicate mode
-   CBUS.indicateFLiMMode(module_config.FLiM);
+   CBUS.indicateFLiMMode(module_config.getFLiM());
 
    // configure and start CAN bus and CBUS message processing
    CBUS.setNumBuffers(16, 4);    // more buffers = more memory used, fewer = less
@@ -206,11 +206,11 @@ void processModuleSwitchChange()
    if (moduleSwitch.stateChanged())
    {
       CANFrame msg;
-      msg.id = module_config.CANID;
+      msg.id = module_config.getCANID();
       msg.len = 5;
       msg.data[0] = (moduleSwitch.isPressed() ? OPC_ACON : OPC_ACOF);
-      msg.data[1] = highByte(module_config.NODE_NUM);
-      msg.data[2] = lowByte(module_config.NODE_NUM);
+      msg.data[1] = highByte(module_config.getNodeNum());
+      msg.data[2] = lowByte(module_config.getNodeNum());
       msg.data[3] = 0;
       msg.data[4] = 1; // event number (EN) = 1
 
@@ -268,6 +268,7 @@ extern "C" int main(int argc, char *argv[])
    while (1)
    {
       loop();
+      /// @todo provision for RTOS and / or basic OSTick / WFI
       sleep_ms(1);
    }
 }

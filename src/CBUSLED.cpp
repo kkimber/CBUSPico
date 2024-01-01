@@ -62,7 +62,7 @@ CBUSLED::CBUSLED() : m_configured{false},
 ///
 /// @param pin Pin number of the pin to assign to this LED
 ///
-void CBUSLED::setPin(uint8_t pin)
+void CBUSLED::setPin(const uint8_t pin)
 {
    // Assign the pin
    m_pin = pin;
@@ -82,7 +82,7 @@ void CBUSLED::setPin(uint8_t pin)
 /// @return true The output pin is HIGH
 /// @return false The output pin is LOW
 ///
-bool CBUSLED::getState()
+bool CBUSLED::getState() const
 {
    return m_state;
 }

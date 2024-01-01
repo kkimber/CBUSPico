@@ -91,9 +91,9 @@ CBUSConfig::CBUSConfig() : EE_EVENTS_START{0x0UL},
                            EE_BYTES_PER_EVENT{0x0U},
                            EE_NVS_START{0x0UL},
                            EE_NUM_NVS{0x0U},
-                           CANID{0x0U},
-                           FLiM{false},
-                           NODE_NUM{0x0UL},
+                           m_canId{0x0U},
+                           m_bFLiM{false},
+                           m_nodeNum{0x0UL},
                            m_intrStatus{0x0UL},
                            m_eepromType{EEPROM_TYPE::EEPROM_USES_FLASH},
                            m_externalAddress{EEPROM_I2C_ADDR},
@@ -235,10 +235,10 @@ void CBUSConfig::setExtEEPROMAddress(uint8_t address)
 ///
 /// @param f New FLiM mode, true = FLiM, false = SLiM
 ///
-void CBUSConfig::setFLiM(bool f)
+void CBUSConfig::setFLiM(bool flim)
 {
-   FLiM = f;
-   writeEEPROM(OFS_FLIM_MODE, f);
+   m_bFLiM = flim;
+   writeEEPROM(OFS_FLIM_MODE, flim);
 }
 
 ///
@@ -248,7 +248,7 @@ void CBUSConfig::setFLiM(bool f)
 ///
 void CBUSConfig::setCANID(uint8_t canid)
 {
-   CANID = canid;
+   m_canId = canid;
    writeEEPROM(OFS_CAN_ID, canid);
 }
 
@@ -259,9 +259,9 @@ void CBUSConfig::setCANID(uint8_t canid)
 ///
 void CBUSConfig::setNodeNum(uint32_t nn)
 {
-   NODE_NUM = nn;
-   writeEEPROM(OFS_NODE_NUM_HB, highByte(NODE_NUM));
-   writeEEPROM(OFS_NODE_NUM_LB, lowByte(NODE_NUM));
+   m_nodeNum = nn;
+   writeEEPROM(OFS_NODE_NUM_HB, highByte(nn));
+   writeEEPROM(OFS_NODE_NUM_LB, lowByte(nn));
 }
 
 ///
@@ -909,9 +909,9 @@ void CBUSConfig::loadNVs(void)
    else
    {
       // EEPROM previously initialized, read defaults from EEPROM
-      FLiM = readEEPROM(OFS_FLIM_MODE);
-      CANID = readEEPROM(OFS_CAN_ID);
-      NODE_NUM = (readEEPROM(OFS_NODE_NUM_HB) << 8) + readEEPROM(OFS_NODE_NUM_LB);
+      m_bFLiM = readEEPROM(OFS_FLIM_MODE);
+      m_canId = readEEPROM(OFS_CAN_ID);
+      m_nodeNum = (readEEPROM(OFS_NODE_NUM_HB) << 8) + readEEPROM(OFS_NODE_NUM_LB);
    }
 }
 

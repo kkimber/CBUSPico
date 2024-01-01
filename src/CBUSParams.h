@@ -39,45 +39,56 @@
 
 #pragma once
 
-#include "CBUSConfig.h"
-
 #include <cstdint>
+
+// Forward declarations
+class CBUSConfig;
 
 constexpr uint8_t NUM_PARAMS = 20; ///< Number of parameters in the CBUS parameter block
 
-constexpr uint8_t NO_PARAMS = 0;  ///< byte 0 Number of params - should be 20 to exclude
-constexpr uint8_t MANUFR_ID = 1;  ///< byte 1 manufacturer
-constexpr uint8_t MINOR_VER = 2;  ///< byte 2 module minor version (character)
-constexpr uint8_t MODULE_ID = 3;  ///< byte 3 module ID
-constexpr uint8_t NO_EVENTS = 4;  ///< byte 4 maximum number of events
-constexpr uint8_t EVS_PR_EV = 5;  ///< byte 5 number of event variables per event
-constexpr uint8_t MXNUM_NVS = 6;  ///< byte 6 number of node variables
-constexpr uint8_t MAJOR_VER = 7;  ///< byte 7 module major version
-constexpr uint8_t MOD_FLAGS = 8;  ///< byte 8 Flags - this identifies the module class in the ls 2 bits - encoded,
-                                  ///  No Events = 0, Consumer = 1, Producer = 2, Combi = 3.
-                                  ///  It also includes the FLiM bit (bit 2) and the Bootable bit (bit 3)
-constexpr uint8_t PROCSR_ID = 9;  ///< byte 9 Processor Id - defines the processor, e.g. 2480, 25K80 the firmware was built for.
-                                  ///  Set to zero for non-PIC processors
-constexpr uint8_t IF_PROTOC = 10; ///< byte 10 Interface protocol - the network type that the module uses,
-                                  ///  currently either CAN (1) or Ethernet (2)
-constexpr uint8_t LOAD_ADDR = 11; ///< bytes 11-14 The load address for the new code, not used for non PIC processor, set to zero
-constexpr uint8_t MANU_PROC = 15; ///< bytes 15-18 Processor manufacturer code, not used for non PIC processor, set to zero
-constexpr uint8_t MANU_CODE = 19; ///< byte 19 Manufacturer code – this parameter identifies the manufacturer
-constexpr uint8_t BETA_FLAG = 20; ///< byte 20 Beta release code – a non-zero value specifies the beta release version, zero indicates a normal release
+constexpr uint8_t IDX_NO_PARAMS = 0;  ///< byte 0 Number of params - should be 20 to exclude
+constexpr uint8_t IDX_MANUFR_ID = 1;  ///< byte 1 manufacturer
+constexpr uint8_t IDX_MINOR_VER = 2;  ///< byte 2 module minor version (character)
+constexpr uint8_t IDX_MODULE_ID = 3;  ///< byte 3 module ID
+constexpr uint8_t IDX_NO_EVENTS = 4;  ///< byte 4 maximum number of events
+constexpr uint8_t IDX_EVS_PR_EV = 5;  ///< byte 5 number of event variables per event
+constexpr uint8_t IDX_MXNUM_NVS = 6;  ///< byte 6 number of node variables
+constexpr uint8_t IDX_MAJOR_VER = 7;  ///< byte 7 module major version
+constexpr uint8_t IDX_MOD_FLAGS = 8;  ///< byte 8 Flags - this identifies the module class in the ls 2 bits - encoded,
+                                      ///  No Events = 0, Consumer = 1, Producer = 2, Combi = 3.
+                                      ///  It also includes the FLiM bit (bit 2) and the Bootable bit (bit 3)
+constexpr uint8_t IDX_PROCSR_ID = 9;  ///< byte 9 Processor Id - defines the processor, e.g. 2480, 25K80 the firmware was built for.
+                                      ///  Set to zero for non-PIC processors
+constexpr uint8_t IDX_IF_PROTOC = 10; ///< byte 10 Interface protocol - the network type that the module uses,
+                                      ///  currently either CAN (1) or Ethernet (2)
+constexpr uint8_t IDX_LOAD_ADDR = 11; ///< bytes 11-14 The load address for the new code, not used for non PIC processor, set to zero
+constexpr uint8_t IDX_MANU_PROC = 15; ///< bytes 15-18 Processor manufacturer code, not used for non PIC processor, set to zero
+constexpr uint8_t IDX_MANU_CODE = 19; ///< byte 19 Manufacturer code – this parameter identifies the manufacturer
+constexpr uint8_t IDX_BETA_FLAG = 20; ///< byte 20 Beta release code – a non-zero value specifies the beta release version, zero indicates a normal release
 
-//
-/// A class to manage setting and storage of CBUS module parameters
-//
+///
+/// @brief A class to manage setting and storage of CBUS module parameters
+///
+/// @details Each CBUS Module maintains a number of parameters that are used primarily by CBUS configuration tools
+///          to obtain information on the firmware running in the module.  The parameters define things like software
+///          versions, capabilies of the module, i.e. if it is a Producer, Consumer or "Combi" module.  There are nominally
+///          twenty defined parameters, although CBUS allows more to be defined in future.  During initial configuration of a
+///          module, the first seven parameters can be read via Request Node Parameters (RQNP).  After initial configuration
+///          any node parameter can be read via Request read of a node parameter by index (RQNPN).  Node parameters are 
+///          numbered from one to twenty, however performing a RQNPN for parameter zero will return the number of available
+///          parameters in the module.  Indexes for the parameters are defined in this file as IDX_xxx, e.g. IDX_MODULE_ID.
+///          The CBUS definition header, cbusdefs.h, includes defines values for a number of the parameters, e.g. manufacturer
+///          codes, module ID's etc. Module developers should ensure they do not conflict or reuse ID's already defined by CBUS.
 
 class CBUSParams
 {
 public:
    explicit CBUSParams(CBUSConfig const &config);
-   void setVersion(char major, char minor, char beta);
-   void setModuleId(uint8_t id);
-   void setFlags(uint8_t flags);
-   void setProcessor(uint8_t manufacturer, uint8_t id, char const *name);
-   uint8_t *getParams(void);
+   void setVersion(const uint8_t major, const char minor, const uint8_t beta);
+   void setModuleId(const uint8_t id);
+   void setFlags(const uint8_t flags);
+   void setProcessor(const uint8_t manufacturer, const uint8_t id, char const *name);
+   uint8_t *getParams(void) const;
 
 private:
    // Initializes processor specific parameters

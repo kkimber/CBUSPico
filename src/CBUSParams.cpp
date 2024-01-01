@@ -38,6 +38,7 @@
 */
 
 #include "CBUSParams.h"
+#include "CBUSConfig.h"
 #include "cbusdefs.h"
 
 #include <cstring>
@@ -52,12 +53,12 @@ uint8_t CBUSParams::m_params[NUM_PARAMS + 1] = {}; ///< Initialize parameter blo
 ///
 CBUSParams::CBUSParams(CBUSConfig const &config)
 {
-   m_params[NO_PARAMS] = NUM_PARAMS;
-   m_params[MANUFR_ID] = MANU_MERG;
-   m_params[NO_EVENTS] = config.EE_MAX_EVENTS;
-   m_params[EVS_PR_EV] = config.EE_NUM_EVS;
-   m_params[MXNUM_NVS] = config.EE_NUM_NVS;
-   m_params[IF_PROTOC] = PB_CAN;
+   m_params[IDX_NO_PARAMS] = NUM_PARAMS;
+   m_params[IDX_MANUFR_ID] = MANU_MERG;
+   m_params[IDX_NO_EVENTS] = config.EE_MAX_EVENTS;
+   m_params[IDX_EVS_PR_EV] = config.EE_NUM_EVS;
+   m_params[IDX_MXNUM_NVS] = config.EE_NUM_NVS;
+   m_params[IDX_IF_PROTOC] = PB_CAN;
    initProcessorParams();
 }
 
@@ -68,11 +69,11 @@ CBUSParams::CBUSParams(CBUSConfig const &config)
 /// @param minor Minor version
 /// @param beta  Beta version
 ///
-void CBUSParams::setVersion(char major, char minor, char beta)
+void CBUSParams::setVersion(const uint8_t major, const char minor, const uint8_t beta)
 {
-   m_params[MAJOR_VER] = major;
-   m_params[MINOR_VER] = minor;
-   m_params[BETA_FLAG] = beta;
+   m_params[IDX_MAJOR_VER] = major;
+   m_params[IDX_MINOR_VER] = minor;
+   m_params[IDX_BETA_FLAG] = beta;
 }
 
 ///
@@ -80,9 +81,9 @@ void CBUSParams::setVersion(char major, char minor, char beta)
 ///
 /// @param id ID to set for the module
 ///
-void CBUSParams::setModuleId(uint8_t id)
+void CBUSParams::setModuleId(const uint8_t id)
 {
-   m_params[MODULE_ID] = id;
+   m_params[IDX_MODULE_ID] = id;
 }
 
 ///
@@ -90,9 +91,9 @@ void CBUSParams::setModuleId(uint8_t id)
 ///
 /// @param flags Flags to set on the module
 ///
-void CBUSParams::setFlags(uint8_t flags)
+void CBUSParams::setFlags(const uint8_t flags)
 {
-   m_params[MOD_FLAGS] = flags;
+   m_params[IDX_MOD_FLAGS] = flags;
 }
 
 ///
@@ -103,11 +104,11 @@ void CBUSParams::setFlags(uint8_t flags)
 /// @param id Processor ID
 /// @param name Processor name - expected to be four bytes!!
 ///
-void CBUSParams::setProcessor(uint8_t manufacturer, uint8_t id, char const *name)
+void CBUSParams::setProcessor(const uint8_t manufacturer, const uint8_t id, char const *name)
 {
-   m_params[PROCSR_ID] = id;
-   m_params[MANU_CODE] = manufacturer;
-   memcpy(&m_params[MANU_PROC], name, 4);
+   m_params[IDX_PROCSR_ID] = id;
+   m_params[IDX_MANU_CODE] = manufacturer;
+   memcpy(&m_params[IDX_MANU_PROC], name, 4);
 }
 
 ///
@@ -115,7 +116,7 @@ void CBUSParams::setProcessor(uint8_t manufacturer, uint8_t id, char const *name
 ///
 /// @return uint8_t* Pointer to the CBUSParam array
 ///
-uint8_t *CBUSParams::getParams()
+uint8_t *CBUSParams::getParams() const
 {
    return m_params;
 }
@@ -127,11 +128,11 @@ uint8_t *CBUSParams::getParams()
 void CBUSParams::initProcessorParams()
 {
    /// @todo there is no defined processor ID code for the RPxxxx mircocontrollers
-   m_params[PROCSR_ID] = 50;       // Processor ID
-   m_params[MANU_CODE] = CPUM_ARM; // Processor manufacturer
+   m_params[IDX_PROCSR_ID] = 50;       // Processor ID
+   m_params[IDX_MANU_CODE] = CPUM_ARM; // Processor manufacturer
 
-   m_params[MANU_PROC + 0] = '2'; // Set processor version to 2040
-   m_params[MANU_PROC + 1] = '0';
-   m_params[MANU_PROC + 2] = '4';
-   m_params[MANU_PROC + 3] = '0';
+   m_params[IDX_MANU_PROC + 0] = '2'; // Set processor version to 2040
+   m_params[IDX_MANU_PROC + 1] = '0';
+   m_params[IDX_MANU_PROC + 2] = '4';
+   m_params[IDX_MANU_PROC + 3] = '0';
 }

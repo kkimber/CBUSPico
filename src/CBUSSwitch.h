@@ -50,12 +50,12 @@ class CBUSSwitch
 
 public:
    CBUSSwitch();
-   void setPin(uint8_t pin, bool pressedState);
+   void setPin(const uint8_t pin, const bool pressedState);
    void run(void);
    void reset(void);
-   bool stateChanged(void);
-   bool getState(void);
-   bool isPressed(void);
+   bool stateChanged(void) const;
+   bool getState(void) const;
+   bool isPressed(void) const;
    uint32_t getCurrentStateDuration(void);
    uint32_t getLastStateDuration(void);
    uint32_t getLastStateChangeTime(void);

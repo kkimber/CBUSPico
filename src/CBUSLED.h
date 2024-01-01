@@ -53,8 +53,8 @@ class CBUSLED
 
 public:
    CBUSLED();
-   void setPin(uint8_t pin);
-   bool getState(void);
+   void setPin(const uint8_t pin);
+   bool getState(void) const;
    void on(void);
    void off(void);
    void toggle(void);

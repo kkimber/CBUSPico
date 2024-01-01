@@ -66,7 +66,7 @@ CBUSSwitch::CBUSSwitch() : m_configured{false},
 /// @param pin Pin number of the pin to assign to this Switch
 /// @param pressedState active state of the pin, true = press = HIGH, false for LOW, default is LOW
 ///
-void CBUSSwitch::setPin(uint8_t pin, bool pressedState = false)
+void CBUSSwitch::setPin(const uint8_t pin, const bool pressedState = false)
 {
    // Set the pin and active state
    m_pin = pin;
@@ -150,7 +150,7 @@ void CBUSSwitch::reset()
 /// @return true The state of the switch has changed
 /// @return false The state of the switch has no changed
 ///
-bool CBUSSwitch::stateChanged()
+bool CBUSSwitch::stateChanged() const
 {
    // has switch state changed ?
    return m_stateChanged;
@@ -162,7 +162,7 @@ bool CBUSSwitch::stateChanged()
 /// @return true The pin is logical HIGH
 /// @return false The pin is logical LOW
 ///
-bool CBUSSwitch::getState()
+bool CBUSSwitch::getState() const
 {
    // return the current switch state read
    return m_currentState;
@@ -174,7 +174,7 @@ bool CBUSSwitch::getState()
 /// @return true The Switch is Pressed
 /// @return false The Switch is not Pressed
 ///
-bool CBUSSwitch::isPressed()
+bool CBUSSwitch::isPressed() const
 {
    // is the switch pressed ?
    return (m_currentState == m_pressedState);

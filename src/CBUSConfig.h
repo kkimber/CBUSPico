@@ -104,7 +104,7 @@ public:
    void readEvent(uint8_t idx, uint8_t tarr[]);
    void writeEvent(uint8_t index, uint8_t data[]);
    void cleareventEEPROM(uint8_t index);
-   void resetModule(CBUSLED& green, CBUSLED& yellow, CBUSSwitch& sw);
+   void resetModule(CBUSLED &green, CBUSLED &yellow, CBUSSwitch &sw);
    void resetModule(void);
 
    // EEPROM support
@@ -116,8 +116,11 @@ public:
 
    // CBUS Addressing
    void setCANID(uint8_t canid);
-   void setFLiM(bool f);
+   inline uint8_t getCANID(void) { return m_canId; };
+   void setFLiM(bool flim);
+   inline bool getFLiM(void) { return m_bFLiM; };
    void setNodeNum(uint32_t nn);
+   inline uint32_t getNodeNum() { return m_nodeNum; };
 
    // Module reset management
    void setResetFlag(void);
@@ -143,10 +146,6 @@ public:
    uint32_t EE_NVS_START;
    uint8_t EE_NUM_NVS;
 
-   uint8_t CANID;
-   bool FLiM;
-   uint32_t NODE_NUM;
-
 private:
    uint32_t m_intrStatus;
    EEPROM_TYPE m_eepromType;
@@ -157,4 +156,7 @@ private:
    bool m_bFlashModified;
    bool m_bFlashZeroToOne;
    uint8_t m_flashBuf[FLASH_SECTOR_SIZE];
+   uint8_t m_canId;
+   bool m_bFLiM;
+   uint32_t m_nodeNum;
 };
