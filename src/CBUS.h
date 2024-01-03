@@ -45,6 +45,7 @@
 #include "CBUSLED.h"
 #include "CBUSSwitch.h"
 #include "CBUSConfig.h"
+#include "CBUSParams.h"
 #include "CBUSCircularBuffer.h"
 
 #include <cbusdefs.h>
@@ -85,6 +86,12 @@ enum
 class CBUSLongMessage;
 class CBUScoe;
 
+/// Length of the module name
+constexpr uint8_t MODULE_NAME_LEN = 7;
+
+/// Type for holding the Module Name
+typedef struct module_name_t { uint8_t byte[MODULE_NAME_LEN]; } module_name_t;
+
 //
 /// @brief An abstract class to encapsulate CAN bus and CBUS processing for a CBUS module,
 /// it must be implemented by a derived subclass
@@ -118,8 +125,8 @@ public:
    void revertSLiM(void);
    void setSLiM(void);
    void renegotiate(void);
-   void setParams(uint8_t *mparams);
-   void setName(unsigned char *mname);
+   void setParams(cbusparam_t *mparams);
+   void setName(module_name_t *moduleName);
    void checkCANenum(void);
    void indicateMode(uint8_t mode);
    void indicateFLiMMode(bool bFLiM);
@@ -144,8 +151,8 @@ protected: // protected members become private in derived classes
    CBUSLED m_ledYlw;
    CBUSSwitch m_sw;
    CBUSConfig &m_moduleConfig;
-   uint8_t *m_mparams;
-   unsigned char *_mname;
+   cbusparam_t *m_pModuleParams;
+   module_name_t*m_pModuleName;
    void (*eventhandler)(uint8_t index, CANFrame *msg);
    void (*eventhandlerex)(uint8_t index, CANFrame *msg, bool evOn, uint8_t evVal);
    void (*framehandler)(CANFrame *msg);

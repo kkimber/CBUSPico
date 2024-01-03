@@ -66,6 +66,9 @@ constexpr uint8_t IDX_MANU_PROC = 15; ///< bytes 15-18 Processor manufacturer co
 constexpr uint8_t IDX_MANU_CODE = 19; ///< byte 19 Manufacturer code – this parameter identifies the manufacturer
 constexpr uint8_t IDX_BETA_FLAG = 20; ///< byte 20 Beta release code – a non-zero value specifies the beta release version, zero indicates a normal release
 
+/// Type for holding configuration parameters, size is plus one to include param zero, which is number of avaialble parameters
+typedef struct cbusparam_t { uint8_t param[NUM_PARAMS + 1]; } cbusparam_t;
+
 ///
 /// @brief A class to manage setting and storage of CBUS module parameters
 ///
@@ -87,13 +90,12 @@ public:
    void setVersion(const uint8_t major, const char minor, const uint8_t beta);
    void setModuleId(const uint8_t id);
    void setFlags(const uint8_t flags);
-   void setProcessor(const uint8_t manufacturer, const uint8_t id, char const *name);
-   uint8_t *getParams(void) const;
+   cbusparam_t* getParams(void) const;
 
 private:
    // Initializes processor specific parameters
    static void initProcessorParams(void);
 
    // Memory for the params is allocated on global memory and handed over to CBUS.setParams().
-   static uint8_t m_params[NUM_PARAMS + 1];
+   static cbusparam_t m_params;
 };

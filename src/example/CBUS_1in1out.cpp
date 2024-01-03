@@ -76,7 +76,7 @@ CBUSSwitch moduleSwitch; // an example switch as input
 CBUSLED moduleLED;       // an example LED as output
 
 // module name, must be 7 characters, space padded.
-uint8_t mname[7] = {'1', 'I', 'N', '1', 'O', 'U', 'T'};
+module_name_t moduleName = {'1', 'I', 'N', '1', 'O', 'U', 'T'};
 
 // forward function declarations
 void eventhandler(uint8_t index, CANFrame *msg);
@@ -108,7 +108,7 @@ void setupCBUS()
 
    // assign to CBUS
    CBUS.setParams(params.getParams());
-   CBUS.setName(mname);
+   CBUS.setName(&moduleName);
 
    // Get the internal CBUS UI objects
    CBUSLED &ledGrn = CBUS.getCBUSGreenLED();

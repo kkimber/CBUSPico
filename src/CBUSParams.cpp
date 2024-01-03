@@ -44,7 +44,7 @@
 #include <cstring>
 
 /// Initialize global CBUSParams
-uint8_t CBUSParams::m_params[NUM_PARAMS + 1] = {}; ///< Initialize parameter block
+cbusparam_t CBUSParams::m_params = {}; ///< Initialize parameter block
 
 ///
 /// @brief Construct a new CBUSParams::CBUSParams object
@@ -53,12 +53,12 @@ uint8_t CBUSParams::m_params[NUM_PARAMS + 1] = {}; ///< Initialize parameter blo
 ///
 CBUSParams::CBUSParams(CBUSConfig const &config)
 {
-   m_params[IDX_NO_PARAMS] = NUM_PARAMS;
-   m_params[IDX_MANUFR_ID] = MANU_MERG;
-   m_params[IDX_NO_EVENTS] = config.EE_MAX_EVENTS;
-   m_params[IDX_EVS_PR_EV] = config.EE_NUM_EVS;
-   m_params[IDX_MXNUM_NVS] = config.EE_NUM_NVS;
-   m_params[IDX_IF_PROTOC] = PB_CAN;
+   m_params.param[IDX_NO_PARAMS] = NUM_PARAMS;
+   m_params.param[IDX_MANUFR_ID] = MANU_MERG;
+   m_params.param[IDX_NO_EVENTS] = config.EE_MAX_EVENTS;
+   m_params.param[IDX_EVS_PR_EV] = config.EE_NUM_EVS;
+   m_params.param[IDX_MXNUM_NVS] = config.EE_NUM_NVS;
+   m_params.param[IDX_IF_PROTOC] = PB_CAN;
    initProcessorParams();
 }
 
@@ -71,9 +71,9 @@ CBUSParams::CBUSParams(CBUSConfig const &config)
 ///
 void CBUSParams::setVersion(const uint8_t major, const char minor, const uint8_t beta)
 {
-   m_params[IDX_MAJOR_VER] = major;
-   m_params[IDX_MINOR_VER] = minor;
-   m_params[IDX_BETA_FLAG] = beta;
+   m_params.param[IDX_MAJOR_VER] = major;
+   m_params.param[IDX_MINOR_VER] = minor;
+   m_params.param[IDX_BETA_FLAG] = beta;
 }
 
 ///
@@ -83,7 +83,7 @@ void CBUSParams::setVersion(const uint8_t major, const char minor, const uint8_t
 ///
 void CBUSParams::setModuleId(const uint8_t id)
 {
-   m_params[IDX_MODULE_ID] = id;
+   m_params.param[IDX_MODULE_ID] = id;
 }
 
 ///
@@ -93,32 +93,17 @@ void CBUSParams::setModuleId(const uint8_t id)
 ///
 void CBUSParams::setFlags(const uint8_t flags)
 {
-   m_params[IDX_MOD_FLAGS] = flags;
+   m_params.param[IDX_MOD_FLAGS] = flags;
 }
 
 ///
-/// @brief Set the processor information for the module,
-///        Optional: use this to override processor info that is set by default.
+/// @brief Get pointer to the CBUS Params
 ///
-/// @param manufacturer Processor Manufacturer ID
-/// @param id Processor ID
-/// @param name Processor name - expected to be four bytes!!
+/// @return Pointer to the CBUS Params
 ///
-void CBUSParams::setProcessor(const uint8_t manufacturer, const uint8_t id, char const *name)
+cbusparam_t* CBUSParams::getParams() const
 {
-   m_params[IDX_PROCSR_ID] = id;
-   m_params[IDX_MANU_CODE] = manufacturer;
-   memcpy(&m_params[IDX_MANU_PROC], name, 4);
-}
-
-///
-/// @brief Get pointer to the CBUSParam array
-///
-/// @return uint8_t* Pointer to the CBUSParam array
-///
-uint8_t *CBUSParams::getParams() const
-{
-   return m_params;
+   return &m_params;
 }
 
 ///
@@ -128,11 +113,11 @@ uint8_t *CBUSParams::getParams() const
 void CBUSParams::initProcessorParams()
 {
    /// @todo there is no defined processor ID code for the RPxxxx mircocontrollers
-   m_params[IDX_PROCSR_ID] = 50;       // Processor ID
-   m_params[IDX_MANU_CODE] = CPUM_ARM; // Processor manufacturer
+   m_params.param[IDX_PROCSR_ID] = 50;       // Processor ID
+   m_params.param[IDX_MANU_CODE] = CPUM_ARM; // Processor manufacturer
 
-   m_params[IDX_MANU_PROC + 0] = '2'; // Set processor version to 2040
-   m_params[IDX_MANU_PROC + 1] = '0';
-   m_params[IDX_MANU_PROC + 2] = '4';
-   m_params[IDX_MANU_PROC + 3] = '0';
+   m_params.param[IDX_MANU_PROC + 0] = '2'; // Set processor version to 2040
+   m_params.param[IDX_MANU_PROC + 1] = '0';
+   m_params.param[IDX_MANU_PROC + 2] = '4';
+   m_params.param[IDX_MANU_PROC + 3] = '0';
 }

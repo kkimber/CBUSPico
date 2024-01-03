@@ -39,7 +39,6 @@
 
 #include "CBUS.h"
 #include "SystemTick.h"
-#include "CBUSParams.h"
 #include "CBUSUtil.h"
 
 #include <pico/stdlib.h>
@@ -59,8 +58,8 @@ CBUSbase::CBUSbase(CBUSConfig &config) : m_numMsgsSent{0x0L},
                                          m_numMsgsRcvd{0x0UL},
                                          m_msg{},
                                          m_moduleConfig{config},
-                                         m_mparams{nullptr},
-                                         _mname{nullptr},
+                                         m_pModuleParams{nullptr},
+                                         m_pModuleName{nullptr},
                                          eventhandler{nullptr},
                                          eventhandlerex{nullptr},
                                          framehandler{nullptr},
@@ -110,18 +109,18 @@ void CBUSbase::setFrameHandler(void (*fptr)(CANFrame *msg), uint8_t opcodes[], u
 /// assign the module parameter set
 //
 
-void CBUSbase::setParams(uint8_t *mparams)
+void CBUSbase::setParams(cbusparam_t *mparams)
 {
-   m_mparams = mparams;
+   m_pModuleParams = mparams;
 }
 
 //
 /// assign the module name
 //
 
-void CBUSbase::setName(unsigned char *mname)
+void CBUSbase::setName(module_name_t *moduleName)
 {
-   _mname = mname;
+   m_pModuleName = moduleName;
 }
 
 //
@@ -541,13 +540,13 @@ void CBUSbase::process(uint8_t num_messages)
                // respond with PARAMS message
                m_msg.len = 8;
                m_msg.data[0] = OPC_PARAMS;  // opcode
-               m_msg.data[1] = m_mparams[IDX_MANUFR_ID]; // manf code -- MERG
-               m_msg.data[2] = m_mparams[IDX_MINOR_VER]; // minor code ver
-               m_msg.data[3] = m_mparams[IDX_MODULE_ID]; // module ident
-               m_msg.data[4] = m_mparams[IDX_NO_EVENTS]; // number of events
-               m_msg.data[5] = m_mparams[IDX_EVS_PR_EV]; // events vars per event
-               m_msg.data[6] = m_mparams[IDX_MXNUM_NVS]; // number of NVs
-               m_msg.data[7] = m_mparams[IDX_MAJOR_VER]; // major code ver
+               m_msg.data[1] = m_pModuleParams->param[IDX_MANUFR_ID]; // manf code -- MERG
+               m_msg.data[2] = m_pModuleParams->param[IDX_MINOR_VER]; // minor code ver
+               m_msg.data[3] = m_pModuleParams->param[IDX_MODULE_ID]; // module ident
+               m_msg.data[4] = m_pModuleParams->param[IDX_NO_EVENTS]; // number of events
+               m_msg.data[5] = m_pModuleParams->param[IDX_EVS_PR_EV]; // events vars per event
+               m_msg.data[6] = m_pModuleParams->param[IDX_MXNUM_NVS]; // number of NVs
+               m_msg.data[7] = m_pModuleParams->param[IDX_MAJOR_VER]; // major code ver
                // final param[8] = node flags is not sent here as the max message payload is 8 bytes (0-7)
                sendMessage(&m_msg);
             }
@@ -566,7 +565,7 @@ void CBUSbase::process(uint8_t num_messages)
 
                // DEBUG_SERIAL << F("> RQNPN request for parameter # ") << paran << F(", from nn = ") << nn << endl;
 
-               if (paran <= m_mparams[IDX_NO_PARAMS])
+               if (paran <= m_pModuleParams->param[IDX_NO_PARAMS])
                {
 
                   paran = m_msg.data[3];
@@ -576,7 +575,7 @@ void CBUSbase::process(uint8_t num_messages)
                   // _msg.data[1] = highByte(module_config.nodeNum);
                   // _msg.data[2] = lowByte(module_config.nodeNum);
                   m_msg.data[3] = paran;
-                  m_msg.data[4] = m_mparams[paran];
+                  m_msg.data[4] = m_pModuleParams->param[paran];
                   sendMessage(&m_msg);
                }
                else
@@ -731,7 +730,7 @@ void CBUSbase::process(uint8_t num_messages)
                m_bLearn = true;
                // DEBUG_SERIAL << F("> set lean mode ok") << endl;
                // set bit 5 in parameter 8
-               bitSet(m_mparams[IDX_MOD_FLAGS], 5);
+               bitSet(m_pModuleParams->param[IDX_MOD_FLAGS], 5);
             }
 
             break;
@@ -780,7 +779,7 @@ void CBUSbase::process(uint8_t num_messages)
                m_bLearn = false;
                // DEBUG_SERIAL << F("> NNULN for node = ") << nn << F(", learn mode off") << endl;
                // clear bit 5 in parameter 8
-               bitClear(m_mparams[IDX_MOD_FLAGS], 5);
+               bitClear(m_pModuleParams->param[IDX_MOD_FLAGS], 5);
             }
 
             break;
@@ -926,9 +925,9 @@ void CBUSbase::process(uint8_t num_messages)
                m_msg.data[0] = OPC_PNN;
                m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
                m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
-               m_msg.data[3] = m_mparams[IDX_MANUFR_ID];
-               m_msg.data[4] = m_mparams[IDX_MODULE_ID];
-               m_msg.data[5] = m_mparams[IDX_MOD_FLAGS];
+               m_msg.data[3] = m_pModuleParams->param[IDX_MANUFR_ID];
+               m_msg.data[4] = m_pModuleParams->param[IDX_MODULE_ID];
+               m_msg.data[5] = m_pModuleParams->param[IDX_MOD_FLAGS];
                sendMessage(&m_msg);
             }
 
@@ -946,7 +945,7 @@ void CBUSbase::process(uint8_t num_messages)
             {
                m_msg.len = 8;
                m_msg.data[0] = OPC_NAME;
-               memcpy(m_msg.data + 1, _mname, 7);
+               memcpy(m_msg.data + 1, m_pModuleName, sizeof(module_name_t));
                sendMessage(&m_msg);
             }
 

@@ -233,7 +233,7 @@ void CBUSConfig::setExtEEPROMAddress(uint8_t address)
 ///
 /// @brief Store the FLiM mode and cache the value
 ///
-/// @param f New FLiM mode, true = FLiM, false = SLiM
+/// @param flim New FLiM mode, true = FLiM, false = SLiM
 ///
 void CBUSConfig::setFLiM(bool flim)
 {
