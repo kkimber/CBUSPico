@@ -91,9 +91,6 @@ CBUSConfig::CBUSConfig() : EE_EVENTS_START{0x0UL},
                            EE_BYTES_PER_EVENT{0x0U},
                            EE_NVS_START{0x0UL},
                            EE_NUM_NVS{0x0U},
-                           m_canId{0x0U},
-                           m_bFLiM{false},
-                           m_nodeNum{0x0UL},
                            m_intrStatus{0x0UL},
                            m_eepromType{EEPROM_TYPE::EEPROM_USES_FLASH},
                            m_externalAddress{EEPROM_I2C_ADDR},
@@ -102,7 +99,10 @@ CBUSConfig::CBUSConfig() : EE_EVENTS_START{0x0UL},
                            m_bHashCollisions{false},
                            m_bFlashModified{false},
                            m_bFlashZeroToOne{false},
-                           m_flashBuf{}
+                           m_flashBuf{},
+                           m_canId{0x0U},
+                           m_bFLiM{false},
+                           m_nodeNum{0x0UL}
 {
 }
 
@@ -620,7 +620,6 @@ uint8_t CBUSConfig::readEEPROM(uint32_t eeaddress)
 uint8_t CBUSConfig::readBytesEEPROM(uint32_t eeaddress, uint8_t nbytes, uint8_t dest[])
 {
    uint8_t addr = static_cast<uint8_t>(eeaddress);
-   int r = 0;
    uint8_t count = 0;
 
    disableIRQs();
@@ -659,7 +658,6 @@ uint8_t CBUSConfig::readBytesEEPROM(uint32_t eeaddress, uint8_t nbytes, uint8_t 
 ///
 void CBUSConfig::writeEEPROM(uint32_t eeaddress, uint8_t data)
 {
-   int r = 0;
    uint8_t txdata[2] = {static_cast<uint8_t>(eeaddress), data};
 
    disableIRQs();
@@ -696,8 +694,6 @@ void CBUSConfig::writeBytesEEPROM(uint32_t eeaddress, uint8_t src[], uint8_t num
 {
    // *** TODO *** handle greater than 32 bytes -> the Arduino I2C write buffer size
    // max write = EEPROM pagesize - 64 bytes
-
-   int r = 0;
 
    disableIRQs();
 

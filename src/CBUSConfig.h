@@ -139,12 +139,12 @@ public:
    void reboot(void);
 
    /// Externally accessed variables @todo should be private with accessors !
-   uint32_t EE_EVENTS_START;
-   uint8_t EE_MAX_EVENTS;
-   uint8_t EE_NUM_EVS;
-   uint8_t EE_BYTES_PER_EVENT;
-   uint32_t EE_NVS_START;
-   uint8_t EE_NUM_NVS;
+   uint32_t EE_EVENTS_START;   ///< Offset of variables
+   uint8_t EE_MAX_EVENTS;      ///< Maximum number of events
+   uint8_t EE_NUM_EVS;         ///< Number of event variables per event
+   uint8_t EE_BYTES_PER_EVENT; ///< Number of bytes per event (includes 16bit CAN ID and Node Number)
+   uint32_t EE_NVS_START;      ///< Start offset of Node Variables
+   uint8_t EE_NUM_NVS;         ///< Number of Node Variables
 
 private:
    uint32_t m_intrStatus;

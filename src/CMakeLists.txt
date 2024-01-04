@@ -25,6 +25,12 @@ target_include_directories(CBUSPico PRIVATE
    ${CAN2040_SOURCE}
    ${CBUSDEFS}
 )
+
+target_compile_options(CBUSPico PRIVATE
+   # can2040 has an unused param, -Wpedantic is a step too far !
+  -Wall -Wextra -Werror -Wno-unused-parameter > 
+)
+
 target_link_libraries(CBUSPico pico_stdlib pico_multicore cmsis_core hardware_i2c hardware_flash)
 
 pico_add_extra_outputs(CBUSPico)

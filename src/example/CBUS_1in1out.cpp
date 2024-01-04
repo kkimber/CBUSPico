@@ -79,7 +79,7 @@ CBUSLED moduleLED;       // an example LED as output
 module_name_t moduleName = {'1', 'I', 'N', '1', 'O', 'U', 'T'};
 
 // forward function declarations
-void eventhandler(uint8_t index, CANFrame *msg);
+void eventhandler(uint8_t index, const CANFrame &msg);
 void processModuleSwitchChange(void);
 
 //
@@ -136,7 +136,7 @@ void setupCBUS()
    }
 
    // register our CBUS event handler, to receive event messages of learned events
-   CBUS.setEventHandler(eventhandler);
+   CBUS.setEventHandlerCB(eventhandler);
 
    // set CBUS LEDs to indicate mode
    CBUS.indicateFLiMMode(module_config.getFLiM());
@@ -227,7 +227,7 @@ void processModuleSwitchChange()
 /// it receives the event table index and the CAN frame
 //
 
-void eventhandler(uint8_t index, CANFrame *msg)
+void eventhandler(uint8_t index, const CANFrame &msg)
 {
    // as an example, control an LED
 
@@ -237,7 +237,7 @@ void eventhandler(uint8_t index, CANFrame *msg)
    // set the LED according to the opcode of the received event, if the first EV equals 0
    // we turn on the LED and if the first EV equals 1 we use the blink() method of the LED object as an example
 
-   if (msg->data[0] == OPC_ACON)
+   if (msg.data[0] == OPC_ACON)
    {
       if (evval == 0)
       {
@@ -248,7 +248,7 @@ void eventhandler(uint8_t index, CANFrame *msg)
          moduleLED.blink();
       }
    }
-   else if (msg->data[0] == OPC_ACOF)
+   else if (msg.data[0] == OPC_ACOF)
    {
       moduleLED.off();
    }
@@ -256,7 +256,7 @@ void eventhandler(uint8_t index, CANFrame *msg)
 
 // MODULE MAIN ENTRY
 
-extern "C" int main(int argc, char *argv[])
+extern "C" int main(int, char**)
 {
    // Init stdio lib (only really required if UART logging etc.)
    stdio_init_all();

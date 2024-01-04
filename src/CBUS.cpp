@@ -60,11 +60,11 @@ CBUSbase::CBUSbase(CBUSConfig &config) : m_numMsgsSent{0x0L},
                                          m_moduleConfig{config},
                                          m_pModuleParams{nullptr},
                                          m_pModuleName{nullptr},
-                                         eventhandler{nullptr},
-                                         eventhandlerex{nullptr},
-                                         framehandler{nullptr},
-                                         _opcodes{nullptr},
-                                         _num_opcodes{0x0U},
+                                         eventHandler{nullptr},
+                                         eventHandlerEx{nullptr},
+                                         frameHandler{nullptr},
+                                         m_opcodes{nullptr},
+                                         m_numOpcodes{0x0U},
                                          m_enumResponses{},
                                          m_bModeChanging{false},
                                          m_bCANenum{false},
@@ -78,31 +78,31 @@ CBUSbase::CBUSbase(CBUSConfig &config) : m_numMsgsSent{0x0L},
 }
 
 //
-/// register the user handler for learned events
+/// register the user callback for learned events
 //
 
-void CBUSbase::setEventHandler(void (*fptr)(uint8_t index, CANFrame *msg))
+void CBUSbase::setEventHandlerCB(eventCallback_t evCallback)
 {
-   eventhandler = fptr;
+   eventHandler = evCallback;
 }
 
-// overloaded form which receives the opcode on/off state and the first event variable
+// register a user event callback which receives the opcode on/off state and the first event variable
 
-void CBUSbase::setEventHandler(void (*fptr)(uint8_t index, CANFrame *msg, bool ison, uint8_t evval))
+void CBUSbase::setEventHandlerExCB(eventExCallback_t evExCallback)
 {
-   eventhandlerex = fptr;
+   eventHandlerEx = evExCallback;
 }
 
 //
-/// register the user handler for CAN frames
+/// register a user callback for CAN frames
 /// default args in .h declaration for opcodes array (nullptr) and size (0)
 //
 
-void CBUSbase::setFrameHandler(void (*fptr)(CANFrame *msg), uint8_t opcodes[], uint8_t num_opcodes)
+void CBUSbase::setFrameHandler(frameCallback_t frameCallback, uint8_t opcodes[], uint8_t num_opcodes)
 {
-   framehandler = fptr;
-   _opcodes = opcodes;
-   _num_opcodes = num_opcodes;
+   frameHandler = frameCallback;
+   m_opcodes = opcodes;
+   m_numOpcodes = num_opcodes;
 }
 
 //
@@ -183,18 +183,18 @@ bool CBUSbase::sendCMDERR(uint8_t cerrno)
 /// is this an Extended CAN frame ?
 //
 
-bool CBUSbase::isExt(CANFrame *amsg)
+bool CBUSbase::isExt(const CANFrame &amsg) const
 {
-   return (amsg->ext);
+   return amsg.ext;
 }
 
 //
 /// is this a Remote frame ?
 //
 
-bool CBUSbase::isRTR(CANFrame *amsg)
+bool CBUSbase::isRTR(const CANFrame &amsg) const
 {
-   return (amsg->rtr);
+   return amsg.rtr;
 }
 
 //
@@ -208,7 +208,7 @@ void CBUSbase::CANenumeration(void)
    // DEBUG_SERIAL << F("> beginning self-enumeration cycle") << endl;
 
    // set global variables
-   m_bCANenum = true;                      // we are enumerating
+   m_bCANenum = true;                    // we are enumerating
    CANenumTime = SystemTick::GetMilli(); // the cycle start time
    memset(m_enumResponses, 0, sizeof(m_enumResponses));
 
@@ -299,8 +299,8 @@ void CBUSbase::indicateFLiMMode(bool bFLiM)
 //
 void CBUSbase::process(uint8_t num_messages)
 {
-   uint8_t remoteCANID = 0, evindex = 0, evval = 0;
-   uint32_t nn = 0, en = 0, opc;
+   uint8_t evindex;
+   uint8_t evval;
 
    // start bus enumeration if required
    if (m_bEnumerationRequired)
@@ -396,37 +396,37 @@ void CBUSbase::process(uint8_t num_messages)
       }
 
       // extract OPC, NN, EN
-      opc = m_msg.data[0];
-      nn = (m_msg.data[1] << 8) + m_msg.data[2];
-      en = (m_msg.data[3] << 8) + m_msg.data[4];
+      uint32_t opc = m_msg.data[0];
+      uint32_t nn = (m_msg.data[1] << 8) + m_msg.data[2];
+      uint32_t en = (m_msg.data[3] << 8) + m_msg.data[4];
 
       //
       /// extract the CANID() of the sending module
       //
 
-      remoteCANID = getCANID(m_msg.id);
+      uint8_t remoteCANID = getCANID(m_msg.id);
 
       //
       /// if registered, call the user handler with this new frame
       //
 
-      if (framehandler != nullptr)
+      if (frameHandler != nullptr)
       {
          // check if incoming opcode is in the user list, if list length > 0
-         if (_num_opcodes > 0)
+         if (m_numOpcodes > 0)
          {
-            for (uint8_t i = 0; i < _num_opcodes; i++)
+            for (uint8_t i = 0; i < m_numOpcodes; i++)
             {
-               if (opc == _opcodes[i])
+               if (opc == m_opcodes[i])
                {
-                  (void)(*framehandler)(&m_msg);
+                  frameHandler(m_msg);
                   break;
                }
             }
          }
          else
          {
-            (void)(*framehandler)(&m_msg);
+            frameHandler(m_msg);
          }
       }
 
@@ -501,7 +501,7 @@ void CBUSbase::process(uint8_t num_messages)
          case OPC_AROF:
 
             // lookup this accessory event in the event table and call the user's registered callback function
-            if (eventhandler || eventhandlerex)
+            if (eventHandler || eventHandlerEx)
             {
                processAccessoryEvent(nn, en, (opc % 2 == 0));
             }
@@ -519,7 +519,7 @@ void CBUSbase::process(uint8_t num_messages)
          case OPC_ASOF3:
 
             // lookup this accessory event in the event table and call the user's registered callback function
-            if (eventhandler || eventhandlerex)
+            if (eventHandler || eventHandlerEx)
             {
                processAccessoryEvent(0, en, (opc % 2 == 0));
             }
@@ -539,7 +539,7 @@ void CBUSbase::process(uint8_t num_messages)
 
                // respond with PARAMS message
                m_msg.len = 8;
-               m_msg.data[0] = OPC_PARAMS;  // opcode
+               m_msg.data[0] = OPC_PARAMS;                            // opcode
                m_msg.data[1] = m_pModuleParams->param[IDX_MANUFR_ID]; // manf code -- MERG
                m_msg.data[2] = m_pModuleParams->param[IDX_MINOR_VER]; // minor code ver
                m_msg.data[3] = m_pModuleParams->param[IDX_MODULE_ID]; // module ident
@@ -810,7 +810,7 @@ void CBUSbase::process(uint8_t num_messages)
             if (nn == m_moduleConfig.getNodeNum())
             {
                m_msg.len = 8;
-               m_msg.data[0] = OPC_ENRSP;                       // response opcode
+               m_msg.data[0] = OPC_ENRSP;                             // response opcode
                m_msg.data[1] = highByte(m_moduleConfig.getNodeNum()); // my NN hi
                m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());  // my NN lo
 
@@ -1015,7 +1015,7 @@ void CBUSbase::process(uint8_t num_messages)
 
             if ((m_msg.data[1] == highByte(m_moduleConfig.getNodeNum())) && (m_msg.data[2] == lowByte(m_moduleConfig.getNodeNum())))
             {
-               (void)(*eventhandler)(0, &m_msg);
+               eventHandler(0, m_msg);
             }
 
             break;
@@ -1120,7 +1120,6 @@ void CBUSbase::checkCANenum(void)
                // i = 16; // ugh ... but probably better than a goto :)
                // but using a goto saves 4 bytes of program size ;)
                goto check_done;
-               break;
             }
          }
       }
@@ -1158,14 +1157,14 @@ void CBUSbase::processAccessoryEvent(uint32_t nn, uint32_t en, bool is_on_event)
 
    if (index < m_moduleConfig.EE_MAX_EVENTS)
    {
-      if (eventhandler != nullptr)
+      if (eventHandler != nullptr)
       {
-         (void)(*eventhandler)(index, &m_msg);
+         eventHandler(index, m_msg);
       }
-      else if (eventhandlerex != nullptr)
+      else if (eventHandlerEx != nullptr)
       {
-         (void)(*eventhandlerex)(index, &m_msg, is_on_event,
-                                 ((m_moduleConfig.EE_NUM_EVS > 0) ? m_moduleConfig.getEventEVval(index, 1) : 0));
+         eventHandlerEx(index, m_msg, is_on_event,
+                        ((m_moduleConfig.EE_NUM_EVS > 0) ? m_moduleConfig.getEventEVval(index, 1) : 0));
       }
    }
 }
@@ -1190,7 +1189,7 @@ void CBUSbase::consumeOwnEvents(CBUScoe *coe)
 ///
 /// @return Reference to the internal CBUSLED object for the Yellow FLiM LED
 ///
-CBUSLED& CBUSbase::getCBUSYellowLED()
+CBUSLED &CBUSbase::getCBUSYellowLED()
 {
    return m_ledYlw;
 }
@@ -1201,7 +1200,7 @@ CBUSLED& CBUSbase::getCBUSYellowLED()
 ///
 /// @return Reference to the internal CBUSLED object for the Green FLiM LED
 ///
-CBUSLED& CBUSbase::getCBUSGreenLED()
+CBUSLED &CBUSbase::getCBUSGreenLED()
 {
    return m_ledGrn;
 }
@@ -1212,7 +1211,7 @@ CBUSLED& CBUSbase::getCBUSGreenLED()
 ///
 /// @return Reference to the internal CBUSSwitch object for the FLiM switch
 ///
-CBUSSwitch& CBUSbase::getCBUSSwitch()
+CBUSSwitch &CBUSbase::getCBUSSwitch()
 {
    return m_sw;
 }
@@ -1271,7 +1270,7 @@ bool CBUScoe::available(void)
    {
       return false;
    }
-   
+
    return coe_buff->available();
 }
 
@@ -1288,4 +1287,3 @@ CANFrame CBUScoe::get(void)
 
    return msg;
 }
-

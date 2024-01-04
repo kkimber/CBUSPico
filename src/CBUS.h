@@ -90,7 +90,24 @@ class CBUScoe;
 constexpr uint8_t MODULE_NAME_LEN = 7;
 
 /// Type for holding the Module Name
-typedef struct module_name_t { uint8_t byte[MODULE_NAME_LEN]; } module_name_t;
+typedef struct module_name_t
+{
+   uint8_t byte[MODULE_NAME_LEN];
+} module_name_t;
+
+// Callback function definitions
+
+/// Standard event callback type
+using eventCallback_t = void (*)(uint8_t index, const CANFrame &msg);
+
+/// Extended event callback type
+using eventExCallback_t = void (*)(uint8_t index, const CANFrame &msg, bool ison, uint8_t evval);
+
+/// Frame callback type
+using frameCallback_t = void (*)(CANFrame &msg);
+
+/// Long Message callback type
+using longMessageCallback_t = void (*)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status);
 
 //
 /// @brief An abstract class to encapsulate CAN bus and CBUS processing for a CBUS module,
@@ -102,6 +119,7 @@ class CBUSbase
 
 public:
    CBUSbase(CBUSConfig &config);
+   virtual ~CBUSbase() {}; // explict virtual destructor for proper cleanup
 
    // these methods are pure virtual and must be implemented by the derived class
    // as a consequence, it is not possible to create an instance of this class
@@ -118,8 +136,8 @@ public:
    bool sendCMDERR(uint8_t cerrno);
    void CANenumeration(void);
    uint8_t getCANID(uint32_t header);
-   bool isExt(CANFrame *msg);
-   bool isRTR(CANFrame *msg);
+   bool isExt(const CANFrame &msg) const;
+   bool isRTR(const CANFrame &msg)const;
    void process(uint8_t num_messages = 3);
    void initFLiM(void);
    void revertSLiM(void);
@@ -130,9 +148,9 @@ public:
    void checkCANenum(void);
    void indicateMode(uint8_t mode);
    void indicateFLiMMode(bool bFLiM);
-   void setEventHandler(void (*fptr)(uint8_t index, CANFrame *msg));
-   void setEventHandler(void (*fptr)(uint8_t index, CANFrame *msg, bool ison, uint8_t evval));
-   void setFrameHandler(void (*fptr)(CANFrame *msg), uint8_t *opcodes = nullptr, uint8_t num_opcodes = 0);
+   void setEventHandlerCB(eventCallback_t evCallback);
+   void setEventHandlerExCB(eventExCallback_t evExCallback);
+   void setFrameHandler(frameCallback_t, uint8_t *opcodes = nullptr, uint8_t num_opcodes = 0);
    void makeHeader(CANFrame *msg, uint8_t priority = DEFAULT_PRIORITY);
    void processAccessoryEvent(uint32_t nn, uint32_t en, bool is_on_event);
 
@@ -143,7 +161,8 @@ public:
    CBUSLED &getCBUSGreenLED(void);
    CBUSSwitch &getCBUSSwitch(void);
 
-   uint32_t m_numMsgsSent, m_numMsgsRcvd;
+   uint32_t m_numMsgsSent;
+   uint32_t m_numMsgsRcvd;
 
 protected: // protected members become private in derived classes
    CANFrame m_msg;
@@ -152,15 +171,18 @@ protected: // protected members become private in derived classes
    CBUSSwitch m_sw;
    CBUSConfig &m_moduleConfig;
    cbusparam_t *m_pModuleParams;
-   module_name_t*m_pModuleName;
-   void (*eventhandler)(uint8_t index, CANFrame *msg);
-   void (*eventhandlerex)(uint8_t index, CANFrame *msg, bool evOn, uint8_t evVal);
-   void (*framehandler)(CANFrame *msg);
-   uint8_t *_opcodes;
-   uint8_t _num_opcodes;
+   module_name_t *m_pModuleName;
+   eventCallback_t eventHandler;
+   eventExCallback_t eventHandlerEx;
+   frameCallback_t frameHandler;
+   uint8_t *m_opcodes;
+   uint8_t m_numOpcodes;
    uint8_t m_enumResponses[16]; // 128 bits for storing CAN ID enumeration results
-   bool m_bModeChanging, m_bCANenum, m_bLearn;
-   uint32_t timeOutTimer, CANenumTime;
+   bool m_bModeChanging;
+   bool m_bCANenum;
+   bool m_bLearn;
+   uint32_t timeOutTimer;
+   uint32_t CANenumTime;
    bool m_bEnumerationRequired;
 
    CBUSLongMessage *longMessageHandler; // CBUS long message object to receive relevant frames
@@ -212,7 +234,8 @@ protected:
    uint32_t _last_fragment_sent = 0UL;
    uint32_t _last_fragment_received = 0UL;
 
-   void (*_messagehandler)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status) = {}; // user callback function to receive long message fragments
+   longMessageCallback_t _messagehandler;
+   //void (*_messagehandler)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status) = {}; // user callback function to receive long message fragments
    CBUSbase *_cbus_object_ptr;
 };
 

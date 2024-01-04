@@ -67,7 +67,7 @@ class CBUSACAN2040 : public CBUSbase
 
 public:
    explicit CBUSACAN2040(CBUSConfig &config);
-   ~CBUSACAN2040();
+   virtual ~CBUSACAN2040();
 
    // these methods are declared virtual in the base class and must be implemented by the derived class
    bool begin(void) override;

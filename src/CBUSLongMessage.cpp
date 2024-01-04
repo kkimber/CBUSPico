@@ -46,8 +46,8 @@
 #include "SystemTick.h"
 #include "CBUSUtil.h"
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 uint16_t crc16(uint8_t *data_p, uint16_t length);
 uint32_t crc32(const char *s, size_t n);
@@ -69,13 +69,13 @@ CBUSLongMessage::CBUSLongMessage(CBUSbase *cbus_object_ptr) : _cbus_object_ptr{c
 /// subscribe to a range of stream IDs
 //
 
-void CBUSLongMessage::subscribe(uint8_t *stream_ids, const uint8_t num_stream_ids, void *receive_buffer, const uint32_t receive_buff_len, void (*messagehandler)(void *msg, uint32_t msg_len, uint8_t stream_id, uint8_t status))
+void CBUSLongMessage::subscribe(uint8_t *stream_ids, const uint8_t num_stream_ids, void *receive_buffer, const uint32_t receive_buff_len, longMessageCallback_t messageHandler)
 {
    _stream_ids = stream_ids;
    _num_stream_ids = num_stream_ids;
    _receive_buffer = (uint8_t *)receive_buffer;
    _receive_buffer_len = receive_buff_len;
-   _messagehandler = messagehandler;
+   _messagehandler = messageHandler;
 }
 
 //
@@ -136,7 +136,7 @@ bool CBUSLongMessage::process(void)
    if (_is_receiving && (SystemTick::GetMilli() - _last_fragment_received >= _receive_timeout))
    {
       // DEBUG_SERIAL << F("> L: ERROR: timed out waiting for continuation packet") << endl;
-      (void)(*_messagehandler)(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_TIMEOUT_ERROR);
+      _messagehandler(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_TIMEOUT_ERROR);
       _is_receiving = false;
       _incoming_message_length = 0;
       _incoming_bytes_received = 0;
@@ -245,7 +245,7 @@ void CBUSLongMessage::processReceivedMessageFragment(const CANFrame *frame)
                   if (_incoming_bytes_received >= _incoming_message_length)
                   {
                      // DEBUG_SERIAL << F("> L: bytes processed = ") << _incoming_bytes_received << F(", message data has been fully consumed") << endl;
-                     (void)(*_messagehandler)(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_COMPLETE);
+                     _messagehandler(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_COMPLETE);
                      _receive_buffer_index = 0;
                      memset(_receive_buffer, 0, _receive_buffer_len);
                      break;
@@ -255,7 +255,7 @@ void CBUSLongMessage::processReceivedMessageFragment(const CANFrame *frame)
                   else if (_receive_buffer_index >= _receive_buffer_len)
                   {
                      // DEBUG_SERIAL << F("> L: user buffer is full") << endl;
-                     (void)(*_messagehandler)(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_INCOMPLETE);
+                     _messagehandler(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_INCOMPLETE);
                      _receive_buffer_index = 0;
                      memset(_receive_buffer, 0, _receive_buffer_len);
                   }
@@ -264,7 +264,7 @@ void CBUSLongMessage::processReceivedMessageFragment(const CANFrame *frame)
             else
             { // it's the wrong sequence id
                // DEBUG_SERIAL << F("> L: ERROR: expected receive sequence num = ") << _expected_next_receive_sequence_num << F(" but got = ") << frame->data[2] << endl;
-               (void)(*_messagehandler)(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_SEQUENCE_ERROR);
+               _messagehandler(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_SEQUENCE_ERROR);
                _incoming_message_length = 0;
                _incoming_bytes_received = 0;
                _is_receiving = false;
@@ -295,7 +295,7 @@ void CBUSLongMessage::processReceivedMessageFragment(const CANFrame *frame)
       if (_receive_buffer_index > 0)
       {
          // DEBUG_SERIAL << F("> L: surfacing final fragment") << endl;
-         (void)(*_messagehandler)(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_COMPLETE);
+         _messagehandler(_receive_buffer, _receive_buffer_index, _receive_stream_id, CBUS_LONG_MESSAGE_COMPLETE);
       }
 
       // get ready for the next long message
@@ -524,7 +524,7 @@ bool CBUSLongMessageEx::process(void)
       {
 
          // DEBUG_SERIAL << F("> Lex: ERROR: timed out waiting for continuation packet in context = ") << i << F(", timeout = ") << _receive_timeout << endl;
-         (void)(*_messagehandler)(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, CBUS_LONG_MESSAGE_TIMEOUT_ERROR);
+         _messagehandler(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, CBUS_LONG_MESSAGE_TIMEOUT_ERROR);
          _receive_context[i]->in_use = false;
          // _receive_context[i]->incoming_message_length = 0;
          // _receive_context[i]->incoming_bytes_received = 0;
@@ -612,7 +612,8 @@ uint8_t CBUSLongMessageEx::is_sending(void)
 
 void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
 {
-   uint8_t i, j, status;
+   uint8_t i;
+   uint8_t status;
    uint16_t tmpcrc = 0;
 
    // DEBUG_SERIAL << F("> Lex: handling incoming message fragment") << endl;
@@ -693,13 +694,13 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
       // error if out of sequence
       if (frame->data[2] != _receive_context[i]->expected_next_receive_sequence_num)
       {
-         (void)(*_messagehandler)(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, CBUS_LONG_MESSAGE_SEQUENCE_ERROR);
+         _messagehandler(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, CBUS_LONG_MESSAGE_SEQUENCE_ERROR);
          _receive_context[i]->in_use = false;
          return;
       }
 
       // consume up to 5 bytes of message data from this fragment
-      for (j = 0; j < 5; j++)
+      for (uint8_t j = 0; j < 5; j++)
       {
          _receive_context[i]->buffer[_receive_context[i]->receive_buffer_index] = frame->data[j + 3];
          ++_receive_context[i]->receive_buffer_index;
@@ -723,7 +724,7 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
                status = CBUS_LONG_MESSAGE_COMPLETE;
             }
 
-            (void)(*_messagehandler)(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, status);
+            _messagehandler(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, status);
             _receive_context[i]->in_use = false;
             break;
 
@@ -731,7 +732,7 @@ void CBUSLongMessageEx::processReceivedMessageFragment(const CANFrame *frame)
          }
          else if (_receive_context[i]->receive_buffer_index >= _receive_buffer_len)
          {
-            (void)(*_messagehandler)(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, CBUS_LONG_MESSAGE_TRUNCATED);
+            _messagehandler(_receive_context[i]->buffer, _receive_context[i]->receive_buffer_index, _receive_context[i]->receive_stream_id, CBUS_LONG_MESSAGE_TRUNCATED);
             _receive_context[i]->in_use = false;
             break;
          }
