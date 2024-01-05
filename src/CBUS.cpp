@@ -47,7 +47,7 @@
 #include <cstdlib>
 
 // forward function declarations
-void makeHeader_impl(CANFrame *msg, uint8_t id, uint8_t priority = 0x0b);
+void makeHeader_impl(CANFrame &msg, uint8_t id, uint8_t priority = 0x0b);
 
 //
 /// construct a CBUS object with a CBUSConfig object that the user provides.
@@ -159,7 +159,7 @@ bool CBUSbase::sendWRACK(void)
    m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
    m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
 
-   return sendMessage(&m_msg);
+   return sendMessage(m_msg);
 }
 
 //
@@ -176,7 +176,7 @@ bool CBUSbase::sendCMDERR(uint8_t cerrno)
    m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
    m_msg.data[3] = cerrno;
 
-   return sendMessage(&m_msg);
+   return sendMessage(m_msg);
 }
 
 //
@@ -214,7 +214,7 @@ void CBUSbase::CANenumeration(void)
 
    // send zero-length RTR frame
    m_msg.len = 0;
-   sendMessage(&m_msg, true, false); // fixed arg order in v 1.1.4, RTR - true, ext = false
+   sendMessage(m_msg, true, false); // fixed arg order in v 1.1.4, RTR - true, ext = false
 }
 
 //
@@ -234,7 +234,7 @@ void CBUSbase::initFLiM(void)
    m_msg.data[0] = OPC_RQNN;
    m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
    m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
-   sendMessage(&m_msg);
+   sendMessage(m_msg);
 }
 
 //
@@ -250,7 +250,7 @@ void CBUSbase::revertSLiM(void)
    m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
    m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
 
-   sendMessage(&m_msg);
+   sendMessage(m_msg);
    setSLiM();
 }
 
@@ -439,7 +439,7 @@ void CBUSbase::process(uint8_t num_messages)
          // DEBUG_SERIAL << F("> CANID() enumeration RTR from CANID() = ") << remoteCANID << endl;
          // send an empty message to show our CANID()
          m_msg.len = 0;
-         sendMessage(&m_msg);
+         sendMessage(m_msg);
          continue;
       }
 
@@ -548,7 +548,7 @@ void CBUSbase::process(uint8_t num_messages)
                m_msg.data[6] = m_pModuleParams->param[IDX_MXNUM_NVS]; // number of NVs
                m_msg.data[7] = m_pModuleParams->param[IDX_MAJOR_VER]; // major code ver
                // final param[8] = node flags is not sent here as the max message payload is 8 bytes (0-7)
-               sendMessage(&m_msg);
+               sendMessage(m_msg);
             }
 
             break;
@@ -576,7 +576,7 @@ void CBUSbase::process(uint8_t num_messages)
                   // _msg.data[2] = lowByte(module_config.nodeNum);
                   m_msg.data[3] = paran;
                   m_msg.data[4] = m_pModuleParams->param[paran];
-                  sendMessage(&m_msg);
+                  sendMessage(m_msg);
                }
                else
                {
@@ -605,7 +605,7 @@ void CBUSbase::process(uint8_t num_messages)
                // _msg.data[1] = highByte(module_config.nodeNum);
                // _msg.data[2] = lowByte(module_config.nodeNum);
 
-               sendMessage(&m_msg);
+               sendMessage(m_msg);
 
                // DEBUG_SERIAL << F("> sent NNACK for NN = ") << module_config.nodeNum << endl;
 
@@ -640,7 +640,7 @@ void CBUSbase::process(uint8_t num_messages)
                m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
                m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
 
-               sendMessage(&m_msg);
+               sendMessage(m_msg);
             }
             break;
 
@@ -693,7 +693,7 @@ void CBUSbase::process(uint8_t num_messages)
                   // _msg.data[1] = highByte(module_config.nodeNum);
                   // _msg.data[2] = lowByte(module_config.nodeNum);
                   m_msg.data[4] = m_moduleConfig.readNV(nvindex);
-                  sendMessage(&m_msg);
+                  sendMessage(m_msg);
                }
             }
 
@@ -798,7 +798,7 @@ void CBUSbase::process(uint8_t num_messages)
                // _msg.data[2] = lowByte(module_config.nodeNum);
                m_msg.data[3] = m_moduleConfig.numEvents();
 
-               sendMessage(&m_msg);
+               sendMessage(m_msg);
             }
 
             break;
@@ -827,7 +827,7 @@ void CBUSbase::process(uint8_t num_messages)
                      m_msg.data[7] = i; // event table index
 
                      // DEBUG_SERIAL << F("> sending ENRSP reply for event index = ") << i << endl;
-                     sendMessage(&m_msg);
+                     sendMessage(m_msg);
                      sleep_ms(10);
 
                   } // valid stored ev
@@ -851,7 +851,7 @@ void CBUSbase::process(uint8_t num_messages)
                   // _msg.data[1] = highByte(module_config.nodeNum);
                   // _msg.data[2] = lowByte(module_config.nodeNum);
                   m_msg.data[5] = m_moduleConfig.getEventEVval(m_msg.data[3], m_msg.data[4]);
-                  sendMessage(&m_msg);
+                  sendMessage(m_msg);
                }
                else
                {
@@ -909,7 +909,7 @@ void CBUSbase::process(uint8_t num_messages)
                // _msg.data[1] = highByte(module_config.nodeNum);
                // _msg.data[2] = lowByte(module_config.nodeNum);
                m_msg.data[3] = free_slots;
-               sendMessage(&m_msg);
+               sendMessage(m_msg);
             }
 
             break;
@@ -928,7 +928,7 @@ void CBUSbase::process(uint8_t num_messages)
                m_msg.data[3] = m_pModuleParams->param[IDX_MANUFR_ID];
                m_msg.data[4] = m_pModuleParams->param[IDX_MODULE_ID];
                m_msg.data[5] = m_pModuleParams->param[IDX_MOD_FLAGS];
-               sendMessage(&m_msg);
+               sendMessage(m_msg);
             }
 
             break;
@@ -946,7 +946,7 @@ void CBUSbase::process(uint8_t num_messages)
                m_msg.len = 8;
                m_msg.data[0] = OPC_NAME;
                memcpy(m_msg.data + 1, m_pModuleName, sizeof(module_name_t));
-               sendMessage(&m_msg);
+               sendMessage(m_msg);
             }
 
             break;
@@ -1037,7 +1037,7 @@ void CBUSbase::process(uint8_t num_messages)
             // CBUS long message
             if (longMessageHandler != nullptr)
             {
-               longMessageHandler->processReceivedMessageFragment(&m_msg);
+               longMessageHandler->processReceivedMessageFragment(m_msg);
             }
             break;
 
@@ -1140,7 +1140,7 @@ void CBUSbase::checkCANenum(void)
       m_msg.data[0] = OPC_NNACK;
       m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
       m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
-      sendMessage(&m_msg);
+      sendMessage(m_msg);
    }
 }
 
@@ -1220,7 +1220,7 @@ CBUSSwitch &CBUSbase::getCBUSSwitch()
 /// utility method to populate a CBUS message header
 //
 
-void CBUSbase::makeHeader(CANFrame *msg, uint8_t priority)
+void CBUSbase::makeHeader(CANFrame &msg, uint8_t priority)
 {
    makeHeader_impl(msg, m_moduleConfig.getCANID(), priority);
 }
@@ -1232,9 +1232,9 @@ void CBUSbase::makeHeader(CANFrame *msg, uint8_t priority)
 /// priority = 1011 (0xB hex, 11 dec) as default argument, which translates to medium/low
 //
 
-void makeHeader_impl(CANFrame *msg, uint8_t id, uint8_t priority)
+void makeHeader_impl(CANFrame &msg, uint8_t id, uint8_t priority)
 {
-   msg->id = (priority << 7) + (id & 0x7f);
+   msg.id = (priority << 7) + (id & 0x7f);
 }
 
 //
@@ -1254,7 +1254,7 @@ CBUScoe::~CBUScoe()
    }
 }
 
-void CBUScoe::put(const CANFrame *msg)
+void CBUScoe::put(const CANFrame &msg)
 {
    if (!coe_buff)
    {

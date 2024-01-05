@@ -145,18 +145,20 @@ bool CBUSACAN2040::available(void)
 
 CANFrame CBUSACAN2040::getNextMessage(void)
 {
-   CANFrame cf;
-   
+   // Return empty CANFrame if called with no rx buffer
+   // ideally this will never be used !
    if (!rx_buffer)
    {
+      CANFrame cf;
       return cf;
    }
    
-   cf = *rx_buffer->get();
+   // Return copy of frame from circular rx buffer
+   CANFrame *pFrame = rx_buffer->get();
 
    ++m_numMsgsRcvd;
 
-   return cf;
+   return *pFrame;
 }
 
 //
@@ -185,7 +187,7 @@ void CBUSACAN2040::notify_cb(struct can2040 *cd, uint32_t notify, struct can2040
 
       if (rx_buffer)
       {
-         rx_buffer->put(&m_msg);
+         rx_buffer->put(m_msg);
       }
       break;
 
@@ -205,7 +207,7 @@ void CBUSACAN2040::notify_cb(struct can2040 *cd, uint32_t notify, struct can2040
 /// send a CBUS message
 //
 
-bool CBUSACAN2040::sendMessage(CANFrame *msg, bool rtr, bool ext, uint8_t priority)
+bool CBUSACAN2040::sendMessage(CANFrame &msg, bool rtr, bool ext, uint8_t priority)
 {
    struct can2040_msg tx_msg;
 
@@ -223,17 +225,21 @@ bool CBUSACAN2040::sendMessage(CANFrame *msg, bool rtr, bool ext, uint8_t priori
    makeHeader(msg, priority); // default priority unless user overrides
 
    if (rtr)
-      msg->id |= 0x40000000;
+   {
+      msg.id |= 0x40000000;
+   }
 
    if (ext)
-      msg->id |= 0x80000000;
-
-   tx_msg.id = msg->id;
-   tx_msg.dlc = msg->len;
-
-   for (uint8_t i = 0; i < msg->len && i < 8; i++)
    {
-      tx_msg.data[i] = msg->data[i];
+      msg.id |= 0x80000000;
+   }
+
+   tx_msg.id = msg.id;
+   tx_msg.dlc = msg.len;
+
+   for (uint8_t i = 0; i < msg.len && i < 8; i++)
+   {
+      tx_msg.data[i] = msg.data[i];
    }
 
    if (acan2040->send_message(&tx_msg))

@@ -127,7 +127,7 @@ public:
    virtual bool begin(void) = 0;
    virtual bool available(void) = 0;
    virtual CANFrame getNextMessage(void) = 0;
-   virtual bool sendMessage(CANFrame *msg, bool rtr = false, bool ext = false, uint8_t priority = DEFAULT_PRIORITY) = 0;
+   virtual bool sendMessage(CANFrame &msg, bool rtr = false, bool ext = false, uint8_t priority = DEFAULT_PRIORITY) = 0;
    virtual void reset(void) = 0;
 
    // implementations of these methods are provided in the base class
@@ -151,7 +151,7 @@ public:
    void setEventHandlerCB(eventCallback_t evCallback);
    void setEventHandlerExCB(eventExCallback_t evExCallback);
    void setFrameHandler(frameCallback_t, uint8_t *opcodes = nullptr, uint8_t num_opcodes = 0);
-   void makeHeader(CANFrame *msg, uint8_t priority = DEFAULT_PRIORITY);
+   void makeHeader(CANFrame &msg, uint8_t priority = DEFAULT_PRIORITY);
    void processAccessoryEvent(uint32_t nn, uint32_t en, bool is_on_event);
 
    void setLongMessageHandler(CBUSLongMessage *handler);
@@ -203,13 +203,13 @@ public:
    bool sendLongMessage(const void *msg, const uint32_t msg_len, const uint8_t stream_id, const uint8_t priority = DEFAULT_PRIORITY);
    void subscribe(uint8_t *stream_ids, const uint8_t num_stream_ids, void *receive_buffer, const uint32_t receive_buffer_len, void (*messagehandler)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status));
    bool process(void);
-   virtual void processReceivedMessageFragment(const CANFrame *frame);
+   virtual void processReceivedMessageFragment(const CANFrame &frame);
    bool is_sending(void);
    void setDelay(uint8_t delay_in_millis);
    void setTimeout(uint32_t timeout_in_millis);
 
 protected:
-   bool sendMessageFragment(CANFrame *frame, const uint8_t priority);
+   bool sendMessageFragment(CANFrame &frame, const uint8_t priority);
 
    bool _is_receiving = false;
    uint8_t *_send_buffer = nullptr;
@@ -279,7 +279,7 @@ public:
    bool sendLongMessage(const void *msg, const uint32_t msg_len, const uint8_t stream_id, const uint8_t priority = DEFAULT_PRIORITY);
    bool process(void);
    void subscribe(uint8_t *stream_ids, const uint8_t num_stream_ids, void (*messagehandler)(void *msg, uint32_t msg_len, uint8_t stream_id, uint8_t status));
-   void processReceivedMessageFragment(const CANFrame *frame) override;
+   void processReceivedMessageFragment(const CANFrame &frame) override;
    uint8_t is_sending(void);
    void use_crc(bool use_crc);
 
@@ -304,7 +304,7 @@ public:
    CBUScoe &operator=(CBUScoe &) = delete;
    CBUScoe(const CBUScoe &) = delete; // Do the same for the default copy constructor
    CBUScoe(CBUScoe &) = delete;
-   void put(const CANFrame *msg);
+   void put(const CANFrame &msg);
    CANFrame get(void);
    bool available(void);
 

@@ -73,7 +73,7 @@ public:
    bool begin(void) override;
    bool available(void) override;
    CANFrame getNextMessage(void) override;
-   bool sendMessage(CANFrame *msg, bool rtr = false, bool ext = false, uint8_t priority = DEFAULT_PRIORITY) override; // note default arguments
+   bool sendMessage(CANFrame &msg, bool rtr = false, bool ext = false, uint8_t priority = DEFAULT_PRIORITY) override; // note default arguments
    void reset(void) override;
 
    // these methods are specific to this implementation

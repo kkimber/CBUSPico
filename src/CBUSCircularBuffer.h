@@ -49,8 +49,6 @@ class CANFrame
 {
 
 public:
-   /// Constructor to initialize members
-   CANFrame() {};
    /// CAN Frame ID
    uint32_t id = {};
    /// CAN Frame EXT flag
@@ -87,7 +85,7 @@ public:
    CBUSCircularBuffer(CBUSCircularBuffer &) = delete;
 
    bool available(void);
-   void put(const CANFrame *cf);
+   void put(const CANFrame &cf);
    CANFrame *peek(void);
    CANFrame *get(void);
    uint32_t insert_time(void);

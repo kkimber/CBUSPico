@@ -214,7 +214,7 @@ void processModuleSwitchChange()
       msg.data[3] = 0;
       msg.data[4] = 1; // event number (EN) = 1
 
-      if (CBUS.sendMessage(&msg))
+      if (CBUS.sendMessage(msg))
       {
          // Sent OK
       }

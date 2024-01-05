@@ -50,7 +50,7 @@ bool CBUSCircularBuffer::available()
 ///
 /// @param item CANFrame to store in the circular buffer
 ///
-void CBUSCircularBuffer::put(const CANFrame *item)
+void CBUSCircularBuffer::put(const CANFrame &item)
 {
    if (!m_buffer)
    {
@@ -58,7 +58,7 @@ void CBUSCircularBuffer::put(const CANFrame *item)
    }
 
    // Copy the frame into the item buffer and set the buffer insertion timestamp
-   m_buffer[m_head]._item = *item;
+   m_buffer[m_head]._item = item;
    m_buffer[m_head]._item_insert_time = SystemTick::GetMicros();
 
    // if the buffer is full, this put will overwrite the oldest item
@@ -83,8 +83,9 @@ void CBUSCircularBuffer::put(const CANFrame *item)
 ///
 CANFrame *CBUSCircularBuffer::get()
 {
+   // If no buffer allocated, return nullptr
    CANFrame *p = nullptr;
-
+   
    if (!m_buffer)
    {
       return p;
