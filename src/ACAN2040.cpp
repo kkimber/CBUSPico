@@ -41,29 +41,46 @@
 
 struct can2040 *_cbusp;
 
+///
+/// @brief PIO IRQ ISR
+///        Notify CAN2040 of the interrupt
+///
 static void PIOx_IRQHandler(void)
 {
    can2040_pio_irq_handler(_cbusp);
 }
 
+
+///
+/// @brief Construct a new ACAN2040::ACAN2040 object
+/// 
+/// @param pio_num PIO instance to use [0 or 1]
+/// @param gpio_tx PICO pin number for the tx line
+/// @param gpio_rx PICO pin number for the rx line
+/// @param bitrate bit rate to use for CAN (in bits per second)
+/// @param sys_clock Clock frequency of the PICO
+/// @param callback Callback for CAN2040 to use to notify us of CAN Rx, Tx complete and errors
+///
 ACAN2040::ACAN2040(uint32_t pio_num,
                    uint32_t gpio_tx,
                    uint32_t gpio_rx,
                    uint32_t bitrate,
                    uint32_t sys_clock,
-                   void (*callback)(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)) : m_pio_num{pio_num},
-                                                                                                     m_bitrate{bitrate},
-                                                                                                     m_gpio_tx{gpio_tx},
-                                                                                                     m_gpio_rx{gpio_rx},
-                                                                                                     m_sys_clock{sys_clock},
-                                                                                                     m_cbus{},
-                                                                                                     m_callback(callback)
+                   can2040_rx_cb callback) : m_pio_num{pio_num},
+                                             m_bitrate{bitrate},
+                                             m_gpio_tx{gpio_tx},
+                                             m_gpio_rx{gpio_rx},
+                                             m_sys_clock{sys_clock},
+                                             m_cbus{},
+                                             m_callback(callback)
 {
    _cbusp = &m_cbus;
 }
 
-/// implementation of ACAN2040 class
-
+///
+/// @brief Initialize and start the CAN2040 instance
+/// 
+///
 void ACAN2040::begin()
 {
    // setup canbus
@@ -88,23 +105,44 @@ void ACAN2040::begin()
    can2040_start(&m_cbus, m_sys_clock, m_bitrate, m_gpio_rx, m_gpio_tx);
 }
 
+///
+/// @brief Transmit a frame through the CAN2040 instance
+/// 
+/// @param msg Pointer to CAN frame to transmit
+/// @return true Successful initiation of frame transmit
+/// @return false Error sending frame, e.g. Tx FIFO full
+///
 bool ACAN2040::send_message(struct can2040_msg *msg)
 {
    int ret = can2040_transmit(&m_cbus, msg);
    return (ret == 0);
 }
 
+///
+/// @brief Check if its OK to initiate a frame transmission
+/// 
+/// @return true CAN2040 is ready to accept a frame for transmission
+/// @return false CAN2040 is not ready, e.g. Tx FIFO is full
+///
 bool ACAN2040::ok_to_send(void)
 {
    return can2040_check_transmit(&m_cbus);
 }
 
+///
+/// @brief Stop CAN2040 from processing
+/// 
 void ACAN2040::stop(void)
 {
-   can2040_stop(_cbusp);
+   can2040_stop(&m_cbus);
 }
 
+///
+/// @brief Get frame statistics from the CAN2040 controller instance
+/// 
+/// @param can_stats Pointer to a can2040_stats struct where data will be returned
+///
 void ACAN2040::get_statistics(struct can2040_stats *can_stats)
 {
-   can2040_get_statistics(_cbusp, can_stats);
+   can2040_get_statistics(&m_cbus, can_stats);
 }

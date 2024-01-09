@@ -109,7 +109,7 @@ bool CBUSACAN2040::begin()
    rx_buffer = new (std::nothrow) CBUSCircularBuffer(_num_rx_buffers);
    tx_buffer = new (std::nothrow) CBUSCircularBuffer(_num_tx_buffers);
 
-   acan2040 = new ACAN2040(0, _gpio_tx, _gpio_rx, CANBITRATE, SystemCoreClock, cb);
+   acan2040 = new (std::nothrow) ACAN2040(0, _gpio_tx, _gpio_rx, CANBITRATE, SystemCoreClock, cb);
 
    if (!rx_buffer || !tx_buffer || !acan2040)
    {

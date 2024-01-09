@@ -59,13 +59,13 @@ extern "C"
 #include "can2040.h"
 }
 
-/// Arduino library class that wraps the can2040 Kevin's code
+/// Library class that wraps the CAN2040 code
 
 class ACAN2040
 {
 
 public:
-   ACAN2040(uint32_t pio_num, uint32_t gpio_tx, uint32_t gpio_rx, uint32_t bitrate, uint32_t sys_clock, void (*callback)(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg));
+   ACAN2040(uint32_t pio_num, uint32_t gpio_tx, uint32_t gpio_rx, uint32_t bitrate, uint32_t sys_clock, can2040_rx_cb callback);
    void begin();
    void stop();
    bool send_message(struct can2040_msg *msg);
@@ -73,11 +73,11 @@ public:
    void get_statistics(struct can2040_stats *can_stats);
 
 private:
-   uint32_t m_pio_num;
-   uint32_t m_bitrate;
-   uint32_t m_gpio_tx;
-   uint32_t m_gpio_rx;
-   uint32_t m_sys_clock;
-   struct can2040 m_cbus;
-   void (*m_callback)(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg);
+   uint32_t m_pio_num;       ///< PIO instance to use for the CAN2040
+   uint32_t m_bitrate;       ///< CAN bitrate - fixed at 125kbps for CBUS
+   uint32_t m_gpio_tx;       ///< PICO pin number for CAN Tx
+   uint32_t m_gpio_rx;       ///< PICO pin number for CAN Rx
+   uint32_t m_sys_clock;     ///< Clock rate of the PICO
+   struct can2040 m_cbus;    ///< Struct to manage the CAN2040 instance
+   can2040_rx_cb m_callback; ///< Callback for CAN2040 to notify us of frame receipt, transmit complete, errors etc.
 };

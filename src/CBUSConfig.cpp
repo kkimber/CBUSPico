@@ -82,6 +82,9 @@ constexpr uint32_t FLASH_OFFSET = PICO_FLASH_SIZE_BYTES - FLASH_SECTOR_SIZE;
 /// Size of our image data is 4KiB or one sectors
 constexpr uint32_t FLASH_SIZE = FLASH_SECTOR_SIZE;
 
+/// Delay for an external EEPROM to complete a write request
+constexpr uint32_t EEPROM_WRITE_DELAY = 4;
+
 ///
 /// @brief Construct a new CBUSConfig::CBUSConfig object
 ///
@@ -398,7 +401,7 @@ uint8_t CBUSConfig::makeHash(uint8_t tarr[4])
 }
 
 ///
-/// @brief Read a event from the EEPROM
+/// @brief Read an event from the EEPROM
 ///
 /// @param idx Index of the event to read
 /// @param tarr four byte array containing event info (NN + EN)
@@ -595,7 +598,10 @@ uint8_t CBUSConfig::readEEPROM(uint32_t eeaddress)
    {
 
    case EEPROM_TYPE::EEPROM_EXTERNAL_I2C:
+      // 8-bit addressing, write address to read 
+      ///@todo support 8-bit and 16-bit addressing
       i2c_write_blocking(m_i2cBus, m_externalAddress, &addr, 1, true);
+      // read byte from address
       i2c_read_blocking(m_i2cBus, m_externalAddress, &rdata, 1, false);
       break;
 
@@ -628,12 +634,12 @@ uint8_t CBUSConfig::readBytesEEPROM(uint32_t eeaddress, uint8_t nbytes, uint8_t 
    {
 
    case EEPROM_TYPE::EEPROM_EXTERNAL_I2C:
-      i2c_write_blocking(m_i2cBus, m_externalAddress, &addr, 1, true);
-
-      while (count < nbytes)
+      // 8-bit addressing, write initial address to read
+      /// @todo support 8-bit and 16-bit addressing
+      if (i2c_write_blocking(m_i2cBus, m_externalAddress, &addr, 1, true) == 1)
       {
-         i2c_read_blocking(m_i2cBus, m_externalAddress, &dest[count++], 1, false);
-         i2c_read_blocking_until(m_i2cBus, m_externalAddress, dest, nbytes, false, make_timeout_time_ms(10));
+         // Read requested number of bytes from the EEPROM
+         count = i2c_read_blocking_until(m_i2cBus, m_externalAddress, dest, nbytes, false, make_timeout_time_ms(10));
       }
       break;
 
@@ -666,12 +672,13 @@ void CBUSConfig::writeEEPROM(uint32_t eeaddress, uint8_t data)
    {
 
    case EEPROM_TYPE::EEPROM_EXTERNAL_I2C:
-      // Write address and byte - STOP
-      i2c_write_blocking(m_i2cBus, m_externalAddress, txdata, 2, false);
-
-      // Wait for write to complete
-      sleep_ms(4);
-
+      // 8-bit addressing, write address for write and byte value + STOP 
+      /// @todo support 16 bit addressing
+      if (i2c_write_blocking(m_i2cBus, m_externalAddress, txdata, 2, false) == 2)
+      {
+         // Delay for write to complete
+         busy_wait_ms(EEPROM_WRITE_DELAY);
+      }
       break;
 
    case EEPROM_TYPE::EEPROM_USES_FLASH:
@@ -692,31 +699,28 @@ void CBUSConfig::writeEEPROM(uint32_t eeaddress, uint8_t data)
 ///
 void CBUSConfig::writeBytesEEPROM(uint32_t eeaddress, uint8_t src[], uint8_t numbytes)
 {
-   // *** TODO *** handle greater than 32 bytes -> the Arduino I2C write buffer size
-   // max write = EEPROM pagesize - 64 bytes
-
    disableIRQs();
 
    switch (m_eepromType)
    {
    case EEPROM_TYPE::EEPROM_EXTERNAL_I2C:
-#if 0   
-      I2Cbus->beginTransmission(m_externalAddress);
-      I2Cbus->write((int)(eeaddress >> 8));   // MSB
-      I2Cbus->write((int)(eeaddress & 0xFF)); // LSB
 
-      for (uint8_t i = 0; i < numbytes; i++)
+      for (uint8_t val = 0; val < numbytes; val++)
       {
-         I2Cbus->write(src[i]);
-      }
+         uint8_t txdata[2] = {static_cast<uint8_t>(eeaddress++), src[val]};
 
-      r = I2Cbus->endTransmission();
-      delay(5);
-
-      if (r < 0)
-      {
+         // Write address and value
+         if (i2c_write_blocking(m_i2cBus, m_externalAddress, txdata, 2, false) == 2)
+         {
+            // Delay for write to complete
+            busy_wait_ms(EEPROM_WRITE_DELAY);
+         }
+         else
+         {
+            /// @todo need return code for failure !
+            break;
+         }
       }
-#endif
       break;
 
    case EEPROM_TYPE::EEPROM_USES_FLASH:
