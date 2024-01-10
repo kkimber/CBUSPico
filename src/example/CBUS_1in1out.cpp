@@ -57,13 +57,13 @@ constexpr uint8_t VER_BETA = 0;  ///< module code beta sub-version
 constexpr uint8_t MODULEID = 99; ///< CBUS module type
 
 // Map CBUS LED's switch to HW
-constexpr uint8_t LED_GRN = 21; ///< CBUS Green SLiM LED pin
-constexpr uint8_t LED_YLW = 20; ///< CBUS Yellow FLiM LED pin
-constexpr uint8_t SWITCH0 = 17; ///< CBUS FLiM push button switch pin
+constexpr uint8_t LED_GRN = 9; ///< CBUS Green SLiM LED pin
+constexpr uint8_t LED_YLW = 15; ///< CBUS Yellow FLiM LED pin
+constexpr uint8_t SWITCH0 = 22; ///< CBUS FLiM push button switch pin
 
 // Map CAN2040 Tx and Rx pins
-constexpr uint8_t CAN_RX = 11; ///< CAN2040 Rx pin
-constexpr uint8_t CAN_TX = 12; ///< CAN2040 Tx pin
+constexpr uint8_t CAN_RX = 14; ///< CAN2040 Rx pin
+constexpr uint8_t CAN_TX = 13; ///< CAN2040 Tx pin
 
 // CBUS objects
 CBUSConfig module_config; // configuration object
@@ -160,11 +160,11 @@ void setup()
    // Setup CBUS Library
    setupCBUS();
 
-   // configure the module switch, attached to IO1 / pin 11, active low
-   moduleSwitch.setPin(2, false);
+   // configure the module switch, attached to GP0, active low
+   moduleSwitch.setPin(0, false);
 
-   // configure the module LED, attached to Red LED / pin 22 via a 1K resistor
-   moduleLED.setPin(22);
+   // configure the module LED, attached to Red LED GP8 via a 1K resistor
+   moduleLED.setPin(8);
 }
 
 //
