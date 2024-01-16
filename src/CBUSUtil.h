@@ -42,14 +42,14 @@
 // Utility macros
 
 /// Extracts the low-order (rightmost) byte of a variable (e.g. a word).
-#define lowByte(w) ((uint8_t) ((w) & 0xff))
+#define lowByte(w) (static_cast<uint8_t>(((w) & 0xffU)))
 
 /// Extracts the high-order (leftmost) byte of a word (or the second lowest byte of a larger data type).
-#define highByte(w) ((uint8_t) ((w) >> 8))
+#define highByte(w) (static_cast<uint8_t>(((w) >> 8U)))
 
 /// Reads a bit of a variable, e.g. uint8_t, uint16_t. Note that float & double are not supported. 
 /// You can read the bit of variables up to an uint64_t (64 bits / 8 bytes).
-#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
+#define bitRead(value, bit) (((value) >> (bit)) & 0x01U)
 
 /// Sets (writes a 1 to) a bit of a numeric variable.
 #define bitSet(value, bit) ((value) |= (1UL << (bit)))

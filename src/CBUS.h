@@ -132,6 +132,16 @@ public:
 
    // implementations of these methods are provided in the base class
 
+   bool sendSingleOpc(const uint8_t opc);
+   bool sendOpcMyNN(const uint8_t opc, const uint8_t dataLen=0, const uint8_t d1=0, const uint8_t d2=0, const uint8_t d3=0, const uint8_t d4=0, const uint8_t d5=0);
+   bool sendOpcNN(const uint8_t opc, const uint16_t nodeId, const uint8_t dataLen=0, const uint8_t d1=0, const uint8_t d2=0, const uint8_t d3=0, const uint8_t d4=0, const uint8_t d5=0);
+   bool sendMsgMyNN(CANFrame& frame);
+   bool sendMsgNN(CANFrame& frame, const uint16_t nodeId);
+   bool sendMyEvent(const uint16_t eventNum, const bool onEvent);
+   bool sendEvent(const uint16_t eventNode, const uint16_t eventNum, const bool onEvent);
+   bool sendEventWithData(uint16_t eventNode, const uint16_t eventNum, const bool onEvent, const uint8_t dataLen=0, const uint8_t d1=0, const uint8_t d2=0, const uint8_t d3=0);
+   bool sendDataEvent(const uint16_t nodeId, const uint8_t d1=0, const uint8_t d2=0, const uint8_t d3=0, const uint8_t d4=0, const uint8_t d5=0);
+
    bool sendWRACK(void);
    bool sendCMDERR(uint8_t cerrno);
    void CANenumeration(void);

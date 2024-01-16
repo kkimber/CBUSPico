@@ -146,6 +146,231 @@ inline uint8_t CBUSbase::getCANID(uint32_t header)
    return header & 0x7f;
 }
 
+///
+/// @brief Send single byte frame - opcode only.
+/// 
+/// @param opc the CBUS opcode to be sent
+/// @return true frame was sent OK
+/// @return false frame could not be sent
+///
+bool CBUSbase::sendSingleOpc(const uint8_t opc)
+{
+   CANFrame frame;
+   frame.id = m_moduleConfig.getCANID();
+   frame.len = 1; // Single byte frame
+   frame.data[0] = opc;
+
+   // send the frame
+   return sendMessage(frame);
+};
+
+///
+/// @brief Send opcode plus our node number, can be used to send simple 3-byte frame,
+/// or may have up to five further bytes appended.
+///
+/// @param opc the CBUS opcode to be sent
+/// @param dataLen the number of optional bytes to send
+/// @param d1 Optional first data byte
+/// @param d2 Optional second data byte
+/// @param d3 Optional third data byte
+/// @param d4 Optional fourth data byte
+/// @param d5 Optional fifth data byte
+/// @return true frame was send OK
+/// @return false frame could not be sent
+///
+bool CBUSbase::sendOpcMyNN(const uint8_t opc, const uint8_t dataLen, const uint8_t d1, const uint8_t d2, const uint8_t d3, const uint8_t d4, const uint8_t d5)
+{
+   CANFrame frame;
+   frame.id = m_moduleConfig.getCANID();
+   frame.len = 3 + dataLen; // Minimal frame with node number is 3 bytes
+   frame.data[0] = opc;
+
+   // Node Number is set in sendMsgMyNN
+
+   // Copy in up to 5 extra bytes of data
+   frame.data[3] = d1;
+   frame.data[4] = d2;
+   frame.data[5] = d3;
+   frame.data[6] = d4;
+   frame.data[7] = d5;
+
+   // and send the frame with our node number
+   return sendMsgMyNN(frame);
+};
+
+///
+/// @brief Send opcode plus our node number, can be used to send simple 3-byte frame,
+/// or may have up to five further bytes appended.
+/// 
+/// @param opc the CBUS opcode to be sent
+/// @param nodeId the CBUS node number to be sent
+/// @param dataLen the number of optional bytes to send
+/// @param d1 Optional first data byte
+/// @param d2 Optional second data byte
+/// @param d3 Optional third data byte
+/// @param d4 Optional fourth data byte
+/// @param d5 Optional fith data byte
+/// @return true the frame was sent OK
+/// @return false frame could no be sent
+///
+bool CBUSbase::sendOpcNN(const uint8_t opc, const uint16_t nodeId, const uint8_t dataLen, const uint8_t d1, const uint8_t d2, const uint8_t d3, const uint8_t d4, const uint8_t d5)
+{
+   CANFrame frame;
+   frame.id = m_moduleConfig.getCANID();
+   frame.len = 3 + dataLen; // Minimal frame with node number is 3 bytes
+   frame.data[0] = opc;
+
+   // Node Number is set in sendMsgNN
+
+   // Copy in up to 5 extra bytes of data
+   frame.data[3] = d1;
+   frame.data[4] = d2;
+   frame.data[5] = d3;
+   frame.data[6] = d4;
+   frame.data[7] = d5;
+
+   // and send the frame with the specified node number
+   return sendMsgNN(frame, nodeId);
+};
+
+///
+/// @brief Send a frame using our Node Number
+/// 
+/// @param frame reference to the partially filled frame to send
+/// @return true the frame was sent OK
+/// @return false the frame could not be sent
+///
+bool CBUSbase::sendMsgMyNN(CANFrame& frame)
+{
+   // Set our node number into the frame
+   frame.data[1] = highByte(m_moduleConfig.getNodeNum());
+   frame.data[2] = lowByte(m_moduleConfig.getNodeNum());
+
+   // and send the frame
+   return sendMessage(frame);
+};
+
+///
+/// @brief Send a frame using the specified Node Number
+/// 
+/// @param frame reference to the partially filled frame to send
+/// @param nodeId node number to insert into the frame before sending
+/// @return true the frame was sent OK
+/// @return false the frame could not be sent
+///
+bool CBUSbase::sendMsgNN(CANFrame& frame, const uint16_t nodeId)
+{
+   // Set node number into the frame
+   frame.data[1] = highByte(nodeId);
+   frame.data[2] = lowByte(nodeId);
+
+   // and send the frame
+   return sendMessage(frame);
+}
+
+///
+/// @brief Send long CBUS event, no data, using our node number.
+/// 
+/// @param eventNum the CBUS Event Number
+/// @param onEvent if true, send ON event, otherwise send OFF event
+/// @return true the frame was sent OK
+/// @return false the frame cound not be sent
+///
+bool CBUSbase::sendMyEvent(const uint16_t eventNum, const bool onEvent)
+{
+   // Send event with our node number
+   return sendEventWithData(m_moduleConfig.getNodeNum(), eventNum, onEvent);
+};
+
+///
+/// @brief Send CBUS event, no data, using specified node number.
+/// send short event if eventNode is 0
+/// 
+/// @param eventNode the event node number, 0 for a short event
+/// @param eventNum the CBUS event node number
+/// @param onEvent if true send ON event, otherwise send OFF event
+/// @return true 
+/// @return false 
+///
+bool CBUSbase::sendEvent(const uint16_t eventNode, const uint16_t eventNum, const bool onEvent)
+{
+   // Send event with specified node number
+   return sendEventWithData(eventNode, eventNum, onEvent);
+};
+
+///
+/// @brief Send CBUS event with optional data bytes
+/// 
+/// @param eventNode the event node number, 0 for a short event
+/// @param eventNum the CBUS event node number
+/// @param onEvent if true send ON event, otherwise send OFF event
+/// @param dataLen number of optional; data bytes to send [0-3]
+/// @param d1 Optional first event data byte
+/// @param d2 Optional second event data byte
+/// @param d3 Optional third event data byte
+/// @return true 
+/// @return false 
+///
+bool CBUSbase::sendEventWithData(uint16_t eventNode, const uint16_t eventNum, const bool onEvent, const uint8_t dataLen, const uint8_t d1, const uint8_t d2, const uint8_t d3)
+{
+   CANFrame frame;
+   frame.id = m_moduleConfig.getCANID();
+   frame.data[0] = OPC_ACON; // Start with long event opcode
+
+   // Send short event if node ID is zero
+   if (eventNode == 0)
+   {
+      frame.data[0] |= 0x08; // Short event opcode
+      eventNode =  m_moduleConfig.getNodeNum(); // Add module node id
+   }
+
+   // Check if off event
+   if (!onEvent)
+   {
+      frame.data[0] |= 0x01; // Off event
+   }
+
+   // Check if optional data is being appended
+   if (dataLen > 0)
+   {
+      frame.data[0] |= (dataLen << 5); // Set opcode based on data length
+   }
+
+   // Set the event number
+   frame.data[3] = highByte(eventNum);
+   frame.data[4] = lowByte(eventNum);
+
+   return sendMsgNN(frame, eventNode);
+};
+
+///
+/// @brief Send a debug message with 5 data bytes
+/// data bytes will be zero if not specifically specified
+/// 
+/// @param nodeId the node number to be sent
+/// @param d1 first data byte (optional)
+/// @param d2 second data byte (optional)
+/// @param d3 third data byte (optional)
+/// @param d4 fourth data byte (optional)
+/// @param d5 fifth data byte (optional)
+/// @return true 
+/// @return false 
+///
+bool CBUSbase::sendDataEvent(const uint16_t nodeId, const uint8_t d1, const uint8_t d2, const uint8_t d3, const uint8_t d4, const uint8_t d5)
+{
+   CANFrame frame;
+   frame.id = m_moduleConfig.getCANID();
+   frame.len = 8; // Full length CAN frame
+   frame.data[0] = OPC_ACDAT;
+   frame.data[3] = d1;
+   frame.data[4] = d2;
+   frame.data[5] = d3;
+   frame.data[6] = d4;
+   frame.data[7] = d5;
+
+   return sendMsgNN(frame, nodeId);
+}
+
 //
 /// send a WRACK (write acknowledge) message
 //
@@ -153,11 +378,7 @@ inline uint8_t CBUSbase::getCANID(uint32_t header)
 bool CBUSbase::sendWRACK(void)
 {
    // send a write acknowledgement response
-
-   m_msg.len = 3;
-   m_msg.data[0] = OPC_WRACK;
-   m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
-   m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
+   return sendOpcMyNN(OPC_WRACK);
 
    return sendMessage(m_msg);
 }
@@ -168,15 +389,8 @@ bool CBUSbase::sendWRACK(void)
 
 bool CBUSbase::sendCMDERR(uint8_t cerrno)
 {
-   // send a command error response
-
-   m_msg.len = 4;
-   m_msg.data[0] = OPC_CMDERR;
-   m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
-   m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
-   m_msg.data[3] = cerrno;
-
-   return sendMessage(m_msg);
+   // send a command error response, 1 extra byte for error code
+   return sendOpcMyNN(OPC_CMDERR, 1, cerrno);
 }
 
 //
@@ -205,8 +419,6 @@ void CBUSbase::CANenumeration(void)
 {
    // initiate CAN bus enumeration cycle, either due to ENUM opcode, ID clash, or user button press
 
-   // DEBUG_SERIAL << F("> beginning self-enumeration cycle") << endl;
-
    // set global variables
    m_bCANenum = true;                    // we are enumerating
    CANenumTime = SystemTick::GetMilli(); // the cycle start time
@@ -222,19 +434,13 @@ void CBUSbase::CANenumeration(void)
 //
 void CBUSbase::initFLiM(void)
 {
-   // DEBUG_SERIAL << F("> initiating FLiM negotation") << endl;
-
    indicateMode(MODE_CHANGING);
 
    m_bModeChanging = true;
    timeOutTimer = SystemTick::GetMilli();
 
    // send RQNN message with current NN, which may be zero if a virgin/SLiM node
-   m_msg.len = 3;
-   m_msg.data[0] = OPC_RQNN;
-   m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
-   m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
-   sendMessage(m_msg);
+   sendOpcMyNN(OPC_RQNN);
 }
 
 //
@@ -242,15 +448,10 @@ void CBUSbase::initFLiM(void)
 //
 void CBUSbase::revertSLiM(void)
 {
-   // DEBUG_SERIAL << F("> reverting to SLiM mode") << endl;
-
    // send NNREL message
-   m_msg.len = 3;
-   m_msg.data[0] = OPC_NNREL;
-   m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
-   m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
+   sendOpcMyNN(OPC_NNREL);
 
-   sendMessage(m_msg);
+   // revert to SLiM
    setSLiM();
 }
 
@@ -338,7 +539,6 @@ void CBUSbase::process(uint8_t num_messages)
       // has switch been released ?
       if (!m_sw.isPressed())
       {
-
          // how long was it pressed for ?
          uint32_t press_time = m_sw.getLastStateDuration();
 
@@ -430,13 +630,9 @@ void CBUSbase::process(uint8_t num_messages)
          }
       }
 
-      /// pulse the green LED
-      m_ledGrn.pulse();
-
       // is this a CANID() enumeration request from another node (RTR set) ?
       if (m_msg.rtr)
       {
-         // DEBUG_SERIAL << F("> CANID() enumeration RTR from CANID() = ") << remoteCANID << endl;
          // send an empty message to show our CANID()
          m_msg.len = 0;
          sendMessage(m_msg);
@@ -450,14 +646,12 @@ void CBUSbase::process(uint8_t num_messages)
 
       if (remoteCANID == m_moduleConfig.getCANID() && m_msg.len > 0)
       {
-         // DEBUG_SERIAL << F("> CAN id clash, enumeration required") << endl;
          m_bEnumerationRequired = true;
       }
 
       // is this an extended frame ? we currently ignore these as bootloader, etc data may confuse us !
       if (m_msg.ext)
       {
-         // DEBUG_SERIAL << F("> extended frame ignored, from CANID() = ") << remoteCANID << endl;
          continue;
       }
 
@@ -469,7 +663,6 @@ void CBUSbase::process(uint8_t num_messages)
          {
             // fix to correctly record the received CANID()
             bitWrite(m_enumResponses[(remoteCANID / 16)], remoteCANID % 8, 1);
-            // DEBUG_SERIAL << F("> stored CANID() ") << remoteCANID << F(" at index = ") << (remoteCANID / 8) << F(", bit = ") << (remoteCANID % 8) << endl;
          }
 
          continue;
@@ -527,16 +720,12 @@ void CBUSbase::process(uint8_t num_messages)
             break;
 
          case OPC_RQNP:
-            // RQNP message - request for node paramters -- does not contain a NN or EN, so only respond if we
-            // are in transition to FLiM
-            // DEBUG_SERIAL << F("> RQNP -- request for node params during FLiM transition for NN = ") << nn << endl;
+            // RQNP message - request for node paramters -- does not contain a NN or EN, 
+            // so only respond if we are in transition to FLiM
 
             // only respond if we are in transition to FLiM mode
             if (m_bModeChanging == true)
             {
-
-               // DEBUG_SERIAL << F("> responding to RQNP with PARAMS") << endl;
-
                // respond with PARAMS message
                m_msg.len = 8;
                m_msg.data[0] = OPC_PARAMS;                            // opcode
@@ -547,7 +736,7 @@ void CBUSbase::process(uint8_t num_messages)
                m_msg.data[5] = m_pModuleParams->param[IDX_EVS_PR_EV]; // events vars per event
                m_msg.data[6] = m_pModuleParams->param[IDX_MXNUM_NVS]; // number of NVs
                m_msg.data[7] = m_pModuleParams->param[IDX_MAJOR_VER]; // major code ver
-               // final param[8] = node flags is not sent here as the max message payload is 8 bytes (0-7)
+
                sendMessage(m_msg);
             }
 
@@ -560,28 +749,18 @@ void CBUSbase::process(uint8_t num_messages)
 
             if (nn == m_moduleConfig.getNodeNum())
             {
-
+               // Extract requested parameter number
                uint8_t paran = m_msg.data[3];
-
-               // DEBUG_SERIAL << F("> RQNPN request for parameter # ") << paran << F(", from nn = ") << nn << endl;
 
                if (paran <= m_pModuleParams->param[IDX_NO_PARAMS])
                {
+                  // Reply with requested parameter
+                  sendOpcMyNN(OPC_PARAN, 2, paran, m_pModuleParams->param[paran]);
 
-                  paran = m_msg.data[3];
-
-                  m_msg.len = 5;
-                  m_msg.data[0] = OPC_PARAN;
-                  // _msg.data[1] = highByte(module_config.nodeNum);
-                  // _msg.data[2] = lowByte(module_config.nodeNum);
-                  m_msg.data[3] = paran;
-                  m_msg.data[4] = m_pModuleParams->param[paran];
-                  sendMessage(m_msg);
                }
                else
                {
-                  // DEBUG_SERIAL << F("> RQNPN - param #") << paran << F(" is out of range !") << endl;
-                  sendCMDERR(9);
+                  sendCMDERR(CMDERR_INV_PARAM_IDX);
                }
             }
 
@@ -589,25 +768,14 @@ void CBUSbase::process(uint8_t num_messages)
 
          case OPC_SNN:
             // received SNN - set node number
-            // DEBUG_SERIAL << F("> received SNN with NN = ") << nn << endl;
 
             if (m_bModeChanging)
             {
-               // DEBUG_SERIAL << F("> buf[1] = ") << _msg.data[1] << ", buf[2] = " << _msg.data[2] << endl;
-
                // save the NN
-               // module_config.setNodeNum((_msg.data[1] << 8) + _msg.data[2]);
                m_moduleConfig.setNodeNum(nn);
 
                // respond with NNACK
-               m_msg.len = 3;
-               m_msg.data[0] = OPC_NNACK;
-               // _msg.data[1] = highByte(module_config.nodeNum);
-               // _msg.data[2] = lowByte(module_config.nodeNum);
-
-               sendMessage(m_msg);
-
-               // DEBUG_SERIAL << F("> sent NNACK for NN = ") << module_config.nodeNum << endl;
+               sendOpcMyNN(OPC_NNACK);
 
                // we are now in FLiM mode - update the configuration
                m_bModeChanging = false;
@@ -616,12 +784,6 @@ void CBUSbase::process(uint8_t num_messages)
 
                // enumerate the CAN bus to allocate a free CAN ID
                CANenumeration();
-
-               // DEBUG_SERIAL << F("> FLiM mode = ") << module_config.FLiM << F(", node number = ") << module_config.nodeNum << F(", CANID() = ") << module_config.CANID() << endl;
-            }
-            else
-            {
-               // DEBUG_SERIAL << F("> received SNN but not in transition") << endl;
             }
 
             break;
@@ -632,32 +794,37 @@ void CBUSbase::process(uint8_t num_messages)
 
             if (m_bModeChanging)
             {
+               // Revert to current mode
                m_bModeChanging = false;
                indicateMode(m_moduleConfig.getFLiM());
-               // respond with NNACK
-               m_msg.len = 3;
-               m_msg.data[0] = OPC_NNACK;
-               m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
-               m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
 
-               sendMessage(m_msg);
+               // respond with NNACK - TODO review this behaviour
+               //m_msg.len = 3;
+               //m_msg.data[0] = OPC_NNACK;
+               //m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
+               //m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
+
+               //sendMessage(m_msg);
             }
             break;
 
          case OPC_CANID:
             // CAN -- set CANID()
-            // DEBUG_SERIAL << F("> CANID() for nn = ") << nn << F(" with new CANID() = ") << _msg.data[3] << endl;
-
             if (nn == m_moduleConfig.getNodeNum())
             {
-               // DEBUG_SERIAL << F("> setting my CANID() to ") << _msg.data[3] << endl;
-               if (m_msg.data[3] < 1 || m_msg.data[3] > 99)
+               // Extract new CAN ID
+               uint8_t newCanId = m_msg.data[3];
+
+               // Valid CAN ID's are in range 1 to 99
+               if ((newCanId < 1) || (newCanId > 99))
                {
-                  sendCMDERR(7);
+                  // Send error if out of range
+                  sendCMDERR(CMDERR_INVALID_EVENT);
                }
                else
                {
-                  m_moduleConfig.setCANID(m_msg.data[3]);
+                  // Otherwise store provided CANID as our new ID
+                  m_moduleConfig.setCANID(newCanId);
                }
             }
 
@@ -665,12 +832,8 @@ void CBUSbase::process(uint8_t num_messages)
 
          case OPC_ENUM:
             // received ENUM -- start CAN bus self-enumeration
-            // DEBUG_SERIAL << F("> ENUM message for nn = ") << nn << F(" from CANID() = ") << remoteCANID << endl;
-            // DEBUG_SERIAL << F("> my nn = ") << module_config.nodeNum << endl;
-
             if (nn == m_moduleConfig.getNodeNum() && remoteCANID != m_moduleConfig.getCANID() && !m_bCANenum)
             {
-               // DEBUG_SERIAL << F("> initiating enumeration") << endl;
                CANenumeration();
             }
 
@@ -683,17 +846,12 @@ void CBUSbase::process(uint8_t num_messages)
                uint8_t nvindex = m_msg.data[3];
                if (nvindex > m_moduleConfig.EE_NUM_NVS)
                {
-                  sendCMDERR(10);
+                  sendCMDERR(CMDERR_INV_NV_IDX);
                }
                else
                {
                   // respond with NVANS
-                  m_msg.len = 5;
-                  m_msg.data[0] = OPC_NVANS;
-                  // _msg.data[1] = highByte(module_config.nodeNum);
-                  // _msg.data[2] = lowByte(module_config.nodeNum);
-                  m_msg.data[4] = m_moduleConfig.readNV(nvindex);
-                  sendMessage(m_msg);
+                  sendOpcMyNN(OPC_NVANS, 2, nvindex, m_moduleConfig.readNV(nvindex));
                }
             }
 
@@ -701,21 +859,19 @@ void CBUSbase::process(uint8_t num_messages)
 
          case OPC_NVSET:
             // received NVSET -- set NV by index
-            // DEBUG_SERIAL << F("> received NVSET for nn = ") << nn << endl;
-
             if (nn == m_moduleConfig.getNodeNum())
             {
                if (m_msg.data[3] > m_moduleConfig.EE_NUM_NVS)
                {
-                  sendCMDERR(10);
+                  sendCMDERR(CMDERR_INV_NV_IDX);
                }
                else
                {
                   // update EEPROM for this NV -- NVs are indexed from 1, not zero
                   m_moduleConfig.writeNV(m_msg.data[3], m_msg.data[4]);
+
                   // respond with WRACK
                   sendWRACK();
-                  // DEBUG_SERIAL << F("> set NV ok") << endl;
                }
             }
 
@@ -723,12 +879,9 @@ void CBUSbase::process(uint8_t num_messages)
 
          case OPC_NNLRN:
             // received NNLRN -- place into learn mode
-            // DEBUG_SERIAL << F("> NNLRN for node = ") << nn << F(", learn mode on") << endl;
-
             if (nn == m_moduleConfig.getNodeNum())
             {
                m_bLearn = true;
-               // DEBUG_SERIAL << F("> set lean mode ok") << endl;
                // set bit 5 in parameter 8
                bitSet(m_pModuleParams->param[IDX_MOD_FLAGS], 5);
             }
@@ -737,21 +890,14 @@ void CBUSbase::process(uint8_t num_messages)
 
          case OPC_EVULN:
             // received EVULN -- unlearn an event, by event number
-            // en = (_msg.data[3] << 8) + _msg.data[4];
-            // DEBUG_SERIAL << F("> EVULN for nn = ") << nn << F(", en = ") << en << endl;
-
             // we must be in learn mode
             if (m_bLearn == true)
             {
-               // DEBUG_SERIAL << F("> searching for existing event to unlearn") << endl;
-
                // search for this NN and EN pair
                index = m_moduleConfig.findExistingEvent(nn, en);
 
                if (index < m_moduleConfig.EE_MAX_EVENTS)
                {
-
-                  // DEBUG_SERIAL << F("> deleting event at index = ") << index << F(", evs ") << endl;
                   m_moduleConfig.cleareventEEPROM(index);
 
                   // update hash table
@@ -762,9 +908,8 @@ void CBUSbase::process(uint8_t num_messages)
                }
                else
                {
-                  // DEBUG_SERIAL << F("> did not find event to unlearn") << endl;
                   // respond with CMDERR
-                  sendCMDERR(10);
+                  sendCMDERR(CMDERR_INV_NV_IDX);
                }
 
             } // if in learn mode
@@ -773,11 +918,9 @@ void CBUSbase::process(uint8_t num_messages)
 
          case OPC_NNULN:
             // received NNULN -- exit from learn mode
-
             if (nn == m_moduleConfig.getNodeNum())
             {
                m_bLearn = false;
-               // DEBUG_SERIAL << F("> NNULN for node = ") << nn << F(", learn mode off") << endl;
                // clear bit 5 in parameter 8
                bitClear(m_pModuleParams->param[IDX_MOD_FLAGS], 5);
             }
@@ -786,27 +929,17 @@ void CBUSbase::process(uint8_t num_messages)
 
          case OPC_RQEVN:
             // received RQEVN -- request for number of stored events
-            // DEBUG_SERIAL << F("> RQEVN -- number of stored events for nn = ") << nn << endl;
 
             if (nn == m_moduleConfig.getNodeNum())
             {
-
                // respond with 0x74 NUMEV
-               m_msg.len = 4;
-               m_msg.data[0] = OPC_NUMEV;
-               // _msg.data[1] = highByte(module_config.nodeNum);
-               // _msg.data[2] = lowByte(module_config.nodeNum);
-               m_msg.data[3] = m_moduleConfig.numEvents();
-
-               sendMessage(m_msg);
+               sendOpcMyNN(OPC_NUMEV, 1, m_moduleConfig.numEvents());
             }
 
             break;
 
          case OPC_NERD:
             // request for all stored events
-            // DEBUG_SERIAL << F("> NERD : request all stored events for nn = ") << nn << endl;
-
             if (nn == m_moduleConfig.getNodeNum())
             {
                m_msg.len = 8;
@@ -816,7 +949,6 @@ void CBUSbase::process(uint8_t num_messages)
 
                for (uint8_t i = 0; i < m_moduleConfig.EE_MAX_EVENTS; i++)
                {
-
                   if (m_moduleConfig.getEvTableEntry(i) != 0)
                   {
                      // it's a valid stored event
@@ -826,7 +958,6 @@ void CBUSbase::process(uint8_t num_messages)
                      m_moduleConfig.readEvent(i, &m_msg.data[3]);
                      m_msg.data[7] = i; // event table index
 
-                     // DEBUG_SERIAL << F("> sending ENRSP reply for event index = ") << i << endl;
                      sendMessage(m_msg);
                      sleep_ms(10);
 
@@ -842,22 +973,17 @@ void CBUSbase::process(uint8_t num_messages)
 
             if (nn == m_moduleConfig.getNodeNum())
             {
+               uint8_t eventindex = m_msg.data[3];
+               uint8_t varindex = m_msg.data[4];
 
-               if (m_moduleConfig.getEvTableEntry(m_msg.data[3]) != 0)
+               if (m_moduleConfig.getEvTableEntry(eventindex) != 0)
                {
-
-                  m_msg.len = 6;
-                  m_msg.data[0] = OPC_NEVAL;
-                  // _msg.data[1] = highByte(module_config.nodeNum);
-                  // _msg.data[2] = lowByte(module_config.nodeNum);
-                  m_msg.data[5] = m_moduleConfig.getEventEVval(m_msg.data[3], m_msg.data[4]);
-                  sendMessage(m_msg);
+                  // return request event variable
+                  sendOpcMyNN(OPC_NEVAL, 3, eventindex, varindex, m_moduleConfig.getEventEVval(eventindex, varindex));
                }
                else
                {
-
-                  // DEBUG_SERIAL << F("> request for invalid event index") << endl;
-                  sendCMDERR(6);
+                  sendCMDERR(CMDERR_INV_EV_IDX);
                }
             }
 
@@ -868,9 +994,6 @@ void CBUSbase::process(uint8_t num_messages)
 
             if (m_bLearn == true && nn == m_moduleConfig.getNodeNum())
             {
-
-               // DEBUG_SERIAL << F("> NNCLR -- clear all events") << endl;
-
                for (uint8_t e = 0; e < m_moduleConfig.EE_MAX_EVENTS; e++)
                {
                   m_moduleConfig.cleareventEEPROM(e);
@@ -878,7 +1001,6 @@ void CBUSbase::process(uint8_t num_messages)
 
                // recreate the hash table
                m_moduleConfig.clearEvHashTable();
-               // DEBUG_SERIAL << F("> cleared all events") << endl;
 
                sendWRACK();
             }
@@ -890,7 +1012,6 @@ void CBUSbase::process(uint8_t num_messages)
 
             if (m_moduleConfig.getNodeNum() == nn)
             {
-
                uint8_t free_slots = 0;
 
                // count free slots using the event hash table
@@ -902,33 +1023,21 @@ void CBUSbase::process(uint8_t num_messages)
                   }
                }
 
-               // DEBUG_SERIAL << F("> responding to to NNEVN with EVNLF, free event table slots = ") << free_slots << endl;
-               // memset(&_msg, 0, sizeof(_msg));
-               m_msg.len = 4;
-               m_msg.data[0] = OPC_EVNLF;
-               // _msg.data[1] = highByte(module_config.nodeNum);
-               // _msg.data[2] = lowByte(module_config.nodeNum);
-               m_msg.data[3] = free_slots;
-               sendMessage(m_msg);
+               // Send response with number of free event table slots
+               sendOpcMyNN(OPC_EVNLF, 1, free_slots);
             }
 
             break;
 
          case OPC_QNN:
             // this is probably a config recreate -- respond with PNN if we have a node number
-            // DEBUG_SERIAL << F("> QNN received, my node number = ") << module_config.nodeNum << endl;
-
             if (m_moduleConfig.getNodeNum() > 0)
             {
-               // DEBUG_SERIAL << ("> responding with PNN message") << endl;
-               m_msg.len = 6;
-               m_msg.data[0] = OPC_PNN;
-               m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
-               m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
-               m_msg.data[3] = m_pModuleParams->param[IDX_MANUFR_ID];
-               m_msg.data[4] = m_pModuleParams->param[IDX_MODULE_ID];
-               m_msg.data[5] = m_pModuleParams->param[IDX_MOD_FLAGS];
-               sendMessage(m_msg);
+               // respond with PNN
+               sendOpcMyNN(OPC_PNN, 3,
+                  m_pModuleParams->param[IDX_MANUFR_ID],
+                  m_pModuleParams->param[IDX_MODULE_ID],
+                  m_pModuleParams->param[IDX_MOD_FLAGS]);
             }
 
             break;
@@ -936,7 +1045,6 @@ void CBUSbase::process(uint8_t num_messages)
          case OPC_RQMN:
             // request for node module name, excluding "CAN" prefix
             // sent during module transition, so no node number check
-            // DEBUG_SERIAL << F("> RQMN received") << endl;
 
             // only respond if in transition to FLiM
 
@@ -945,7 +1053,7 @@ void CBUSbase::process(uint8_t num_messages)
             {
                m_msg.len = 8;
                m_msg.data[0] = OPC_NAME;
-               memcpy(m_msg.data + 1, m_pModuleName, sizeof(module_name_t));
+               memcpy(&m_msg.data[1], m_pModuleName, sizeof(module_name_t));
                sendMessage(m_msg);
             }
 
@@ -956,20 +1064,15 @@ void CBUSbase::process(uint8_t num_messages)
             evindex = m_msg.data[5];
             evval = m_msg.data[6];
 
-            // DEBUG_SERIAL << endl << F("> EVLRN for source nn = ") << nn << F(", en = ") << en << F(", evindex = ") << evindex << F(", evval = ") << evval << endl;
-
             // we must be in learn mode
             if (m_bLearn == true)
             {
-
                // search for this NN, EN as we may just be adding an EV to an existing learned event
-               // DEBUG_SERIAL << F("> searching for existing event to update") << endl;
                index = m_moduleConfig.findExistingEvent(nn, en);
 
                // not found - it's a new event
                if (index >= m_moduleConfig.EE_MAX_EVENTS)
                {
-                  // DEBUG_SERIAL << F("> existing event not found - creating a new one if space available") << endl;
                   index = m_moduleConfig.findEventSpace();
                }
 
@@ -977,9 +1080,7 @@ void CBUSbase::process(uint8_t num_messages)
 
                if (index < m_moduleConfig.EE_MAX_EVENTS)
                {
-
                   // write the event to EEPROM at this location -- EVs are indexed from 1 but storage offsets start at zero !!
-                  // DEBUG_SERIAL << F("> writing EV = ") << evindex << F(", at index = ") << index << F(", offset = ") << (module_config.EE_EVENTS_START + (index * module_config.EE_BYTES_PER_EVENT)) << endl;
 
                   // don't repeat this for subsequent EVs
                   if (evindex < 2)
@@ -990,7 +1091,6 @@ void CBUSbase::process(uint8_t num_messages)
                   m_moduleConfig.writeEventEV(index, evindex, evval);
 
                   // recreate event hash table entry
-                  // DEBUG_SERIAL << F("> updating hash table entry for idx = ") << index << endl;
                   m_moduleConfig.updateEvHashEntry(index);
 
                   // respond with WRACK
@@ -998,14 +1098,9 @@ void CBUSbase::process(uint8_t num_messages)
                }
                else
                {
-                  // DEBUG_SERIAL << F("> no free event storage, index = ") << index << endl;
                   // respond with CMDERR
-                  sendCMDERR(10);
+                  sendCMDERR(CMDERR_INV_NV_IDX);
                }
-            }
-            else
-            { // bLearn == true
-              // DEBUG_SERIAL << F("> error -- not in learn mode") << endl;
             }
 
             break;
@@ -1043,14 +1138,23 @@ void CBUSbase::process(uint8_t num_messages)
 
          default:
             // unknown or unhandled OPC
-            // DEBUG_SERIAL << F("> opcode 0x") << _HEX(opc) << F(" is not currently implemented")  << endl;
             break;
          }
       }
+
+      /// Show activity on the LED's
+      /// @todo correct LED blink behaviours to match PIC libraries
+      if (m_moduleConfig.getFLiM())
+      {
+         // In FLiM the green LED is flickered on activity
+         m_ledGrn.pulse(false);
+      }
       else
       {
-         // DEBUG_SERIAL << F("> oops ... zero - length frame ?? ") << endl;
+         // In SLiM the yellow LED is flickered on activity
+         m_ledYlw.pulse(false);
       }
+
    } // while messages available
 
    // check CAN bus enumeration timer
@@ -1062,13 +1166,9 @@ void CBUSbase::process(uint8_t num_messages)
 
    if (m_bModeChanging && ((SystemTick::GetMilli() - timeOutTimer) >= 30000))
    {
-
-      // DEBUG_SERIAL << F("> timeout expired, FLiM = ") << FLiM << F(", mode change = ") << bModeChanging << endl;
       indicateFLiMMode(m_moduleConfig.getFLiM());
       m_bModeChanging = false;
    }
-
-   // DEBUG_SERIAL << F("> end of opcode processing, time = ") << (micros() - mtime) << "us" << endl;
 
    //
    /// end of CBUS message processing
@@ -1086,11 +1186,7 @@ void CBUSbase::checkCANenum(void)
    // if (bCANenum && !bCANenumComplete && (SystemTick::GetMilli() - CANenumTime) >= 100) {
    if (m_bCANenum && (SystemTick::GetMilli() - CANenumTime) >= 100)
    {
-
       // enumeration timer has expired -- stop enumeration and process the responses
-
-      // DEBUG_SERIAL << F("> enum cycle complete at ") << SystemTick::GetMilli() << F(", start = ") << CANenumTime << F(", duration = ") << (SystemTick::GetMilli() - CANenumTime) << endl;
-      // DEBUG_SERIAL << F("> processing received responses") << endl;
 
       // iterate through the 128 bit field
       for (uint8_t i = 0; i < 16; i++)
@@ -1116,7 +1212,7 @@ void CBUSbase::checkCANenum(void)
             if (bitRead(m_enumResponses[i], b) == 0)
             {
                selected_id = ((i * 16) + b);
-               // DEBUG_SERIAL << F("> bit ") << b << F(" of uint8_t ") << i << F(" is not set, first free CAN ID = ") << selected_id << endl;
+
                // i = 16; // ugh ... but probably better than a goto :)
                // but using a goto saves 4 bytes of program size ;)
                goto check_done;
@@ -1126,8 +1222,6 @@ void CBUSbase::checkCANenum(void)
 
    check_done:
 
-      // DEBUG_SERIAL << F("> enumeration responses = ") << enums << F(", lowest available CAN id = ") << selected_id << endl;
-
       // bCANenumComplete = true;
       m_bCANenum = false;
       CANenumTime = 0UL;
@@ -1136,11 +1230,7 @@ void CBUSbase::checkCANenum(void)
       m_moduleConfig.setCANID(selected_id);
 
       // send NNACK
-      m_msg.len = 3;
-      m_msg.data[0] = OPC_NNACK;
-      m_msg.data[1] = highByte(m_moduleConfig.getNodeNum());
-      m_msg.data[2] = lowByte(m_moduleConfig.getNodeNum());
-      sendMessage(m_msg);
+      sendOpcMyNN(OPC_NNACK);
    }
 }
 

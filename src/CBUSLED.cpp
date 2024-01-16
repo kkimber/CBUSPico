@@ -42,6 +42,10 @@
 
 #include <pico/stdlib.h>
 
+constexpr uint16_t BLINK_RATE = 500;         ///< flash at 1Hz, 500mS on, 500mS off
+constexpr uint16_t SHORT_FILCKER_TIME = 100; ///< short flicker duration 100mS - Non consumed CAN event
+constexpr uint16_t LONG_FLICKER_TIME = 500;  ///< long flicker duration 500mS - Consumed CAN event
+
 ///
 /// Class to control an individual LED, with non-blocking control
 ///
@@ -52,7 +56,8 @@ CBUSLED::CBUSLED() : m_configured{false},
                      m_blink{false},
                      m_pulse{false},
                      m_lastTime{0x0UL},
-                     m_pulseStart{0x0UL}
+                     m_pulseStart{0x0UL},
+                     m_pulseDuration{0x0U}
 {
 }
 
@@ -124,8 +129,17 @@ void CBUSLED::blink()
 ///
 /// @brief Sets the LED to pulse (on) once
 ///
-void CBUSLED::pulse()
+void CBUSLED::pulse(bool bShort)
 {
+   if (bShort)
+   {
+      m_pulseDuration = SHORT_FILCKER_TIME;
+   }
+   else
+   {
+      m_pulseDuration = LONG_FLICKER_TIME;
+   }
+
    m_pulse = true;
    m_state = true;
    m_pulseStart = SystemTick::GetMilli();
@@ -153,7 +167,7 @@ void CBUSLED::run()
    // single pulse
    if (m_pulse)
    {
-      if ((SystemTick::GetMilli() - m_pulseStart) >= PULSE_ON_TIME)
+      if ((SystemTick::GetMilli() - m_pulseStart) >= m_pulseDuration)
       {
          m_pulse = false;
          m_state = false;

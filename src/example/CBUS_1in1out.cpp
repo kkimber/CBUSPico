@@ -49,6 +49,7 @@
 
 #include <cstdio>
 #include <pico/stdlib.h>
+#include <pico/binary_info.h>
 
 // constants
 constexpr uint8_t VER_MAJ = 1;   ///< module code major version
@@ -57,13 +58,17 @@ constexpr uint8_t VER_BETA = 0;  ///< module code beta sub-version
 constexpr uint8_t MODULEID = 99; ///< CBUS module type
 
 // Map CBUS LED's switch to HW
-constexpr uint8_t LED_GRN = 9; ///< CBUS Green SLiM LED pin
+constexpr uint8_t LED_GRN = 9;  ///< CBUS Green SLiM LED pin
 constexpr uint8_t LED_YLW = 15; ///< CBUS Yellow FLiM LED pin
 constexpr uint8_t SWITCH0 = 22; ///< CBUS FLiM push button switch pin
 
 // Map CAN2040 Tx and Rx pins
 constexpr uint8_t CAN_RX = 14; ///< CAN2040 Rx pin
 constexpr uint8_t CAN_TX = 13; ///< CAN2040 Tx pin
+
+// Map Module IO
+constexpr uint8_t MODULE_LED = 8;    ///< Module LED
+constexpr uint8_t MODULE_SWITCH = 0; ///< Module Switch
 
 // CBUS objects
 CBUSConfig module_config; // configuration object
@@ -88,6 +93,19 @@ void processModuleSwitchChange(void);
 
 void setupCBUS()
 {
+   // Declare binary info for Picotool
+   bi_decl(bi_program_description("CBUS Pico Module : 1 in 1 out"));
+
+   // Notify pin setup for Picotool
+   bi_decl(bi_1pin_with_name(LED_GRN, "CBUS Green LED"));
+   bi_decl(bi_1pin_with_name(LED_YLW, "CBUS Yellow LED"));
+   bi_decl(bi_1pin_with_name(SWITCH0, "CBUS FLiM Switch"));
+   bi_decl(bi_1pin_with_name(CAN_TX, "CAN2040 Tx"));
+   bi_decl(bi_1pin_with_name(CAN_RX, "CAN2040 Rx"));
+
+   bi_decl(bi_1pin_with_name(MODULE_LED, "Module LED"));
+   bi_decl(bi_1pin_with_name(MODULE_SWITCH, "Module Switch"));
+
    // set config layout parameters
    module_config.EE_NVS_START = 10;    // Offset start of Node Variables
    module_config.EE_NUM_NVS = 10;      // Number of Node Variables
@@ -161,10 +179,10 @@ void setup()
    setupCBUS();
 
    // configure the module switch, attached to GP0, active low
-   moduleSwitch.setPin(0, false);
+   moduleSwitch.setPin(MODULE_SWITCH, false);
 
    // configure the module LED, attached to Red LED GP8 via a 1K resistor
-   moduleLED.setPin(8);
+   moduleLED.setPin(MODULE_LED);
 }
 
 //
@@ -205,16 +223,7 @@ void processModuleSwitchChange()
 {
    if (moduleSwitch.stateChanged())
    {
-      CANFrame msg;
-      msg.id = module_config.getCANID();
-      msg.len = 5;
-      msg.data[0] = (moduleSwitch.isPressed() ? OPC_ACON : OPC_ACOF);
-      msg.data[1] = highByte(module_config.getNodeNum());
-      msg.data[2] = lowByte(module_config.getNodeNum());
-      msg.data[3] = 0;
-      msg.data[4] = 1; // event number (EN) = 1
-
-      if (CBUS.sendMessage(msg))
+      if (CBUS.sendMyEvent(1U, moduleSwitch.isPressed()))
       {
          // Sent OK
       }
@@ -256,7 +265,7 @@ void eventhandler(uint8_t index, const CANFrame &msg)
 
 // MODULE MAIN ENTRY
 
-extern "C" int main(int, char**)
+extern "C" int main(int, char **)
 {
    // Init stdio lib (only really required if UART logging etc.)
    stdio_init_all();

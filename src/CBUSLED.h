@@ -41,9 +41,6 @@
 
 #include <cstdint>
 
-#define BLINK_RATE 500   ///< flash at 1Hz, 500mS on, 500mS off
-#define PULSE_ON_TIME 25 ///< pulse on duration
-
 //
 /// class to encapsulate a non-blocking LED
 //
@@ -60,7 +57,7 @@ public:
    void toggle(void);
    void blink(void);
    void run(void);
-   void pulse(void);
+   void pulse(bool bShort=true);
 
 private:
    bool m_configured;
@@ -70,5 +67,6 @@ private:
    bool m_pulse;
    uint32_t m_lastTime;
    uint32_t m_pulseStart;
+   uint32_t m_pulseDuration;
    void _write(void);
 };
