@@ -162,10 +162,39 @@ public:
    void setEventHandlerExCB(eventExCallback_t evExCallback);
    void setFrameHandler(frameCallback_t, uint8_t *opcodes = nullptr, uint8_t num_opcodes = 0);
    void makeHeader(CANFrame &msg, uint8_t priority = DEFAULT_PRIORITY);
-   void processAccessoryEvent(uint32_t nn, uint32_t en, bool is_on_event);
 
    void setLongMessageHandler(CBUSLongMessage *handler);
    void consumeOwnEvents(CBUScoe *coe);
+
+   // Application Hooks
+   virtual bool validateNV(const uint8_t NVindex, const uint8_t oldValue, const uint8_t NVvalue);
+   virtual void actUponNVchange(const uint8_t NVindex, const uint8_t oldValue, const uint8_t NVvalue);
+
+   // Message Parsers
+   bool parseCBUSMsg(CANFrame &msg);
+   bool parseCBUSEvent(CANFrame &msg);
+   bool parseFLiMCmd(CANFrame &msg);
+
+   // Message Processors
+   uint8_t getParFlags(void);
+   void QNNrespond(void);
+   void doRqnpn(const uint8_t index);
+   void doNvrd(const uint8_t NVindex);
+   void doNvset(const uint8_t NVindex, const uint8_t NVvalue);
+   void doRqnp(void);
+   void doRqmn(void);
+   void doSnn(void);
+
+   void doNnclr(void);
+   void doEvlrn(const uint8_t evNum, const uint8_t evVal);
+   void doReval(const uint8_t enNum, const uint8_t evNum);
+   void doEvuln(void);
+   void doReqev(const uint8_t evNum);
+
+   void doNnevn(void);
+   void doNerd(void);
+   void doNenrd(const uint8_t index);
+   void doRqevn(void);
 
    CBUSLED &getCBUSYellowLED(void);
    CBUSLED &getCBUSGreenLED(void);
@@ -175,7 +204,6 @@ public:
    uint32_t m_numMsgsRcvd;
 
 protected: // protected members become private in derived classes
-   CANFrame m_msg;
    CBUSLED m_ledGrn;
    CBUSLED m_ledYlw;
    CBUSSwitch m_sw;
@@ -191,6 +219,9 @@ protected: // protected members become private in derived classes
    bool m_bModeChanging;
    bool m_bCANenum;
    bool m_bLearn;
+   bool m_bThisNN;
+   uint16_t m_nodeNumber;
+   uint16_t m_eventNumber;
    uint32_t timeOutTimer;
    uint32_t CANenumTime;
    bool m_bEnumerationRequired;

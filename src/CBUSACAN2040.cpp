@@ -167,38 +167,38 @@ CANFrame CBUSACAN2040::getNextMessage(void)
 
 void CBUSACAN2040::notify_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *amsg)
 {
-   (void)(cd);
+   (void)(cd); // unused
+
+   CANFrame msg;
 
    switch (notify)
    {
    case CAN2040_NOTIFY_RX:
-      // Serial.printf("acan2040 cb: message received\n");
+      msg.id = amsg->id;
+      msg.len = amsg->dlc;
 
-      m_msg.id = amsg->id;
-      m_msg.len = amsg->dlc;
-
-      for (uint8_t i = 0; i < m_msg.len && i < 8; i++)
+      for (uint8_t i = 0; i < msg.len && i < 8; i++)
       {
-         m_msg.data[i] = amsg->data[i];
+         msg.data[i] = amsg->data[i];
       }
 
-      m_msg.rtr = amsg->id & CAN2040_ID_RTR;
-      m_msg.ext = amsg->id & CAN2040_ID_EFF;
+      msg.rtr = amsg->id & CAN2040_ID_RTR;
+      msg.ext = amsg->id & CAN2040_ID_EFF;
 
       if (rx_buffer)
       {
-         rx_buffer->put(m_msg);
+         rx_buffer->put(msg);
       }
       break;
 
    case CAN2040_NOTIFY_TX:
-      // Serial.printf("acan2040 cb: message sent ok\n");
+      // Notify Tx Complete
       break;
    case CAN2040_NOTIFY_ERROR:
-      // Serial.printf("acan2040 cb: an error occurred\n");
+      // Notify CAN Error
       break;
    default:
-      // Serial.printf("acan2040 cb: unknown event type\n");
+      // Unknown notification
       break;
    }
 }

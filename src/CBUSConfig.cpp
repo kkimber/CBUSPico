@@ -85,6 +85,22 @@ constexpr uint32_t FLASH_SIZE = FLASH_SECTOR_SIZE;
 /// Delay for an external EEPROM to complete a write request
 constexpr uint32_t EEPROM_WRITE_DELAY = 4;
 
+/// Unused event is all 0xFF
+EVENT_INFO_t evInfoUnused {0xFFFFU, 0xFFFFU};
+
+///
+/// @brief Comparison operator for event information
+/// 
+/// @param lhs left hand side for comparison
+/// @param rhs right hand side for comparison
+/// @return true lhs = rhs
+/// @return false lhs != rhs
+///
+bool operator==(const EVENT_INFO_t& lhs, const EVENT_INFO_t& rhs)
+{
+   return ((lhs.nodeNumber == rhs.nodeNumber) && (lhs.eventNumber == rhs.eventNumber));
+}
+
 ///
 /// @brief Construct a new CBUSConfig::CBUSConfig object
 ///
@@ -172,7 +188,7 @@ void CBUSConfig::begin()
       bi_decl(bi_2pins_with_func(0, 1, GPIO_FUNC_I2C));
    }
 
-   // read events and create an event hash table
+    // read events and create an event hash table
    makeEvHashTable();
 
    // read global configuration variables
@@ -263,8 +279,9 @@ void CBUSConfig::setCANID(uint8_t canid)
 void CBUSConfig::setNodeNum(uint32_t nn)
 {
    m_nodeNum = nn;
-   writeEEPROM(OFS_NODE_NUM_HB, highByte(nn));
-   writeEEPROM(OFS_NODE_NUM_LB, lowByte(nn));
+   writeEEPROM(OFS_NODE_NUM_HB, highByte(nn), false);
+   writeEEPROM(OFS_NODE_NUM_LB, lowByte(nn), false);
+   commitChanges();
 }
 
 ///
@@ -274,19 +291,15 @@ void CBUSConfig::setNodeNum(uint32_t nn)
 /// @param en Event Number
 /// @return uint8_t Index of the event, EE_MAX_EVENTS if the event is not found
 ///
-uint8_t CBUSConfig::findExistingEvent(uint32_t nn, uint32_t en)
+uint8_t CBUSConfig::findExistingEvent(uint16_t nn, uint16_t en)
 {
-   uint8_t tarray[4];
    uint8_t tmphash, i, j, matches;
    bool confirmed = false;
 
-   tarray[0] = highByte(nn);
-   tarray[1] = lowByte(nn);
-   tarray[2] = highByte(en);
-   tarray[3] = lowByte(en);
+   EVENT_INFO_t evInfo {.nodeNumber=nn, .eventNumber=en};
 
    // calc the hash of the incoming event to match
-   tmphash = makeHash(tarray);
+   tmphash = makeHash(evInfo);
 
    for (i = 0; i < EE_MAX_EVENTS; i++)
    {
@@ -316,8 +329,9 @@ uint8_t CBUSConfig::findExistingEvent(uint32_t nn, uint32_t en)
                   if (m_evhashtbl[i] == tmphash)
                   {
                      // check the EEPROM for a match with the incoming NN and EN
-                     readEvent(i, tarray);
-                     if ((uint32_t)((tarray[0] << 8) + tarray[1]) == nn && (uint32_t)((tarray[2] << 8) + tarray[3]) == en)
+                     EVENT_INFO_t evInfo;
+                     readEvent(i, evInfo);
+                     if ((evInfo.nodeNumber == nn) && (evInfo.eventNumber == en))
                      {
                         // the stored NN and EN match this event, so no further checking is required
                         confirmed = true;
@@ -342,8 +356,9 @@ uint8_t CBUSConfig::findExistingEvent(uint32_t nn, uint32_t en)
 
    if (i < EE_MAX_EVENTS && !confirmed)
    {
-      readEvent(i, tarray);
-      if (!((uint32_t)((tarray[0] << 8) + tarray[1]) == nn && (uint32_t)((tarray[2] << 8) + tarray[3]) == en))
+      EVENT_INFO_t evInfo;
+      readEvent(i, evInfo);
+      if (!((evInfo.nodeNumber == nn) && (evInfo.eventNumber == en)))
       {
          // the stored NN and EN do not match this event
          i = EE_MAX_EVENTS;
@@ -379,19 +394,15 @@ uint8_t CBUSConfig::findEventSpace(void)
 /// @param tarr Node number in lower two bytes, Event number in upper two bytes
 /// @return uint8_t 8-bit has of Node Number and Event Number
 ///
-uint8_t CBUSConfig::makeHash(uint8_t tarr[4])
+uint8_t CBUSConfig::makeHash(EVENT_INFO_t& evInfo)
 {
    uint8_t hash = 0;
-   uint32_t nn, en;
 
-   // make a hash from a 4-uint8_t NN + EN event
-
-   nn = (tarr[0] << 8) + tarr[1];
-   en = (tarr[2] << 8) + tarr[3];
+   // make a hash from 16-bit node number and 16-bit event number
 
    // need to hash the NN and EN to a uniform distribution across HASH_LENGTH
-   hash = nn ^ (nn >> 8);
-   hash = 7 * hash + (en ^ (en >> 8));
+   hash = evInfo.eventNumber ^ (evInfo.eventNumber >> 8);
+   hash = 7 * hash + (evInfo.nodeNumber ^ (evInfo.nodeNumber >> 8));
 
    // ensure it is within bounds and non-zero
    hash %= HASH_LENGTH;
@@ -402,17 +413,17 @@ uint8_t CBUSConfig::makeHash(uint8_t tarr[4])
 
 ///
 /// @brief Read an event from the EEPROM
-///
+/// 
 /// @param idx Index of the event to read
-/// @param tarr four byte array containing event info (NN + EN)
+/// @param evInfo Event info of the event (node number / event number)
 ///
-void CBUSConfig::readEvent(uint8_t idx, uint8_t tarr[])
+void CBUSConfig::readEvent(uint8_t idx, EVENT_INFO_t &evInfo)
 {
-   // populate the array with the first 4 bytes (NN + EN) of the event entry from the EEPROM
-   for (uint8_t i = 0; i < EE_HASH_BYTES; i++)
-   {
-      tarr[i] = readEEPROM(EE_EVENTS_START + (idx * EE_BYTES_PER_EVENT) + i);
-   }
+   evInfo.nodeNumber = (readEEPROM(EE_EVENTS_START + (idx * EE_BYTES_PER_EVENT) + 0) << 8) +
+                       (readEEPROM(EE_EVENTS_START + (idx * EE_BYTES_PER_EVENT) + 1));
+
+   evInfo.eventNumber = (readEEPROM(EE_EVENTS_START + (idx * EE_BYTES_PER_EVENT) + 2)  << 8) +
+                        (readEEPROM(EE_EVENTS_START + (idx * EE_BYTES_PER_EVENT) + 3));
 }
 
 ///
@@ -445,8 +456,7 @@ void CBUSConfig::writeEventEV(uint8_t idx, uint8_t evnum, uint8_t evval)
 ///
 void CBUSConfig::makeEvHashTable(void)
 {
-   uint8_t evarray[4];
-   const uint8_t unused_entry[4] = {0xff, 0xff, 0xff, 0xff};
+   EVENT_INFO_t evInfo;
 
    // Delete any previously allocated hash table
    if (m_evhashtbl != nullptr)
@@ -467,16 +477,16 @@ void CBUSConfig::makeEvHashTable(void)
 
    for (uint8_t idx = 0; idx < EE_MAX_EVENTS; idx++)
    {
-      readEvent(idx, evarray);
+      readEvent(idx, evInfo);
 
       // empty slots have all four bytes set to 0xff
-      if (memcmp(evarray, unused_entry, 4) == 0)
+      if (evInfo == evInfoUnused)
       {
          m_evhashtbl[idx] = 0;
       }
       else
       {
-         m_evhashtbl[idx] = makeHash(evarray);
+         m_evhashtbl[idx] = makeHash(evInfo);
       }
    }
 
@@ -490,20 +500,19 @@ void CBUSConfig::makeEvHashTable(void)
 ///
 void CBUSConfig::updateEvHashEntry(uint8_t idx)
 {
-   uint8_t evarray[4];
-   const uint8_t unused_entry[4] = {0xff, 0xff, 0xff, 0xff};
+   EVENT_INFO_t evInfo;
 
    // read the first four bytes from EEPROM - NN + EN
-   readEvent(idx, evarray);
+   readEvent(idx, evInfo);
 
    // empty slots have all four bytes set to 0xff
-   if (memcmp(evarray, unused_entry, 4) == 0)
+   if (evInfo == evInfoUnused)
    {
       m_evhashtbl[idx] = 0;
    }
    else
    {
-      m_evhashtbl[idx] = makeHash(evarray);
+      m_evhashtbl[idx] = makeHash(evInfo);
    }
 
    m_bHashCollisions = check_hash_collisions();
@@ -598,7 +607,7 @@ uint8_t CBUSConfig::readEEPROM(uint32_t eeaddress)
    {
 
    case EEPROM_TYPE::EEPROM_EXTERNAL_I2C:
-      // 8-bit addressing, write address to read 
+      // 8-bit addressing, write address to read
       ///@todo support 8-bit and 16-bit addressing
       i2c_write_blocking(m_i2cBus, m_externalAddress, &addr, 1, true);
       // read byte from address
@@ -661,8 +670,9 @@ uint8_t CBUSConfig::readBytesEEPROM(uint32_t eeaddress, uint8_t nbytes, uint8_t 
 ///
 /// @param eeaddress Byte address of the offset to write
 /// @param data Value to write to the EEPROM
+/// @param bFlush Set to false to prevent a flush to flash for each byte written
 ///
-void CBUSConfig::writeEEPROM(uint32_t eeaddress, uint8_t data)
+void CBUSConfig::writeEEPROM(uint32_t eeaddress, uint8_t data, bool bFlush)
 {
    uint8_t txdata[2] = {static_cast<uint8_t>(eeaddress), data};
 
@@ -672,7 +682,7 @@ void CBUSConfig::writeEEPROM(uint32_t eeaddress, uint8_t data)
    {
 
    case EEPROM_TYPE::EEPROM_EXTERNAL_I2C:
-      // 8-bit addressing, write address for write and byte value + STOP 
+      // 8-bit addressing, write address for write and byte value + STOP
       /// @todo support 16 bit addressing
       if (i2c_write_blocking(m_i2cBus, m_externalAddress, txdata, 2, false) == 2)
       {
@@ -683,7 +693,10 @@ void CBUSConfig::writeEEPROM(uint32_t eeaddress, uint8_t data)
 
    case EEPROM_TYPE::EEPROM_USES_FLASH:
       setChipEEPROMVal(eeaddress, data);
-      flushToFlash();
+      if (bFlush)
+      {
+         flushToFlash();
+      }
       break;
    }
 
@@ -739,28 +752,52 @@ void CBUSConfig::writeBytesEEPROM(uint32_t eeaddress, uint8_t src[], uint8_t num
 }
 
 ///
-/// @brief Write an event to the EEPROM
+/// @brief Write an event to the event table
+/// 
+/// @param index index into the event table where the event should be written
+/// @param evInfo event information for the event (node number and event number)
+/// @param bFlush set to false to prevent an immediate write to flash
 ///
-/// @param index Index of the event to write
-/// @param data event data
-///
-void CBUSConfig::writeEvent(uint8_t index, uint8_t data[])
+void CBUSConfig::writeEvent(const uint8_t index, EVENT_INFO_t &evInfo, bool bFlush)
 {
-   int eeaddress = EE_EVENTS_START + (index * EE_BYTES_PER_EVENT);
+   uint32_t eeaddress = EE_EVENTS_START + (index * EE_BYTES_PER_EVENT);
 
-   writeBytesEEPROM(eeaddress, data, 4);
+   // Write node number and event number to flash, no flush on each byte
+   writeEEPROM(eeaddress + 0, highByte(evInfo.nodeNumber), false);
+   writeEEPROM(eeaddress + 1, lowByte(evInfo.nodeNumber), false);
+   writeEEPROM(eeaddress + 2, highByte(evInfo.eventNumber), false);
+   writeEEPROM(eeaddress + 3, lowByte(evInfo.eventNumber), false);
+
+   // Flush now if requested
+   if (bFlush)
+   {
+      commitChanges();
+   }
 }
 
 ///
-/// @brief Clear and event from the EEPROM
+/// @brief Clear an event from the EEPROM
 ///
 /// @param index Index of the event to clear
 ///
-void CBUSConfig::cleareventEEPROM(uint8_t index)
+void CBUSConfig::clearEventEEPROM(uint8_t index, bool bFlush)
 {
-   uint8_t unused_entry[4] = {0xff, 0xff, 0xff, 0xff};
+   writeEvent(index, evInfoUnused, bFlush);
+}
 
-   writeEvent(index, unused_entry);
+///
+/// @brief Clear all events from the EEPROM
+///
+void CBUSConfig::clearEventsEEPROM()
+{
+   for (uint8_t e = 0; e < EE_MAX_EVENTS; e++)
+   {
+      // Clear each event, not flush on each clear
+      clearEventEEPROM(e, false);
+   }
+
+   // Flush to flash now complete
+   commitChanges();
 }
 
 ///
@@ -776,6 +813,21 @@ void CBUSConfig::resetEEPROM(void)
       {
          writeEEPROM(addr, 0xff);
       }
+   }
+}
+
+///
+/// @brief Commit changes to flash
+///
+void CBUSConfig::commitChanges()
+{
+   if (m_eepromType == EEPROM_TYPE::EEPROM_USES_FLASH)
+   {
+      disableIRQs();
+
+      flushToFlash();
+
+      enableIRQs();
    }
 }
 
@@ -873,15 +925,19 @@ void CBUSConfig::resetModule(void)
    // set the node identity defaults
    // we set a NN and CANID of zero in SLiM as we're now a consumer-only node
 
-   writeEEPROM(0, 0); // SLiM
-   writeEEPROM(1, 0); // CANID
-   writeEEPROM(2, 0); // NN hi
-   writeEEPROM(3, 0); // NN lo
+   writeEEPROM(0, 0, false); // SLiM
+   writeEEPROM(1, 0, false); // CANID
+   writeEEPROM(2, 0, false); // NN hi
+   writeEEPROM(3, 0, false); // NN lo
    setResetFlag();    // set reset indicator
+
+   // Commit all changes now (for flash)
+   commitChanges();
 
    // zero NVs (NVs number from one, not zero)
    for (uint8_t i = 0; i < EE_NUM_NVS; i++)
    {
+      /// @todo need no flush version of this !!
       writeNV(i + 1, 0);
    }
 

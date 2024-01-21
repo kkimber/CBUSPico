@@ -53,12 +53,12 @@ cbusparam_t CBUSParams::m_params = {}; ///< Initialize parameter block
 ///
 CBUSParams::CBUSParams(CBUSConfig const &config)
 {
-   m_params.param[IDX_NO_PARAMS] = NUM_PARAMS;
-   m_params.param[IDX_MANUFR_ID] = MANU_MERG;
-   m_params.param[IDX_NO_EVENTS] = config.EE_MAX_EVENTS;
-   m_params.param[IDX_EVS_PR_EV] = config.EE_NUM_EVS;
-   m_params.param[IDX_MXNUM_NVS] = config.EE_NUM_NVS;
-   m_params.param[IDX_IF_PROTOC] = PB_CAN;
+   m_params.param[PAR_NPARAMS] = NUM_PARAMS;
+   m_params.param[PAR_MANU] = MANU_MERG;
+   m_params.param[PAR_EVTNUM] = config.EE_MAX_EVENTS;
+   m_params.param[PAR_EVNUM] = config.EE_NUM_EVS;
+   m_params.param[PAR_NVNUM] = config.EE_NUM_NVS;
+   m_params.param[PAR_BUSTYPE] = PB_CAN;
    initProcessorParams();
 }
 
@@ -71,9 +71,9 @@ CBUSParams::CBUSParams(CBUSConfig const &config)
 ///
 void CBUSParams::setVersion(const uint8_t major, const char minor, const uint8_t beta)
 {
-   m_params.param[IDX_MAJOR_VER] = major;
-   m_params.param[IDX_MINOR_VER] = minor;
-   m_params.param[IDX_BETA_FLAG] = beta;
+   m_params.param[PAR_MAJVER] = major;
+   m_params.param[PAR_MINVER] = minor;
+   m_params.param[PAR_BETA] = beta;
 }
 
 ///
@@ -83,7 +83,7 @@ void CBUSParams::setVersion(const uint8_t major, const char minor, const uint8_t
 ///
 void CBUSParams::setModuleId(const uint8_t id)
 {
-   m_params.param[IDX_MODULE_ID] = id;
+   m_params.param[PAR_MTYP] = id;
 }
 
 ///
@@ -93,7 +93,7 @@ void CBUSParams::setModuleId(const uint8_t id)
 ///
 void CBUSParams::setFlags(const uint8_t flags)
 {
-   m_params.param[IDX_MOD_FLAGS] = flags;
+   m_params.param[PAR_FLAGS] = flags;
 }
 
 ///
@@ -113,11 +113,11 @@ cbusparam_t* CBUSParams::getParams() const
 void CBUSParams::initProcessorParams()
 {
    /// @todo there is no defined processor ID code for the RPxxxx mircocontrollers
-   m_params.param[IDX_PROCSR_ID] = 50;       // Processor ID
-   m_params.param[IDX_MANU_CODE] = CPUM_ARM; // Processor manufacturer
+   m_params.param[PAR_CPUID] = 50;       // Processor ID
+   m_params.param[PAR_CPUMAN] = CPUM_ARM; // Processor manufacturer
 
-   m_params.param[IDX_MANU_PROC + 0] = '2'; // Set processor version to 2040
-   m_params.param[IDX_MANU_PROC + 1] = '0';
-   m_params.param[IDX_MANU_PROC + 2] = '4';
-   m_params.param[IDX_MANU_PROC + 3] = '0';
+   m_params.param[PAR_CPUMID + 0] = '2'; // Set processor version to 2040
+   m_params.param[PAR_CPUMID + 1] = '0';
+   m_params.param[PAR_CPUMID + 2] = '4';
+   m_params.param[PAR_CPUMID + 3] = '0';
 }

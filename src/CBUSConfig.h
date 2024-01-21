@@ -55,6 +55,13 @@ constexpr uint8_t HASH_LENGTH = 128;
 /// Default I2C address of the external EEPROM
 constexpr uint8_t EEPROM_I2C_ADDR = 0x50;
 
+/// struct to hold event information
+typedef struct
+{
+   uint16_t nodeNumber;  ///< Node number of the event
+   uint16_t eventNumber; ///< Event number of the event
+} EVENT_INFO_t;
+
 enum class EEPROM_TYPE
 {
    EEPROM_USES_FLASH,  ///< Use Pico QPSI flash as a pseudo EEPROM
@@ -80,13 +87,13 @@ public:
    void enableIRQs(void);
 
    // Event management
-   uint8_t findExistingEvent(uint32_t nn, uint32_t en);
+   uint8_t findExistingEvent(uint16_t nn, uint16_t en);
    uint8_t findEventSpace(void);
 
    // Event table and hash table management
    uint8_t getEvTableEntry(uint8_t tindex);
    uint8_t numEvents(void);
-   uint8_t makeHash(uint8_t tarr[]);
+   uint8_t makeHash(EVENT_INFO_t& evInfo);
    void getEvArray(uint8_t idx);
    void makeEvHashTable(void);
    void updateEvHashEntry(uint8_t idx);
@@ -101,18 +108,20 @@ public:
    void loadNVs(void);
 
    // Event management
-   void readEvent(uint8_t idx, uint8_t tarr[]);
-   void writeEvent(uint8_t index, uint8_t data[]);
-   void cleareventEEPROM(uint8_t index);
+   void readEvent(uint8_t idx, EVENT_INFO_t& evInfo);
+   void writeEvent(const uint8_t index, EVENT_INFO_t& evInfo, bool bFlush=true);
+   void clearEventEEPROM(uint8_t index, bool bFlush=true);
+   void clearEventsEEPROM(void);
    void resetModule(CBUSLED &green, CBUSLED &yellow, CBUSSwitch &sw);
    void resetModule(void);
 
    // EEPROM support
    uint8_t readEEPROM(uint32_t eeaddress);
-   void writeEEPROM(uint32_t eeaddress, uint8_t data);
+   void writeEEPROM(uint32_t eeaddress, uint8_t data, bool bFlush=true);
    uint8_t readBytesEEPROM(uint32_t eeaddress, uint8_t nbytes, uint8_t dest[]);
    void writeBytesEEPROM(uint32_t eeaddress, uint8_t src[], uint8_t numbytes);
    void resetEEPROM(void);
+   void commitChanges(void);
 
    // CBUS Addressing
    void setCANID(uint8_t canid);
