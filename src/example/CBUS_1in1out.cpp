@@ -80,6 +80,9 @@ CBUSACAN2040 CBUS(module_config);
 CBUSSwitch moduleSwitch; // an example switch as input
 CBUSLED moduleLED;       // an example LED as output
 
+// Consume own events
+CBUScoe coe;
+
 // module name, must be 7 characters, space padded.
 module_name_t moduleName = {'1', 'I', 'N', '1', 'O', 'U', 'T'};
 
@@ -127,6 +130,7 @@ void setupCBUS()
    // assign to CBUS
    CBUS.setParams(params.getParams());
    CBUS.setName(&moduleName);
+   CBUS.consumeOwnEvents(&coe);
 
    // Get the internal CBUS UI objects
    CBUSLED &ledGrn = CBUS.getCBUSGreenLED();

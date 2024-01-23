@@ -321,6 +321,7 @@ bool CBUSbase::sendEventWithData(uint16_t eventNode, const uint16_t eventNum, co
 {
    CANFrame frame;
    frame.id = m_moduleConfig.getCANID();
+   frame.len = 5 + dataLen;
    frame.data[0] = OPC_ACON; // Start with long event opcode
 
    // Send short event if node ID is zero
@@ -345,6 +346,17 @@ bool CBUSbase::sendEventWithData(uint16_t eventNode, const uint16_t eventNum, co
    // Set the event number
    frame.data[3] = highByte(eventNum);
    frame.data[4] = lowByte(eventNum);
+
+   // Copy in optional event data
+   frame.data[5] = d1;
+   frame.data[6] = d2;
+   frame.data[7] = d3;
+
+   // If we're consuming our own events, post to rx queue
+   if (m_coeObj != nullptr)
+   {
+      m_coeObj->put(frame);
+   }
 
    return sendMsgNN(frame, eventNode);
 };
@@ -590,9 +602,13 @@ void CBUSbase::process(uint8_t num_messages)
       // at least one CAN frame is available in either the reception buffer or the COE buffer
       // retrieve the next one
 
+      bool bOwnEvent = false;
+
       if (m_coeObj != nullptr && m_coeObj->available())
       {
          msg = m_coeObj->get();
+         // Flag this is from us, so we don't trigger enumeration
+         bOwnEvent = true;
       }
       else
       {
@@ -646,11 +662,12 @@ void CBUSbase::process(uint8_t num_messages)
       }
 
       //
-      /// set flag if we find a CANID() conflict with the frame's producer
-      /// doesn't apply to RTR or zero-length frames, so as not to trigger an enumeration loop
+      /// Set flag if we find a CANID() conflict with the frame's producer from another module
+      /// i.e. not from our own consumed events!
+      /// Doesn't apply to RTR or zero-length frames, so as not to trigger an enumeration loop
       //
 
-      if (remoteCANID == m_moduleConfig.getCANID() && msg.len > 0)
+      if (!bOwnEvent && (remoteCANID == m_moduleConfig.getCANID()) && (msg.len > 0))
       {
          m_bEnumerationRequired = true;
       }
