@@ -47,6 +47,8 @@
 #include "cbusdefs.h"     // MERG CBUS constants
 #include "CBUSUtil.h"     // Utility macros
 
+#include "CBUSWiFi.h"     // CBUS WiFi support
+
 #include <cstdio>
 #include <pico/stdlib.h>
 #include <pico/binary_info.h>
@@ -83,8 +85,11 @@ CBUSLED moduleLED;       // an example LED as output
 // Consume own events
 CBUScoe coe;
 
+// CBUS WiFI
+CBUSWiFi wifi;
+
 // module name, must be 7 characters, space padded.
-module_name_t moduleName = {'1', 'I', 'N', '1', 'O', 'U', 'T'};
+module_name_t moduleName = {'P', 'i', 'c', 'o', 'W', 'i', ' '};
 
 // forward function declarations
 void eventhandler(uint8_t index, const CANFrame &msg);
@@ -97,7 +102,7 @@ void processModuleSwitchChange(void);
 void setupCBUS()
 {
    // Declare binary info for Picotool
-   bi_decl(bi_program_description("CBUS Pico Module : 1 in 1 out"));
+   bi_decl(bi_program_description("CBUS Pico WiFi module"));
 
    // Notify pin setup for Picotool
    bi_decl(bi_1pin_with_name(LED_GRN, "CBUS Green LED"));
@@ -187,6 +192,22 @@ void setup()
 
    // configure the module LED, attached to Red LED GP8 via a 1K resistor
    moduleLED.setPin(MODULE_LED);
+
+   // Connect WiFi
+   if (!wifi.InitializeClient())
+   {
+      // Failed to connect - hang here flashing the RED LED
+      moduleLED.blink();
+
+      while(1)
+      {
+         moduleLED.run();
+      }
+   }
+
+   // Initialize web server
+   wifi.InitWebServer();
+
 }
 
 //

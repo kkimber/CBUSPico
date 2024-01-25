@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 # Define the target board
-set (PICO_BOARD pico)
+set (PICO_BOARD pico_w)
 
 # Pull in the SDK (Must be before project definition)
 include(pico_sdk_import.cmake)

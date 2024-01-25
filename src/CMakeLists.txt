@@ -1,6 +1,6 @@
 set(CAN2040_SOURCE can2040/src)
 set(CBUSDEFS cbusdefs)
-set(EXAMPLE example)
+set(PICOWI picowi)
 
 add_executable(CBUSPico
    # Source for CAN2040 PIO based CAN controller
@@ -16,8 +16,9 @@ add_executable(CBUSPico
    CBUS.cpp
    ACAN2040.cpp
    CBUSACAN2040.cpp
-   # Example module using libary
-   ${EXAMPLE}/CBUS_1in1out.cpp
+   # PICOWi module using libary
+   CBUSWiFi.cpp
+   ${PICOWI}/CANPicoWi.cpp
 )
 
 target_include_directories(CBUSPico PRIVATE
@@ -28,9 +29,18 @@ target_include_directories(CBUSPico PRIVATE
 
 target_compile_options(CBUSPico PRIVATE
    # can2040 has an unused param, -Wpedantic is a step too far !
-  -Wall -Wextra -Werror -Wno-unused-parameter > 
+  -Wall -Wextra -Werror -Wno-unused-parameter 
 )
 
-target_link_libraries(CBUSPico pico_stdlib pico_multicore cmsis_core hardware_i2c hardware_flash)
+target_link_libraries(
+   CBUSPico
+   pico_stdlib
+   pico_multicore
+   cmsis_core
+   hardware_i2c
+   hardware_flash
+   pico_cyw43_arch_lwip_threadsafe_background
+   pico_lwip_http
+)
 
 pico_add_extra_outputs(CBUSPico)
