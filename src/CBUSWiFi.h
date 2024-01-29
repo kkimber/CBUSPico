@@ -40,6 +40,24 @@
 #pragma once
 
 #include <cstdint>
+#include "ini.h"
+
+///
+/// Type to hold configuration info obtained from the INI
+///
+
+typedef struct
+{
+   const char *country;
+   const char *ssid;
+   const char *passwd;
+   bool wpaAuth;
+   bool wpa2Auth;
+   bool gcEnable;
+   uint16_t gcPort;
+   bool edEnable;
+   uint16_t edPort;
+} config_t;
 
 //
 /// Class to encapsulate a non-blocking switch class
@@ -51,10 +69,15 @@ class CBUSWiFi
 public:
    CBUSWiFi();
 
+   static bool ReadConfiguration(void);
+
    bool InitializeClient(void);
    bool InitializeAP(void);
    bool InitWebServer(void);
 
 private:
+   static config_t m_config;
+
+   static int parseINI(const char *filename, ini_handler handler, void *user);
 
 };

@@ -4,3 +4,9 @@
 [submodule "src/cbusdefs"]
 	path = src/cbusdefs
 	url = https://github.com/MERG-DEV/cbusdefs.git
+[submodule "src/FatFsPicoSPI"]
+	path = src/FatFsPicoSPI
+	url = https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico.git
+[submodule "src/inih"]
+	path = src/inih
+	url = https://github.com/benhoyt/inih.git
