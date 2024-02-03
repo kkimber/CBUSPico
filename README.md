@@ -16,7 +16,7 @@ and the PICO CAN2040 libraries:
 
 ## Project Status
 
-* Current status has the example module compling and it appears functional.
+* Current status has the example module compiling and it appears functional.
 * Use of the external I2C FRAM or EEPROM is not yet implemented, and is largely untested.
 * Module based on using the PICO QPSI flash should be functional, but has had very limited testing.
 
@@ -60,7 +60,7 @@ The documentation will be created in the build/html folder.  Open the file index
 
 ## Hardware setup
 
-The CBUSPico library and exampels can be run on any Pico board as long as it is connected to a suitable CAN transceiver, however the default pin mapping has been designed to support the PICO02 board designed by Ian Hart.
+The CBUSPico library and examples can be run on any Pico board as long as it is connected to a suitable CAN transceiver, however the default pin mapping has been designed to support the PICO02 board designed by Ian Hart.
 
 ![Pico 2 board](doc/pico2.png "Pico 2 board")
 
