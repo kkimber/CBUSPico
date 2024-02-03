@@ -17,7 +17,7 @@ and the PICO CAN2040 libraries:
 ## Project Status
 
 * Current status has the example module compling and it appears functional.
-* Use of the external I2C EEPROM is not yet fully implemented, and is completely untested.
+* Use of the external I2C FRAM or EEPROM is not yet implemented, and is largely untested.
 * Module based on using the PICO QPSI flash should be functional, but has had very limited testing.
 
 **NOTE:** This is a work in progress and all API's and interfaces are therefore subject to change.
@@ -60,26 +60,27 @@ The documentation will be created in the build/html folder.  Open the file index
 
 ## Hardware setup
 
-The CBUSPico library and exampels can be run on any Pico board as long as it is connected to a suitable CAN transceiver, however the default pin mapping has been designed to support using a Waveshare Pico to HAT conversion board to connect to the MERG CANPiCAP board.
+The CBUSPico library and exampels can be run on any Pico board as long as it is connected to a suitable CAN transceiver, however the default pin mapping has been designed to support the PICO02 board designed by Ian Hart.
 
-![waveshare Pico to HAT board](doc/pico2hat.png "Waveshare Pico 2 HAT board")
+![Pico 2 board](doc/pico2.png "Pico 2 board")
 
-The default pin mapping used by CANPico is as follows.
+The default pin mapping used by CANPico is therefore as follows.
 
 ![pico pin mapping](doc/pinout.png)
 
+The current configuration of the library uses the PIO based CAN2040 libraries, and therefore the PICO2 should be setup so that the 2515 controller chip is not fitted, and the CAN transceiver is jumpered directly to the PICO.
 
 ## Storage memory layout
 
-Storage for module global configuration variables and node variables can optionally be in an external I2C EEPROM, or can be located in a the external QSPI flash on the PICO board.
+Storage for module global configuration variables and node variables can optionally be in an external I2C FRAM or EEPROM, or can be located in a the external QSPI flash on the PICO board.
 
-### External EEPROM or Flash
+### External FRAM / EEPROM or Flash
 
-If the external EEPROM is used the variables are located offset into the EEPROM as per "Address" below.
+If the external FRAM or EEPROM is used the variables are located offset into the FRAM or EEPROM as per "Address" below.
 
 If QSPI flash is used, the last sector of flash is used.  The size of flash on the PICO is defined by PICO_FLASH_SIZE_BYTES, nominally 2MiB in size for current models.  Flash sector size is defined as FLASH_SECTOR_SIZE, which is the minimum size that can be erased, so with a flash size of 2MiB the data will be located at 0x1FF000, with variables located within that sector as per "Address" below.
 
-| Address #           | Length                           | Usage           | EEPROM   |
+| Address #           | Length                           | Usage           | EEPROM/FRAM   |
 |---------------------|----------------------------------|-----------------|----------|
 | 0x00                | 1                                | FLiM Mode       | Optional |
 | 0x01                | 1                                | CANID           | Optional |
