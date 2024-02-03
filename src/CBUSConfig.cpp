@@ -391,7 +391,7 @@ uint8_t CBUSConfig::findEventSpace(void)
 ///
 /// @brief Create a 8-bit hash from the combination of Node Number and Event Number
 ///
-/// @param tarr Node number in lower two bytes, Event number in upper two bytes
+/// @param evInfo event info from which to create hash
 /// @return uint8_t 8-bit has of Node Number and Event Number
 ///
 uint8_t CBUSConfig::makeHash(EVENT_INFO_t& evInfo)
@@ -779,6 +779,7 @@ void CBUSConfig::writeEvent(const uint8_t index, EVENT_INFO_t &evInfo, bool bFlu
 /// @brief Clear an event from the EEPROM
 ///
 /// @param index Index of the event to clear
+/// @param bFlush true if data should be flushed to flash
 ///
 void CBUSConfig::clearEventEEPROM(uint8_t index, bool bFlush)
 {
