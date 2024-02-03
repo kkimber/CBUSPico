@@ -177,7 +177,7 @@ void CBUSACAN2040::notify_cb(struct can2040 *cd, uint32_t notify, struct can2040
       msg.id = amsg->id;
       msg.len = amsg->dlc;
 
-      for (uint8_t i = 0; i < msg.len && i < 8; i++)
+      for (int_fast8_t i = 0; i < msg.len && i < 8; i++)
       {
          msg.data[i] = amsg->data[i];
       }
@@ -237,7 +237,7 @@ bool CBUSACAN2040::sendMessage(CANFrame &msg, bool rtr, bool ext, uint8_t priori
    tx_msg.id = msg.id;
    tx_msg.dlc = msg.len;
 
-   for (uint8_t i = 0; i < msg.len && i < 8; i++)
+   for (int_fast8_t i = 0; i < msg.len && i < 8; i++)
    {
       tx_msg.data[i] = msg.data[i];
    }

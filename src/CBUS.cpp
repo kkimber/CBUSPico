@@ -637,7 +637,7 @@ void CBUSbase::process(uint8_t num_messages)
          // check if incoming opcode is in the user list, if list length > 0
          if (m_numOpcodes > 0)
          {
-            for (uint8_t i = 0; i < m_numOpcodes; i++)
+            for (int_fast8_t i = 0; i < m_numOpcodes; i++)
             {
                if (opc == m_opcodes[i])
                {
@@ -742,7 +742,7 @@ void CBUSbase::checkCANenum()
       // enumeration timer has expired -- stop enumeration and process the responses
 
       // iterate through the 128 bit field
-      for (uint8_t i = 0; i < 16; i++)
+      for (int_fast8_t i = 0; i < 16; i++)
       {
 
          // ignore if this uint8_t is all 1's -> there are no unused IDs in this group of numbers
@@ -752,7 +752,7 @@ void CBUSbase::checkCANenum()
          }
 
          // for each bit in the uint8_t
-         for (uint8_t b = 0; b < 8; b++)
+         for (int_fast8_t b = 0; b < 8; b++)
          {
 
             // ignore first bit of first uint8_t -- CAN ID zero is not used for nodes
@@ -1456,7 +1456,7 @@ void CBUSbase::doNnevn()
    uint8_t free_slots = 0;
 
    // count free slots using the event hash table
-   for (uint8_t i = 0; i < m_moduleConfig.EE_MAX_EVENTS; i++)
+   for (int_fast8_t i = 0; i < m_moduleConfig.EE_MAX_EVENTS; i++)
    {
       if (m_moduleConfig.getEvTableEntry(i) == 0)
       {
@@ -1482,7 +1482,7 @@ void CBUSbase::doNerd()
    msg.data[2] = lowByte(m_nodeNumber);  // my NN lo
 
    // Loop for all events in the event table
-   for (uint8_t i = 0; i < m_moduleConfig.EE_MAX_EVENTS; i++)
+   for (int_fast8_t i = 0; i < m_moduleConfig.EE_MAX_EVENTS; i++)
    {
       // Check for valid event
       if (m_moduleConfig.getEvTableEntry(i) != 0)
