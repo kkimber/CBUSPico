@@ -62,7 +62,7 @@ The documentation will be created in the build/html folder.  Open the file index
 
 The CBUSPico library and exampels can be run on any Pico board as long as it is connected to a suitable CAN transceiver, however the default pin mapping has been designed to support the PICO02 board designed by Ian Hart.
 
-![Pico 2 board](doc/pico02.png "Pico 2 board")
+![Pico 2 board](doc/pico2.png "Pico 2 board")
 
 The default pin mapping used by CANPico is therefore as follows.
 
