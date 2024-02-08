@@ -84,6 +84,7 @@ enum
 
 // forward declations
 class CBUSLongMessage;
+class CBUSGridConnect;
 class CBUScoe;
 
 /// Length of the module name
@@ -164,6 +165,7 @@ public:
    void makeHeader(CANFrame &msg, uint8_t priority = DEFAULT_PRIORITY);
 
    void setLongMessageHandler(CBUSLongMessage *handler);
+   void setGridConnectServer(CBUSGridConnect *gcServer);
    void consumeOwnEvents(CBUScoe *coe);
 
    // Application Hooks
@@ -227,6 +229,7 @@ protected: // protected members become private in derived classes
    bool m_bEnumerationRequired;
 
    CBUSLongMessage *longMessageHandler; // CBUS long message object to receive relevant frames
+   CBUSGridConnect *m_gcServer;         // CBUS grid connect server
    CBUScoe *m_coeObj;                   // consume-own-events
 };
 

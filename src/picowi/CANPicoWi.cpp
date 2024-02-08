@@ -48,6 +48,7 @@
 #include "CBUSUtil.h"     // Utility macros
 
 #include "CBUSWiFi.h"     // CBUS WiFi support
+#include "CBUSGridConnect.h" // CBUS Grid Connect support
 
 #include <cstdio>
 #include <pico/stdlib.h>
@@ -87,6 +88,9 @@ CBUScoe coe;
 
 // CBUS WiFI
 CBUSWiFi wifi;
+
+// CBUS Grid Connect
+CBUSGridConnect gcServer;
 
 // module name, must be 7 characters, space padded.
 module_name_t moduleName = {'P', 'i', 'c', 'o', 'W', 'i', ' '};
@@ -136,6 +140,7 @@ void setupCBUS()
    CBUS.setParams(params.getParams());
    CBUS.setName(&moduleName);
    CBUS.consumeOwnEvents(&coe);
+   CBUS.setGridConnectServer(&gcServer);
 
    // Get the internal CBUS UI objects
    CBUSLED &ledGrn = CBUS.getCBUSGreenLED();
@@ -208,6 +213,8 @@ void setup()
    // Initialize web server
    wifi.InitWebServer();
 
+   // Initialize GC server
+   gcServer.startServer();
 }
 
 //
@@ -228,6 +235,9 @@ void loop()
 
    moduleSwitch.run();
    moduleLED.run();
+
+   // run the GC server
+   gcServer.run();
 
    //
    /// Check if switch changed and do any processing for this change.

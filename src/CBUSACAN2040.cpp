@@ -39,6 +39,7 @@
 
 // CBUS device-specific library
 #include "CBUSACAN2040.h"
+#include "CBUSGridConnect.h"
 #include "SystemTick.h"
 
 #include <new>
@@ -61,7 +62,6 @@ static void cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 //
 
 CBUSACAN2040::CBUSACAN2040(CBUSConfig &config) : CBUSbase(config),
-                                                 acan2040{nullptr},
                                                  tx_buffer{nullptr},
                                                  rx_buffer{nullptr},
                                                  _gpio_tx{0x0U},
@@ -222,6 +222,13 @@ bool CBUSACAN2040::sendMessage(CANFrame &msg, bool rtr, bool ext, uint8_t priori
       return false;
    }
 
+   // Send the frame to GC
+   // Forward all received CAN messages to GridConnect clients
+   if (m_gcServer)
+   {
+      m_gcServer->sendCANFrame(msg);
+   }
+
    makeHeader(msg, priority); // default priority unless user overrides
 
    if (rtr)
@@ -277,6 +284,57 @@ void CBUSACAN2040::reset(void)
    }
 
    begin();
+}
+
+///
+/// @brief Transmit a CAN frame
+/// 
+/// @param msg CAN frame to transmit
+/// @return true frame queued for transmission
+/// @return false frame was not queued for transmission
+///
+bool CBUSACAN2040::sendCANMessage(CANFrame &msg)
+{
+   struct can2040_msg tx_msg;
+
+   // caller must populate the message data
+   // this method will create the correct frame header (CAN ID and priority bits)
+   // rtr and ext default to false unless arguments are supplied - see method definition in .h
+   // priority defaults to 1011 low/medium
+
+   if (!acan2040->ok_to_send())
+   {
+      return false;
+   }
+
+   //makeHeader(msg, DEFAULT_PRIORITY); // default priority unless user overrides
+
+   if (msg.rtr)
+   {
+      msg.id |= 0x40000000;
+   }
+
+   if (msg.ext)
+   {
+      msg.id |= 0x80000000;
+   }
+
+   tx_msg.id = msg.id;
+   tx_msg.dlc = msg.len;
+
+   for (int_fast8_t i = 0; i < msg.len && i < 8; i++)
+   {
+      tx_msg.data[i] = msg.data[i];
+   }
+
+   if (acan2040->send_message(&tx_msg))
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 //

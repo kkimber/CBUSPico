@@ -38,6 +38,7 @@
 */
 
 #include "CBUS.h"
+#include "CBUSGridConnect.h"
 #include "SystemTick.h"
 #include "CBUSUtil.h"
 
@@ -79,6 +80,7 @@ CBUSbase::CBUSbase(CBUSConfig &config) : m_numMsgsSent{0x0L},
                                          CANenumTime{0x0UL},
                                          m_bEnumerationRequired{false},
                                          longMessageHandler{nullptr},
+                                         m_gcServer{nullptr},
                                          m_coeObj{nullptr}
 {
 }
@@ -595,7 +597,10 @@ void CBUSbase::process(uint8_t num_messages)
 
    uint8_t mcount = 0;
 
-   while ((available() || (m_coeObj != nullptr && m_coeObj->available())) && mcount < num_messages)
+   while ((available() ||                                      // Message on local queue
+         (m_gcServer != nullptr && m_gcServer->available()) || // Message on GC Server queue
+         (m_coeObj != nullptr && m_coeObj->available()))       // Message on COE queue
+         && mcount < num_messages)                             // Limit messages processed per run
    {
       ++mcount;
 
@@ -604,7 +609,12 @@ void CBUSbase::process(uint8_t num_messages)
 
       bool bOwnEvent = false;
 
-      if (m_coeObj != nullptr && m_coeObj->available())
+      if (m_gcServer != nullptr && m_gcServer->available())
+      {
+         // Process message received from Grid Connect
+         msg = m_gcServer->get();
+      }
+      else if (m_coeObj != nullptr && m_coeObj->available())
       {
          msg = m_coeObj->get();
          // Flag this is from us, so we don't trigger enumeration
@@ -612,7 +622,14 @@ void CBUSbase::process(uint8_t num_messages)
       }
       else
       {
+         // Process message received off CAN
          msg = getNextMessage();
+
+         // Forward all received CAN messages to GridConnect clients
+         if (m_gcServer)
+         {
+            m_gcServer->sendCANFrame(msg);
+         }
       }
 
       // extract OPC and node number
@@ -794,6 +811,11 @@ void CBUSbase::checkCANenum()
 void CBUSbase::setLongMessageHandler(CBUSLongMessage *handler)
 {
    longMessageHandler = handler;
+}
+
+void CBUSbase::setGridConnectServer(CBUSGridConnect *gcServer)
+{
+   m_gcServer = gcServer;
 }
 
 void CBUSbase::consumeOwnEvents(CBUScoe *coe)
@@ -1348,7 +1370,7 @@ void CBUSbase::doEvlrn(const uint8_t evNum, const uint8_t evVal)
       // don't repeat this for subsequent EVs
       if (evNum < 2)
       {
-         EVENT_INFO_t evInfo {.nodeNumber=m_nodeNumber, .eventNumber=m_eventNumber};
+         EVENT_INFO_t evInfo{.nodeNumber = m_nodeNumber, .eventNumber = m_eventNumber};
          m_moduleConfig.writeEvent(index, evInfo);
       }
 
@@ -1645,14 +1667,13 @@ bool CBUScoe::available()
 
 CANFrame CBUScoe::get()
 {
-   CANFrame msg;
-
    if (!coe_buff)
    {
+      CANFrame msg;
       return msg;
    }
 
-   msg = *coe_buff->get();
+   CANFrame* msg = coe_buff->get();
 
-   return msg;
+   return *msg;
 }

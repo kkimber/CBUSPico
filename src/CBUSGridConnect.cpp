@@ -38,15 +38,419 @@
 */
 
 #include "CBUSGridConnect.h"
+#include "CBUSACAN2040.h"
 #include <cstdio>
 #include <cctype>
 #include <cstdlib>
+#include <new>
+
+constexpr uint16_t TCP_PORT = 5550;
+constexpr uint8_t FIFO_SIZE = 10;
 
 ///
 /// Class to encode and decode CBUS Grid Connect messages
 ///
-CBUSGridConnect::CBUSGridConnect()
+CBUSGridConnect::CBUSGridConnect() : m_tcpServer{}
 {
+   // NOTE: Single CAN circular buffer for all instances of this class
+   // really we should only ever have a single instance, but avoid singleton
+   m_pCANBuffer = new (std::nothrow) CBUSCircularBuffer(FIFO_SIZE);
+}
+
+CBUSGridConnect::~CBUSGridConnect()
+{
+   // Clean up CAN buffer
+   if (m_pCANBuffer != nullptr)
+   {
+      delete m_pCANBuffer;
+   }
+}
+
+///
+/// @brief Start the GridConnect TCP Server
+///
+/// @return true the server was successfully created and started
+/// @return false the server could not be created or started
+///
+bool CBUSGridConnect::startServer()
+{
+   if (m_pCANBuffer == nullptr)
+   {
+      return false;
+   }
+
+   if (!serverOpen(static_cast<void *>(&m_tcpServer)))
+   {
+      serverClose(static_cast<void *>(&m_tcpServer));
+      return false;
+   }
+
+   return true;
+}
+
+///
+/// @brief Stop the GridConnect Server
+///
+/// @return true the server was shutdown successfully
+/// @return false the server could not be cleanly shutdown
+///
+bool CBUSGridConnect::stopServer()
+{
+   /// @todo check clean shutdown of server
+   m_tcpServer.complete = true;
+   return serverClose(static_cast<void *>(&m_tcpServer)) == ERR_OK;
+}
+
+///
+/// @brief Create / open a server connection
+///
+/// @param arg Pointer to a TCP Server struct to hold information relating to this connection
+/// @return true the server connection was opened successfully
+/// @return false the server connection could not be opened
+///
+bool CBUSGridConnect::serverOpen(void *arg)
+{
+   TCPServer_t *state = static_cast<TCPServer_t *>(arg);
+
+   // Create new TCP protocol control block
+   struct tcp_pcb *pcb = tcp_new_ip_type(IPADDR_TYPE_ANY);
+
+   if (!pcb)
+   {
+      return false;
+   }
+
+   // Bind the control block to the required TCP Port
+   err_t err = tcp_bind(pcb, IP_ADDR_ANY, TCP_PORT);
+
+   if (err)
+   {
+      return false;
+   }
+
+   // Set the control block into listen mode
+   // we re-allocate the CB, so we must reassign here
+   // allow one connection in the connection queue
+   state->server_pcb = tcp_listen_with_backlog(pcb, 1);
+
+   if (!state->server_pcb)
+   {
+      if (pcb)
+      {
+         tcp_close(pcb);
+      }
+
+      return false;
+   }
+
+   // Assign state to be returned in callbacks
+   tcp_arg(state->server_pcb, state);
+
+   // Specify callback to be used for Accept
+   tcp_accept(state->server_pcb, serverAccept);
+
+   return true;
+}
+
+err_t CBUSGridConnect::serverCloseConn(struct tcp_pcb *client_pcb)
+{
+   err_t err = ERR_OK;
+
+   // Is there a client connection
+   if (client_pcb != nullptr)
+   {
+      // Clear all callback function pointers
+      tcp_arg(client_pcb, nullptr);
+      tcp_poll(client_pcb, nullptr, 0);
+      tcp_sent(client_pcb, nullptr);
+      tcp_recv(client_pcb, nullptr);
+      tcp_err(client_pcb, nullptr);
+
+      // Close client connection
+      err = tcp_close(client_pcb);
+      if (err != ERR_OK)
+      {
+         // Failed to close cleanly, so abort connection
+         tcp_abort(client_pcb);
+         err = ERR_ABRT;
+      }
+   }
+
+   return err;
+}
+
+///
+/// @brief Close a TCP Server connection
+///
+/// @param arg Pointer to a TCP Server struct holding information on the TCP Server connection to close
+/// @return err_t ERR_OK on success
+///
+err_t CBUSGridConnect::serverClose(void *arg)
+{
+   TCPServer_t *state = static_cast<TCPServer_t *>(arg);
+
+   err_t err = ERR_OK;
+
+   // Is there a client connection
+   if (state->client_pcb != nullptr)
+   {
+      serverCloseConn(state->client_pcb);
+
+      // Clean-up
+      state->client_pcb = nullptr;
+   }
+
+   // Is the server valid
+   if (state->server_pcb)
+   {
+      // Clear callback function pointer
+      tcp_arg(state->server_pcb, nullptr);
+
+      // Close the server
+      tcp_close(state->server_pcb);
+
+      // Clean-up
+      state->server_pcb = nullptr;
+   }
+
+   return err;
+}
+
+///
+/// @brief Perform Grid Connect background procesing
+///
+void CBUSGridConnect::run()
+{
+   // Do we need to do anything?
+}
+
+///
+/// @brief send a CAN message to Ethernet clients
+///
+/// @param msg reference to CAN frame to forward
+///
+void CBUSGridConnect::sendCANFrame(const CANFrame &msg)
+{
+   gcMessage_t gcMsg;
+
+   if (encodeGC(msg, gcMsg))
+   {
+      if (m_tcpServer.client_pcb)
+      {
+         serverSend(&m_tcpServer, m_tcpServer.client_pcb, gcMsg);
+      }
+   }
+}
+
+///
+/// @brief 
+/// 
+/// @return true 
+/// @return false 
+///
+bool CBUSGridConnect::available()
+{
+   if (m_pCANBuffer != nullptr)
+   {
+      return m_pCANBuffer->available();
+   }
+
+   return false;
+}
+
+///
+/// @brief 
+/// 
+/// @return CANFrame 
+///
+CANFrame CBUSGridConnect::get()
+{
+   if (m_pCANBuffer != nullptr)
+   {
+      CANFrame* msg = m_pCANBuffer->get();
+      return *msg;
+   }
+
+   // Return empty frame
+   CANFrame msg;
+   return msg;
+}
+
+///
+/// @brief Accept a client connection
+///
+/// @param arg TCP Server state associated with the server accept
+/// @param client_pcb Pointer to a client control block to describe the client connection
+/// @param err Error code if there was an error accepting the connection
+/// @return err_t ERR_OK on success
+///
+err_t CBUSGridConnect::serverAccept(void *arg, struct tcp_pcb *client_pcb, err_t err)
+{
+   TCPServer_t *state = static_cast<TCPServer_t *>(arg);
+
+   // Check for client control block and errors
+   if ((err != ERR_OK) || (client_pcb == nullptr))
+   {
+      serverClose(arg);
+      return ERR_VAL;
+   }
+
+   // Disable nagle - TODO [good idea]
+   tcp_nagle_disable(client_pcb);
+
+   // Set priority - TODO [good idea]
+   tcp_setprio(client_pcb, TCP_PRIO_MIN);
+
+   // Save the client connection control block
+   state->client_pcb = client_pcb;
+
+   // Assign state to be returned in callbacks
+   tcp_arg(client_pcb, state);
+
+   // Specify callback functions
+   tcp_sent(client_pcb, serverSent);
+   tcp_recv(client_pcb, serverRecv);
+   // tcp_poll(client_pcb, serverPoll, xx); ///@ todo for client timeouts
+   tcp_err(client_pcb, serverErr);
+
+   return ERR_OK;
+}
+
+///
+/// @brief Receive data from a client connection
+///
+/// @param arg TCP Server state associated with the server providing data
+/// @param tpcb Pointer to the Control Block providing data
+/// @param p Pointer to the received data buffer, or null if the connection is closed
+/// @param err Error code if there was an error receiving data
+/// @return err_t ERR_OK on success
+///
+err_t CBUSGridConnect::serverRecv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
+{
+   TCPServer_t *state = static_cast<TCPServer_t *>(arg);
+
+   // Check for error or closed connection
+   if ((err != ERR_OK) || (p == nullptr) || (arg == nullptr))
+   {
+      // Error or client closed connection
+      if (p != nullptr)
+      {
+         // Inform stack we have received the data
+         tcp_recved(tpcb, p->tot_len);
+         pbuf_free(p);
+      }
+
+      serverCloseConn(tpcb);
+
+      // Clean-up client connection
+      if (state)
+      {
+         state->client_pcb = nullptr;
+      }
+
+      return ERR_OK;
+   }
+
+   // this method is callback from lwIP, so cyw43_arch_lwip_begin is not required, however you
+   // can use this method to cause an assertion in debug mode, if this method is called when
+   // cyw43_arch_lwip_begin IS needed
+   cyw43_arch_lwip_check();
+
+   // Check for received data length
+   if (p->tot_len > 0)
+   {
+      // Receive into the buffer
+      const uint16_t buffer_left = GC_MAX_MSG - state->bufferRecv.len;
+      state->bufferRecv.len += pbuf_copy_partial(p, &state->bufferRecv.byte[state->bufferRecv.len],
+                                                 p->tot_len > buffer_left ? buffer_left : p->tot_len, 0);
+      tcp_recved(tpcb, p->tot_len);
+   }
+
+   // Free the buffer, now we have copied the data
+   pbuf_free(p);
+
+   // Have we have received a complete Grid Connect message yet?
+   // Check end of frame indicator
+   if ((state->bufferRecv.byte[state->bufferRecv.len - 1] == ';') ||
+       (state->bufferRecv.byte[state->bufferRecv.len - 2] == ';') || // Allow 1x EOL char
+       (state->bufferRecv.byte[state->bufferRecv.len - 3] == ';'))   // Allow 2x EOL chars
+   {
+      // Check start of frame indicator
+      if (state->bufferRecv.byte[0] == ':')
+      {
+         // Yes, complete message received
+         // Attempt to parse into a CANFrame
+         CANFrame canMsg;
+
+         if (decodeGC(state->bufferRecv, canMsg))
+         {
+            // Parse successful, so queue for sending on CAN
+            m_pCANBuffer->put(canMsg);
+            CBUSACAN2040::sendCANMessage(canMsg);
+         }
+
+         // Init receive buffer
+         state->bufferRecv = {};
+      }
+   }
+
+   return ERR_OK;
+}
+
+err_t CBUSGridConnect::serverSent(void *arg, struct tcp_pcb *tpcb, u16_t len)
+{
+   TCPServer_t *state = static_cast<TCPServer_t *>(arg);
+
+   state->sent_len += len;
+
+   if (state->sent_len >= GC_MAX_MSG)
+   {
+      // We should get the data back from the client
+      state->bufferRecv.len = 0;
+   }
+
+   return ERR_OK;
+}
+
+err_t CBUSGridConnect::serverSend(void *arg, struct tcp_pcb *tpcb, gcMessage_t msg)
+{
+   TCPServer_t *state = static_cast<TCPServer_t *>(arg);
+
+   // LwIP Stack is NOT thread safe - lock stack as calling from different context
+   cyw43_arch_lwip_begin();
+
+   state->sent_len = 0;
+
+   err_t err = tcp_write(tpcb, msg.byte, msg.len, TCP_WRITE_FLAG_COPY);
+
+   if (err == ERR_OK)
+   {
+      err = tcp_output(tpcb);
+   }
+
+   if (err != ERR_OK)
+   {
+      err = serverClose(arg);
+   }
+
+   // Unlock stack
+   cyw43_arch_lwip_end();
+
+   return err;
+}
+
+err_t CBUSGridConnect::serverPoll(void *arg, struct tcp_pcb *tpcb)
+{
+   // @todo - do we want this?
+   return ERR_OK;
+}
+
+void CBUSGridConnect::serverErr(void *arg, err_t err)
+{
+   if (err != ERR_ABRT)
+   {
+      serverClose(arg);
+   }
 }
 
 ///
@@ -311,7 +715,7 @@ void CBUSGridConnect::uint8ToHex(const uint8_t u8, hexByteChars_t &byteStr)
 ///
 /// @brief Convert two hex characters to a uint8_t
 ///
-/// @param hexChar hex characters to conver, upper and lower nibbles
+/// @param hexChar hex characters to convert, upper and lower nibbles
 /// @return converted uint8_t value
 ///
 uint8_t CBUSGridConnect::hexToUint8(const hexByteChars_t &hexChar)
