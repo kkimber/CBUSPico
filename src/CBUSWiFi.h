@@ -48,15 +48,15 @@
 
 typedef struct
 {
-   const char *country;
-   const char *ssid;
-   const char *passwd;
-   bool wpaAuth;
-   bool wpa2Auth;
-   bool gcEnable;
-   uint16_t gcPort;
-   bool edEnable;
-   uint16_t edPort;
+   const char *country; ///< WiFi country code
+   const char *ssid;    ///< WiFi router or AP SSID
+   const char *passwd;  ///< WiFi router or AP Password
+   bool wpaAuth;        ///< True = Authentication is using WPA
+   bool wpa2Auth;       ///< True = Authentication is using WPA2
+   bool gcEnable;       ///< True = Grid Connect Server is enabled
+   uint16_t gcPort;     ///< Grid Connect Server port
+   bool edEnable;       ///< True = Engine Driver Throttle Service enabled
+   uint16_t edPort;     ///< Engine Driver Throttle Service enabled
 } config_t;
 
 //
@@ -75,9 +75,39 @@ public:
    bool InitializeAP(void);
    bool InitWebServer(void);
 
+   ///
+   /// @brief Determine if the Grid Connect server should be enabled 
+   /// 
+   /// @return true the Grid Connect server should be enabled
+   /// @return false the Grid Connect server should not be enabled
+   ///
+   static bool isGridConnectEnabled(void) { return m_config.gcEnable; };
+
+   ///
+   /// @brief Get the Grid Connect Port object
+   /// 
+   /// @return uint16_t TCP port number to use for the Grid Connect server
+   ///
+   static uint16_t getGridConnectPort(void) { return m_config.gcPort; };
+
+   ///
+   /// @brief Determine if the Engine Driver Throttle should be enabled
+   /// 
+   /// @return true the Engine Driver Throttle service should be enabled
+   /// @return false the Engine Driver Throttle service should not be enabled
+   ///
+   static bool isEdThrottleEnabled(void) { return m_config.edEnable; };
+
+   ///
+   /// @brief Get the Ed Throttle Port object
+   /// 
+   /// @return uint16_t TCP port number to use for the Engine Driver Throttle service
+   ///
+   static uint16_t getEdThrottlePort(void) { return m_config.edPort; };
+
 private:
-   static config_t m_config;
+   /// Configuration data store
+   static inline config_t m_config = {};
 
    static int parseINI(const char *filename, ini_handler handler, void *user);
-
 };

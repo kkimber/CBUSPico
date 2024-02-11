@@ -213,8 +213,20 @@ void setup()
    // Initialize web server
    wifi.InitWebServer();
 
-   // Initialize GC server
-   gcServer.startServer();
+   // Start Grid Connect server?
+   if (wifi.isGridConnectEnabled())
+   {
+      // Initialize GC server
+      gcServer.startServer(wifi.getGridConnectPort());
+   }
+
+   // Start Engine Driver throttle server?
+   if (wifi.isEdThrottleEnabled())
+   {
+      // Intialize Throttle server
+      wifi.getEdThrottlePort();
+   }
+
 }
 
 //

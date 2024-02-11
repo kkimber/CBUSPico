@@ -92,9 +92,9 @@ class CBUSGridConnect
 public:
    CBUSGridConnect();
    ~CBUSGridConnect();
-   bool startServer(void);
+   bool startServer(uint16_t nPort);
    bool stopServer(void);
-   bool serverOpen(void);
+   bool serverOpen(uint16_t nPort);
    static void extractAndQueueGC(TCPServer_t *state, uint16_t nStart, struct pbuf *p);
    // Interface for clients to send us frames from CAN
    void sendCANFrame(const CANFrame &msg);

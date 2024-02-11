@@ -44,7 +44,6 @@
 #include <cstdlib>
 #include <new>
 
-constexpr uint16_t TCP_PORT = 5550;
 constexpr uint8_t FIFO_SIZE = 10;
 
 ///
@@ -75,7 +74,7 @@ CBUSGridConnect::~CBUSGridConnect()
 /// @return true the server was successfully created and started
 /// @return false the server could not be created or started
 ///
-bool CBUSGridConnect::startServer()
+bool CBUSGridConnect::startServer(uint16_t nPort)
 {
    // Check we have a FIFO before starting the server
    if (m_pCANBuffer == nullptr)
@@ -84,7 +83,7 @@ bool CBUSGridConnect::startServer()
    }
 
    // Attempt to start the server
-   if (!serverOpen())
+   if (!serverOpen(nPort))
    {
       // Cleaup on failure to start
       serverShutdown(&m_tcpServer);
@@ -114,7 +113,7 @@ bool CBUSGridConnect::stopServer()
 /// @return true the server connection was opened successfully
 /// @return false the server connection could not be opened
 ///
-bool CBUSGridConnect::serverOpen()
+bool CBUSGridConnect::serverOpen(uint16_t nPort)
 {
    // Create new TCP protocol control block, allow IPv4 and IPv6
    m_pServerCB = tcp_new_ip_type(IPADDR_TYPE_ANY);
@@ -126,7 +125,7 @@ bool CBUSGridConnect::serverOpen()
    }
 
    // Bind the control block to the required TCP Port for IPv4 and IPv6
-   err_t err = tcp_bind(m_pServerCB, IP_ADDR_ANY, TCP_PORT);
+   err_t err = tcp_bind(m_pServerCB, IP_ADDR_ANY, nPort);
 
    if (err != ERR_OK)
    {

@@ -48,9 +48,6 @@
 #include "ff.h"
 #include "hw_config.h"
 
-// Static initialization
-config_t CBUSWiFi::m_config = {};
-
 /// Helper for INI parsing
 #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
 
@@ -59,9 +56,10 @@ static int handler(void *user, const char *section, const char *name, const char
 {
    config_t *pconfig = (config_t *)user;
 
-   const char *wifiSection = "wifi";
-   const char *gcSection = "gridconnect";
-   const char *edSection = "edthrottle";
+   // Configuration INI section headers
+   constexpr const char *wifiSection = "wifi";
+   constexpr const char *gcSection = "gridconnect";
+   constexpr const char *edSection = "edthrottle";
 
    if (MATCH(wifiSection, "country"))
    {
@@ -85,7 +83,7 @@ static int handler(void *user, const char *section, const char *name, const char
    }
    else if (MATCH(gcSection, "enable"))
    {
-      pconfig->gcEnable = true; // todo
+      pconfig->gcEnable = strcasecmp(value, "true") == 0 ? true : false;
    }
    else if (MATCH(gcSection, "port"))
    {
@@ -93,7 +91,7 @@ static int handler(void *user, const char *section, const char *name, const char
    }
    else if (MATCH(edSection, "enable"))
    {
-      pconfig->edEnable = true; // todo
+      pconfig->edEnable = strcasecmp(value, "true") == 0 ? true : false;
    }
    else if (MATCH(edSection, "port"))
    {
@@ -111,26 +109,45 @@ static int handler(void *user, const char *section, const char *name, const char
 ///// TEST WEB SERVER CODE
 
 // SSI tags - tag length limited to 8 bytes by default
-const char *ssi_tags[] = {"ipaddr", "port", "mac"};
+const char *ssi_tags[] = {"gcenable","gcport","edenable","edport"};
 
 u16_t ssi_handler(int iIndex, char *pcInsert, int iInsertLen)
 {
    size_t printed;
    switch (iIndex)
    {
-   case 0: // ipaddr
+   case 0: // Grid Connect server enabled
    {
-      printed = sprintf(pcInsert, "%s", ip4addr_ntoa(netif_ip4_addr(&cyw43_state.netif[0])));
+      if (CBUSWiFi::isGridConnectEnabled())
+      {
+         printed = snprintf(pcInsert, iInsertLen, "%s", "Yes");
+      }  
+      else
+      {
+         printed = snprintf(pcInsert, iInsertLen, "%s", "No");
+      }
+      break;
+   }
+   case 1: // Grid Connect port
+   {
+      printed = snprintf(pcInsert, iInsertLen, "%d", CBUSWiFi::getGridConnectPort());
    }
    break;
-   case 1: // port
+   case 2: // Engine Driver Throttle enabled
    {
-      printed = snprintf(pcInsert, iInsertLen, "%d", 55555);
+      if (CBUSWiFi::isEdThrottleEnabled())
+      {
+         printed = snprintf(pcInsert, iInsertLen, "%s", "Yes");
+      }  
+      else
+      {
+         printed = snprintf(pcInsert, iInsertLen, "%s", "No");
+      }
+      break;
    }
-   break;
-   case 2: // mac
+   case 3: // Engine Driver Throttle port
    {
-      printed = snprintf(pcInsert, iInsertLen, "%x:%x:%x:%x:%x:%x", 6, 5, 4, 3, 2, 1);
+      printed = snprintf(pcInsert, iInsertLen, "%d", CBUSWiFi::getEdThrottlePort());
    }
    break;
    default:
@@ -138,7 +155,7 @@ u16_t ssi_handler(int iIndex, char *pcInsert, int iInsertLen)
       break;
    }
 
-   return (u16_t)printed;
+   return static_cast<u16_t>(printed);
 }
 
 // Initialise the SSI handler
@@ -164,7 +181,7 @@ CBUSWiFi::CBUSWiFi()
 /// @return true if the SD card could be mounted and the configuration file parsed
 /// @return false the SD card could not be mounted, or error parsing the configuration file
 ///
-bool CBUSWiFi::ReadConfiguration(void)
+bool CBUSWiFi::ReadConfiguration()
 {
    // Setup SPI based on configuration in hw_config.c
    sd_card_t *pSD = sd_get_by_num(0);
