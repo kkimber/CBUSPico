@@ -314,11 +314,16 @@ err_t CBUSGridConnect::serverSend(void *arg, struct tcp_pcb *tpcb, gcMessage_t m
 
    if (err == ERR_OK)
    {
+      // Try to force write immediately
       err = tcp_output(tpcb);
    }
-
-   if (err != ERR_OK)
+   else if (err == ERR_MEM)
    {
+      // Defer to poll ???
+   }
+   else
+   {
+      // some other error - TODO shutdown??
       err = serverShutdown(state);
    }
 
