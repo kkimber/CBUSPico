@@ -236,9 +236,6 @@ void loop()
    moduleSwitch.run();
    moduleLED.run();
 
-   // run the GC server
-   gcServer.run();
-
    //
    /// Check if switch changed and do any processing for this change.
    //

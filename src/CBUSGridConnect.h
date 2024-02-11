@@ -47,8 +47,8 @@
 #include "lwip/pbuf.h"
 #include "lwip/tcp.h"
 
-/// Maximum possible length of a Grid Connect string
-constexpr uint8_t GC_MAX_MSG = 32;
+/// Maximum possible length of a Grid Connect "string", excluding null and any EOL chars
+constexpr uint8_t GC_MAX_MSG = 28;
 
 /// Type for holding a Grid Connect string
 typedef struct
@@ -64,18 +64,23 @@ typedef struct
    unsigned char upperNibble; ///< Upper nibble character
 } hexByteChars_t;
 
+enum class clientState_t : uint8_t
+{
+  CS_NONE = 0,
+  CS_ACCEPTED,
+  CS_RECEIVED,
+  CS_CLOSING
+};
+
 /// Type to hold status information for the GridConnect TCP server
 typedef struct
 {
-   struct tcp_pcb *server_pcb;
-   struct tcp_pcb *client_pcb;
-   bool complete;
-   uint8_t buffer_sent[GC_MAX_MSG];
-   uint8_t buffer_recv[GC_MAX_MSG];
-   gcMessage_t bufferRecv;
-   gcMessage_t bufferSent;
+   struct tcp_pcb *pClientCB; ///< Pointer to Client control block
+   clientState_t clientState; ///< Client state
+   struct pbuf *p;            ///< pbuf (chain) to recycle
+   gcMessage_t bufferRecv;    ///< Buffer for received GC frames
+   gcMessage_t bufferSent;    ///< Buffer for transmitted GC frames
    int sent_len;
-   int run_count;
 } TCPServer_t;
 
 ///
@@ -89,25 +94,32 @@ public:
    ~CBUSGridConnect();
    bool startServer(void);
    bool stopServer(void);
-   bool serverOpen(void *arg);
-   void run(void);
-   void sendCANFrame(const CANFrame& msg);
+   bool serverOpen(void);
+   static void extractAndQueueGC(TCPServer_t *state, uint16_t nStart, struct pbuf *p);
+   // Interface for clients to send us frames from CAN
+   void sendCANFrame(const CANFrame &msg);
+   static err_t serverSend(void *arg, struct tcp_pcb *tpcb, gcMessage_t msg);
+   // Interface to receive CAN Frames from GridConnect clients
    bool available(void);
    CANFrame get(void);
-   // LwIp callback methods
-   static err_t serverCloseConn(struct tcp_pcb *client_pcb);
-   static err_t serverClose(void *arg);
-   static err_t serverAccept(void *arg, struct tcp_pcb *client_pcb, err_t err);
+   // Helper to close connection - called from LwIP callback
+   static void serverCloseConn(struct tcp_pcb *pClientCB, TCPServer_t* server);
+   // Helper to shutdown server - called from LwIP callback
+   static err_t serverShutdown(TCPServer_t *state);
+   // LwIP callback methods
+   static err_t serverAccept(void *arg, struct tcp_pcb *pClientCB, err_t err);
    static err_t serverRecv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err);
    static err_t serverSent(void *arg, struct tcp_pcb *tpcb, u16_t len);
-   static err_t serverSend(void *arg, struct tcp_pcb *tpcb, gcMessage_t msg);
    static err_t serverPoll(void *arg, struct tcp_pcb *tpcb);
    static void serverErr(void *arg, err_t err);
+
 private:
+   ///
    TCPServer_t m_tcpServer;
-   static inline CBUSCircularBuffer* m_pCANBuffer = nullptr;
-   static bool encodeGC(const CANFrame& canMsg, gcMessage_t& gcMsg);
-   static bool decodeGC(const gcMessage_t& gcMsg, CANFrame& canMsg);
+   static inline struct tcp_pcb *m_pServerCB = nullptr;
+   static inline CBUSCircularBuffer *m_pCANBuffer = nullptr;
+   static bool encodeGC(const CANFrame &canMsg, gcMessage_t &gcMsg);
+   static bool decodeGC(const gcMessage_t &gcMsg, CANFrame &canMsg);
    static void uint8ToHex(const uint8_t u8, hexByteChars_t &byteStr);
    static uint8_t hexToUint8(const hexByteChars_t &hexChar);
    static bool checkHexChars(const gcMessage_t &msg, uint8_t start, uint8_t count);
