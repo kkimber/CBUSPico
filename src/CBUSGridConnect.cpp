@@ -109,7 +109,7 @@ bool CBUSGridConnect::stopServer()
 ///
 /// @brief Create / open a server connection
 ///
-/// @param arg Pointer to a TCP Server struct to hold information relating to this connection
+/// @param nPort TCP port for the Grid Connect server
 /// @return true the server connection was opened successfully
 /// @return false the server connection could not be opened
 ///
@@ -227,6 +227,7 @@ void CBUSGridConnect::extractAndQueueGC(TCPServer_t *state, uint16_t nStart, str
 /// @brief Close a client connection
 /// 
 /// @param pClientCB Pointer to client Control Block for the connection to close
+/// @param server Pointer to TCP Server struct
 ///
 void CBUSGridConnect::serverCloseConn(struct tcp_pcb *pClientCB, TCPServer_t* server)
 {
@@ -251,7 +252,7 @@ void CBUSGridConnect::serverCloseConn(struct tcp_pcb *pClientCB, TCPServer_t* se
 ///
 /// @brief Close a TCP Server connection
 ///
-/// @param arg Pointer to a TCP Server struct holding information on the TCP Server connection to close
+/// @param state Pointer to a TCP Server struct holding information on the TCP Server connection to close
 /// @return err_t ERR_OK on success
 ///
 err_t CBUSGridConnect::serverShutdown(TCPServer_t* state)

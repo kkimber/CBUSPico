@@ -47,7 +47,7 @@
 #include "cbusdefs.h"     // MERG CBUS constants
 #include "CBUSUtil.h"     // Utility macros
 
-#include "CBUSWiFi.h"     // CBUS WiFi support
+#include "CBUSWiFi.h"        // CBUS WiFi support
 #include "CBUSGridConnect.h" // CBUS Grid Connect support
 
 #include <cstdio>
@@ -201,14 +201,31 @@ void setup()
    // Connect WiFi
    if (!wifi.InitializeClient())
    {
-      // Failed to connect - hang here flashing the RED LED
-      moduleLED.blink();
-
-      while(1)
+      while (1)
       {
-         moduleLED.run();
+         // Blink the onboard LED
+         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+         sleep_ms(250);
+         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
+         sleep_ms(250);
       }
    }
+
+   // Turn onboard LED ON now we're connected
+   cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+
+   // Map configuration settings to NV's
+   uint8_t NVs[module_config.EE_NUM_NVS]{};
+
+   NVs[0] = wifi.isGridConnectEnabled();               // NV1 Grid Connect enable
+   NVs[1] = (wifi.getGridConnectPort() & 0xFF00) >> 8; // NV2 Grid Connect Port upper byte
+   NVs[2] = (wifi.getGridConnectPort() & 0x00FF);      // NV3 Grid Connect Port lower byte
+   NVs[3] = wifi.isEdThrottleEnabled();                // NV4 Engine Driver Throttle enable
+   NVs[4] = (wifi.getEdThrottlePort() & 0xFF00) >> 8;  // NV5 Engine Driver Throttle Port upper byte
+   NVs[5] = (wifi.getEdThrottlePort() & 0x00FF);       // NV6 Engine Driver Throttle Port lower byte
+
+   // Block write the NV's from the configuration settings from the SD card
+   module_config.writeBytesEEPROM(module_config.EE_NVS_START, NVs, module_config.EE_NUM_NVS);
 
    // Initialize web server
    wifi.InitWebServer();
@@ -226,7 +243,6 @@ void setup()
       // Intialize Throttle server
       wifi.getEdThrottlePort();
    }
-
 }
 
 //
