@@ -52,12 +52,12 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Build Project Documentation
-      run: cmake --build build --target doxygen
+      run: cmake --build ${{github.workspace}}/build --target doxygen
       
     - name: Publish Doxygen content to GitHub Pages
       uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
       with:
-        dir: build/html
+        dir: ${{github.workspace}}/build/html
         branch: gh-pages
         token: ${{ secrets.ACCESS_TOKEN }}
      
