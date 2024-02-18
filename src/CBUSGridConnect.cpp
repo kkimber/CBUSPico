@@ -293,9 +293,11 @@ void CBUSGridConnect::sendCANFrame(const CANFrame &msg)
 {
    gcMessage_t gcMsg;
 
+   // Try to encode the provided CAN frame into a Grid Connect message
    if (encodeGC(msg, gcMsg))
    {
-      if (m_tcpServer.pClientCB)
+      // If we have a client connection, initiate sending the frame to the client
+      if (m_tcpServer.pClientCB != nullptr)
       {
          serverSend(&m_tcpServer, m_tcpServer.pClientCB, gcMsg);
       }
@@ -320,7 +322,9 @@ err_t CBUSGridConnect::serverSend(void *arg, struct tcp_pcb *tpcb, gcMessage_t m
    }
    else if (err == ERR_MEM)
    {
-      // Defer to poll ???
+      // Low on memory to send
+      // Save message to send later - enqueue into a pbuf ??
+      state->bufferSent = msg;
    }
    else
    {
@@ -442,7 +446,7 @@ err_t CBUSGridConnect::serverRecv(void *arg, struct tcp_pcb *tpcb, struct pbuf *
       {
          // we're not done yet TODO
          // tcp_sent(tpcb, serverSent);
-         // serverSend(state, tpcb, xx);
+         // serverSend(state, tpcb, xx)d;
       }
       retErr = ERR_OK;
    }
@@ -555,6 +559,15 @@ err_t CBUSGridConnect::serverSent(void *arg, struct tcp_pcb *tpcb, u16_t len)
 err_t CBUSGridConnect::serverPoll(void *arg, struct tcp_pcb *tpcb)
 {
    // @todo - do we want this?
+   TCPServer_t *state = static_cast<TCPServer_t *>(arg);
+
+   if (state->bufferSent.len != 0)
+   {
+      // Install sent notification
+      tcp_sent(state->pClientCB, serverSent);
+      serverSend(state, state->pClientCB, state->bufferSent);
+   }
+
    return ERR_OK;
 }
 
