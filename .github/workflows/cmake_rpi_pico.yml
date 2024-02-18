@@ -37,6 +37,10 @@ jobs:
       working-directory: ${{github.workspace}}/pico-sdk
       run: git submodule update --init        
 
+    - name: Install Doxygen
+      run:  sudo apt-get install doxygen graphviz -y
+      shell: bash
+
     - name: Get ARM toolchain
       uses: carlosperate/arm-none-eabi-gcc-action@v1
 
