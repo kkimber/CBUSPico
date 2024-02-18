@@ -51,6 +51,16 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
+    - name: Build Project Documentation
+      run: cmake --build build --target doxygen
+      
+    - name: Publish Doxygen content to GitHub Pages
+      uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
+      with:
+        dir: build/html
+        branch: gh-pages
+        token: ${{ secrets.ACCESS_TOKEN }}
+     
     - name: Create a temporary artifact downloads folder
       working-directory: ${{github.workspace}}    
       run: mkdir downloads
@@ -68,5 +78,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with: 
         name: build-binaries
-        path: downloads/   
-
+        path: downloads/  
+        
