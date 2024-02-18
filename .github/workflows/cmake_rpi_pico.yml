@@ -58,12 +58,11 @@ jobs:
     - name: Build Project Documentation
       run: cmake --build ${{github.workspace}}/build --target doxygen
       
-    - name: Publish Doxygen content to GitHub Pages
-      uses: tsunematsu21/actions-publish-gh-pages@v1.0.2
+    - name: Publish Doxygen Docs
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        dir: ${{github.workspace}}/build/html
-        branch: gh-pages
-        token: ${{ secrets.ACCESS_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ${{github.workspace}}/build/html        
      
     - name: Create a temporary artifact downloads folder
       working-directory: ${{github.workspace}}    
