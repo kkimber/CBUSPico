@@ -1,0 +1,4 @@
+<map id="cbus_frame_buffer_t" name="cbus_frame_buffer_t">
+<area shape="rect" id="node1" title="A buffer item type for holding CAN/CBUS frames in the circular buffer." alt="" coords="5,95,160,121"/>
+<area shape="rect" id="node2" href="$CBUSCircularBuffer_8h.html#classCANFrame" title="Class to hold a CAN/CBUS frame." alt="" coords="37,5,128,32"/>
+</map>
