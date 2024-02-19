@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.9.1-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -5,14 +6,26 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MERG-CBUSPico-Library: src/CBUSConfig.h Source File</title>
+<title>CBUS Pico: src/CBUSConfig.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-cbus.js"></script>
+<script type="text/javascript">
+  DoxygenAwesomeDarkModeToggle.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -22,8 +35,10 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">MERG-CBUSPico-Library
+   <div id="projectname">CBUS Pico
+   &#160;<span id="projectnumber">1.0a</span>
    </div>
+   <div id="projectbrief">Library Documentation</div>
   </td>
  </tr>
  </tbody>
@@ -46,6 +61,23 @@ $(function() {
 });
 /* @license-end */</script>
 <div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('CBUSConfig_8h_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -60,11 +92,6 @@ $(function() {
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="headertitle">
 <div class="title">CBUSConfig.h</div>  </div>
@@ -247,11 +274,11 @@ $(function() {
 <div class="ttc" id="aCBUSConfig_8h_html_adde7669366ae3afb3c1774afdd3135f5a9fc6fff26d3c730cbcf29eeafabdb2a3"><div class="ttname"><a href="CBUSConfig_8h.html#adde7669366ae3afb3c1774afdd3135f5a9fc6fff26d3c730cbcf29eeafabdb2a3">EEPROM_TYPE::EEPROM_USES_FLASH</a></div><div class="ttdeci">@ EEPROM_USES_FLASH</div><div class="ttdoc">Use Pico QPSI flash as a pseudo EEPROM.</div></div>
 <div class="ttc" id="aCBUSConfig_8h_html_structEVENT__INFO__t"><div class="ttname"><a href="CBUSConfig_8h.html#structEVENT__INFO__t">EVENT_INFO_t</a></div><div class="ttdoc">struct to hold event information</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:60</div></div>
 <div class="ttc" id="aclassCBUSConfig_html"><div class="ttname"><a href="classCBUSConfig.html">CBUSConfig</a></div><div class="ttdoc">a class to encapsulate CBUS module configuration, events, NVs, EEPROM, etc</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:76</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_a0491f42fd24f0f6af84b364a00d7faa7"><div class="ttname"><a href="classCBUSConfig.html#a0491f42fd24f0f6af84b364a00d7faa7">CBUSConfig::clearEventsEEPROM</a></div><div class="ttdeci">void clearEventsEEPROM(void)</div><div class="ttdoc">Clear all events from the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:791</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_a07103250fa2082300f3dfe25f85f6a11"><div class="ttname"><a href="classCBUSConfig.html#a07103250fa2082300f3dfe25f85f6a11">CBUSConfig::clearResetFlag</a></div><div class="ttdeci">void clearResetFlag(void)</div><div class="ttdoc">Clear the reset flag in the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1091</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_a0491f42fd24f0f6af84b364a00d7faa7"><div class="ttname"><a href="classCBUSConfig.html#a0491f42fd24f0f6af84b364a00d7faa7">CBUSConfig::clearEventsEEPROM</a></div><div class="ttdeci">void clearEventsEEPROM(void)</div><div class="ttdoc">Clear all events from the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:792</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_a07103250fa2082300f3dfe25f85f6a11"><div class="ttname"><a href="classCBUSConfig.html#a07103250fa2082300f3dfe25f85f6a11">CBUSConfig::clearResetFlag</a></div><div class="ttdeci">void clearResetFlag(void)</div><div class="ttdoc">Clear the reset flag in the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1092</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a0b4dba3e5dc03c231966480a8de50505"><div class="ttname"><a href="classCBUSConfig.html#a0b4dba3e5dc03c231966480a8de50505">CBUSConfig::getFLiM</a></div><div class="ttdeci">bool getFLiM(void)</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:130</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a148d9f7dc9510511692dc0dad51e739e"><div class="ttname"><a href="classCBUSConfig.html#a148d9f7dc9510511692dc0dad51e739e">CBUSConfig::updateEvHashEntry</a></div><div class="ttdeci">void updateEvHashEntry(uint8_t idx)</div><div class="ttdoc">Update an event hash table entry.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:501</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_a1999e216c9144650022b54c6e958be7f"><div class="ttname"><a href="classCBUSConfig.html#a1999e216c9144650022b54c6e958be7f">CBUSConfig::reboot</a></div><div class="ttdeci">void reboot(void)</div><div class="ttdoc">Initiate a reboot of the PICO.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:837</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_a1999e216c9144650022b54c6e958be7f"><div class="ttname"><a href="classCBUSConfig.html#a1999e216c9144650022b54c6e958be7f">CBUSConfig::reboot</a></div><div class="ttdeci">void reboot(void)</div><div class="ttdoc">Initiate a reboot of the PICO.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:838</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a1e339dd2b22017157219c86d35edf55e"><div class="ttname"><a href="classCBUSConfig.html#a1e339dd2b22017157219c86d35edf55e">CBUSConfig::readNV</a></div><div class="ttdeci">uint8_t readNV(uint8_t idx)</div><div class="ttdoc">Read a Node Variable from the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:577</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a1e53d5ef3d92fdc6847a598405f3ba7e"><div class="ttname"><a href="classCBUSConfig.html#a1e53d5ef3d92fdc6847a598405f3ba7e">CBUSConfig::CBUSConfig</a></div><div class="ttdeci">CBUSConfig()</div><div class="ttdoc">Construct a new CBUSConfig::CBUSConfig object.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:107</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a20b7b2c677281daa03b65306a64701d6"><div class="ttname"><a href="classCBUSConfig.html#a20b7b2c677281daa03b65306a64701d6">CBUSConfig::disableIRQs</a></div><div class="ttdeci">void disableIRQs(void)</div><div class="ttdoc">Disable interrupts and pause the second core.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:145</div></div>
@@ -259,13 +286,13 @@ $(function() {
 <div class="ttc" id="aclassCBUSConfig_html_a2e8bfa5d8df5645ce2892a1e3f059618"><div class="ttname"><a href="classCBUSConfig.html#a2e8bfa5d8df5645ce2892a1e3f059618">CBUSConfig::getNodeNum</a></div><div class="ttdeci">uint32_t getNodeNum()</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:132</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a3008f04467c2d81b5dde752c66a10fbc"><div class="ttname"><a href="classCBUSConfig.html#a3008f04467c2d81b5dde752c66a10fbc">CBUSConfig::EE_EVENTS_START</a></div><div class="ttdeci">uint32_t EE_EVENTS_START</div><div class="ttdoc">Externally accessed variables.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:151</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a3955fd96d3fd81f71491b67168d4f687"><div class="ttname"><a href="classCBUSConfig.html#a3955fd96d3fd81f71491b67168d4f687">CBUSConfig::writeEvent</a></div><div class="ttdeci">void writeEvent(const uint8_t index, EVENT_INFO_t &amp;evInfo, bool bFlush=true)</div><div class="ttdoc">Write an event to the event table.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:761</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_a4010188967b39919e33981f8ae457b52"><div class="ttname"><a href="classCBUSConfig.html#a4010188967b39919e33981f8ae457b52">CBUSConfig::flushToFlash</a></div><div class="ttdeci">void flushToFlash(void)</div><div class="ttdoc">Flush RAM cache of Flash to Flash.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1032</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_a4010188967b39919e33981f8ae457b52"><div class="ttname"><a href="classCBUSConfig.html#a4010188967b39919e33981f8ae457b52">CBUSConfig::flushToFlash</a></div><div class="ttdeci">void flushToFlash(void)</div><div class="ttdoc">Flush RAM cache of Flash to Flash.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1033</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a4437d1ec71b80781ca1ae7b2568ba419"><div class="ttname"><a href="classCBUSConfig.html#a4437d1ec71b80781ca1ae7b2568ba419">CBUSConfig::makeHash</a></div><div class="ttdeci">uint8_t makeHash(EVENT_INFO_t &amp;evInfo)</div><div class="ttdoc">Create a 8-bit hash from the combination of Node Number and Event Number.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:397</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_a4a335dbc6ebd43843eaf08188f92b6fc"><div class="ttname"><a href="classCBUSConfig.html#a4a335dbc6ebd43843eaf08188f92b6fc">CBUSConfig::resetEEPROM</a></div><div class="ttdeci">void resetEEPROM(void)</div><div class="ttdoc">Clear all event data in external EEPROM chip.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:806</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_a4a335dbc6ebd43843eaf08188f92b6fc"><div class="ttname"><a href="classCBUSConfig.html#a4a335dbc6ebd43843eaf08188f92b6fc">CBUSConfig::resetEEPROM</a></div><div class="ttdeci">void resetEEPROM(void)</div><div class="ttdoc">Clear all event data in external EEPROM chip.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:807</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a4c40ae0cb79627c29677295853145287"><div class="ttname"><a href="classCBUSConfig.html#a4c40ae0cb79627c29677295853145287">CBUSConfig::findExistingEvent</a></div><div class="ttdeci">uint8_t findExistingEvent(uint16_t nn, uint16_t en)</div><div class="ttdoc">Lookup an event by node number and event number, using the hash table.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:294</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a4ca0b9ff6b51f1e14d0b0508f7b345ef"><div class="ttname"><a href="classCBUSConfig.html#a4ca0b9ff6b51f1e14d0b0508f7b345ef">CBUSConfig::writeEEPROM</a></div><div class="ttdeci">void writeEEPROM(uint32_t eeaddress, uint8_t data, bool bFlush=true)</div><div class="ttdoc">Write a byte to the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:675</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a4d339abc268724fcbacb2b4866e68b10"><div class="ttname"><a href="classCBUSConfig.html#a4d339abc268724fcbacb2b4866e68b10">CBUSConfig::setFLiM</a></div><div class="ttdeci">void setFLiM(bool flim)</div><div class="ttdoc">Store the FLiM mode and cache the value.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:257</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_a5088321f676e3b88064fbf16476610ae"><div class="ttname"><a href="classCBUSConfig.html#a5088321f676e3b88064fbf16476610ae">CBUSConfig::freeSRAM</a></div><div class="ttdeci">uint32_t freeSRAM(void)</div><div class="ttdoc">Determine the amount of free memory.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:848</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_a5088321f676e3b88064fbf16476610ae"><div class="ttname"><a href="classCBUSConfig.html#a5088321f676e3b88064fbf16476610ae">CBUSConfig::freeSRAM</a></div><div class="ttdeci">uint32_t freeSRAM(void)</div><div class="ttdoc">Determine the amount of free memory.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:849</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a56f7ec06530a60549bbbf75470f94247"><div class="ttname"><a href="classCBUSConfig.html#a56f7ec06530a60549bbbf75470f94247">CBUSConfig::clearEvHashTable</a></div><div class="ttdeci">void clearEvHashTable(void)</div><div class="ttdoc">Clear the event hash table.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:524</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a5732139949b3dbff43f496388ea7568a"><div class="ttname"><a href="classCBUSConfig.html#a5732139949b3dbff43f496388ea7568a">CBUSConfig::setCANID</a></div><div class="ttdeci">void setCANID(uint8_t canid)</div><div class="ttdoc">Store the CANID and cache the valie.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:268</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a5e2d9197398a3c537d92fb7e448f8e70"><div class="ttname"><a href="classCBUSConfig.html#a5e2d9197398a3c537d92fb7e448f8e70">CBUSConfig::EE_NVS_START</a></div><div class="ttdeci">uint32_t EE_NVS_START</div><div class="ttdoc">Start offset of Node Variables.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:155</div></div>
@@ -273,22 +300,22 @@ $(function() {
 <div class="ttc" id="aclassCBUSConfig_html_a640e633392cf9f6dcd5373504cb3973c"><div class="ttname"><a href="classCBUSConfig.html#a640e633392cf9f6dcd5373504cb3973c">CBUSConfig::setEEPROMtype</a></div><div class="ttdeci">bool setEEPROMtype(EEPROM_TYPE type)</div><div class="ttdoc">Set the type of storage in use, either QSPI flash or an external I2C EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:205</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a76b788660447c0b1ae0c5689a98edfdc"><div class="ttname"><a href="classCBUSConfig.html#a76b788660447c0b1ae0c5689a98edfdc">CBUSConfig::EE_BYTES_PER_EVENT</a></div><div class="ttdeci">uint8_t EE_BYTES_PER_EVENT</div><div class="ttdoc">Number of bytes per event (includes 16bit CAN ID and Node Number)</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:154</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a7734a2a1ed73adce143043e4e370c44a"><div class="ttname"><a href="classCBUSConfig.html#a7734a2a1ed73adce143043e4e370c44a">CBUSConfig::writeNV</a></div><div class="ttdeci">void writeNV(uint8_t idx, uint8_t val)</div><div class="ttdoc">Write a Node Variable to the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:588</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_a8124b0cd1d0279e5e8f5a59ccaf0452b"><div class="ttname"><a href="classCBUSConfig.html#a8124b0cd1d0279e5e8f5a59ccaf0452b">CBUSConfig::isResetFlagSet</a></div><div class="ttdeci">bool isResetFlagSet(void)</div><div class="ttdoc">Determine if the Reset flag is set in the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1102</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_a8e0f68d438741d1e108520f9dcee3303"><div class="ttname"><a href="classCBUSConfig.html#a8e0f68d438741d1e108520f9dcee3303">CBUSConfig::getChipEEPROMVal</a></div><div class="ttdeci">uint8_t getChipEEPROMVal(uint32_t eeaddress)</div><div class="ttdoc">Read a byte value from the RAM cache of flash data.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1061</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_a8e4dd6a2c956810bf6b1ed857e41bfc4"><div class="ttname"><a href="classCBUSConfig.html#a8e4dd6a2c956810bf6b1ed857e41bfc4">CBUSConfig::resetModule</a></div><div class="ttdeci">void resetModule(void)</div><div class="ttdoc">Perform a factory reset of the module.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:910</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_a8124b0cd1d0279e5e8f5a59ccaf0452b"><div class="ttname"><a href="classCBUSConfig.html#a8124b0cd1d0279e5e8f5a59ccaf0452b">CBUSConfig::isResetFlagSet</a></div><div class="ttdeci">bool isResetFlagSet(void)</div><div class="ttdoc">Determine if the Reset flag is set in the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1103</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_a8e0f68d438741d1e108520f9dcee3303"><div class="ttname"><a href="classCBUSConfig.html#a8e0f68d438741d1e108520f9dcee3303">CBUSConfig::getChipEEPROMVal</a></div><div class="ttdeci">uint8_t getChipEEPROMVal(uint32_t eeaddress)</div><div class="ttdoc">Read a byte value from the RAM cache of flash data.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1062</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_a8e4dd6a2c956810bf6b1ed857e41bfc4"><div class="ttname"><a href="classCBUSConfig.html#a8e4dd6a2c956810bf6b1ed857e41bfc4">CBUSConfig::resetModule</a></div><div class="ttdeci">void resetModule(void)</div><div class="ttdoc">Perform a factory reset of the module.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:911</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a90e99dfacf163a966cc13625b3e55e1d"><div class="ttname"><a href="classCBUSConfig.html#a90e99dfacf163a966cc13625b3e55e1d">CBUSConfig::EE_NUM_NVS</a></div><div class="ttdeci">uint8_t EE_NUM_NVS</div><div class="ttdoc">Number of Node Variables.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:156</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a91bd21debc0ba4d1f6778080d8d8b8b8"><div class="ttname"><a href="classCBUSConfig.html#a91bd21debc0ba4d1f6778080d8d8b8b8">CBUSConfig::getEventEVval</a></div><div class="ttdeci">uint8_t getEventEVval(uint8_t idx, uint8_t evnum)</div><div class="ttdoc">Read an event variable from the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:436</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a956788cd5ffc30cd1f6b07dbd60f4100"><div class="ttname"><a href="classCBUSConfig.html#a956788cd5ffc30cd1f6b07dbd60f4100">CBUSConfig::getEvArray</a></div><div class="ttdeci">void getEvArray(uint8_t idx)</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a97d273a0b6d22b3fc519ed26ed1033f7"><div class="ttname"><a href="classCBUSConfig.html#a97d273a0b6d22b3fc519ed26ed1033f7">CBUSConfig::EE_NUM_EVS</a></div><div class="ttdeci">uint8_t EE_NUM_EVS</div><div class="ttdoc">Number of event variables per event.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:153</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_a9e19c6bbca5888a43b29679b6883209d"><div class="ttname"><a href="classCBUSConfig.html#a9e19c6bbca5888a43b29679b6883209d">CBUSConfig::findEventSpace</a></div><div class="ttdeci">uint8_t findEventSpace(void)</div><div class="ttdoc">Find first empty slot in the Event Table.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:376</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_aa2f81a90805daf68bc0ba3fea4c691d4"><div class="ttname"><a href="classCBUSConfig.html#aa2f81a90805daf68bc0ba3fea4c691d4">CBUSConfig::setChipEEPROMVal</a></div><div class="ttdeci">void setChipEEPROMVal(uint32_t eeaddress, uint8_t val)</div><div class="ttdoc">Write a byte value to the RAM flash cache, must be followed up with a call to flushToFlash.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1004</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_aa2f81a90805daf68bc0ba3fea4c691d4"><div class="ttname"><a href="classCBUSConfig.html#aa2f81a90805daf68bc0ba3fea4c691d4">CBUSConfig::setChipEEPROMVal</a></div><div class="ttdeci">void setChipEEPROMVal(uint32_t eeaddress, uint8_t val)</div><div class="ttdoc">Write a byte value to the RAM flash cache, must be followed up with a call to flushToFlash.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1005</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_aa4c730daa126929d317eb04c914b25a1"><div class="ttname"><a href="classCBUSConfig.html#aa4c730daa126929d317eb04c914b25a1">CBUSConfig::readEvent</a></div><div class="ttdeci">void readEvent(uint8_t idx, EVENT_INFO_t &amp;evInfo)</div><div class="ttdoc">Read an event from the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:420</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_aa87f55426e8326efb9ac13359b945f16"><div class="ttname"><a href="classCBUSConfig.html#aa87f55426e8326efb9ac13359b945f16">CBUSConfig::getEvTableEntry</a></div><div class="ttdeci">uint8_t getEvTableEntry(uint8_t tindex)</div><div class="ttdoc">return a single hash table entry by index</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:559</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_ab1fb6c9811dba38a123b0ecfdb71a25b"><div class="ttname"><a href="classCBUSConfig.html#ab1fb6c9811dba38a123b0ecfdb71a25b">CBUSConfig::setResetFlag</a></div><div class="ttdeci">void setResetFlag(void)</div><div class="ttdoc">Set the reset flag in the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1083</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_ab310500b44dc44d2cecf77cd5d9c6a48"><div class="ttname"><a href="classCBUSConfig.html#ab310500b44dc44d2cecf77cd5d9c6a48">CBUSConfig::check_hash_collisions</a></div><div class="ttdeci">bool check_hash_collisions(void)</div><div class="ttdoc">Check for any existing hash clashes between different configured events.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:980</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_ab1fb6c9811dba38a123b0ecfdb71a25b"><div class="ttname"><a href="classCBUSConfig.html#ab1fb6c9811dba38a123b0ecfdb71a25b">CBUSConfig::setResetFlag</a></div><div class="ttdeci">void setResetFlag(void)</div><div class="ttdoc">Set the reset flag in the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:1084</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_ab310500b44dc44d2cecf77cd5d9c6a48"><div class="ttname"><a href="classCBUSConfig.html#ab310500b44dc44d2cecf77cd5d9c6a48">CBUSConfig::check_hash_collisions</a></div><div class="ttdeci">bool check_hash_collisions(void)</div><div class="ttdoc">Check for any existing hash clashes between different configured events.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:981</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_ab491da30c90d0607dd416674d6a267aa"><div class="ttname"><a href="classCBUSConfig.html#ab491da30c90d0607dd416674d6a267aa">CBUSConfig::setExtEEPROMAddress</a></div><div class="ttdeci">void setExtEEPROMAddress(uint8_t address)</div><div class="ttdoc">Set the address of the external EEPROM devices on the I2C bus.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:247</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_ac144b400a84c160eed9b3c96dabe26b8"><div class="ttname"><a href="classCBUSConfig.html#ac144b400a84c160eed9b3c96dabe26b8">CBUSConfig::numEvents</a></div><div class="ttdeci">uint8_t numEvents(void)</div><div class="ttdoc">Retrieve the number of currently configure / stored events.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:540</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_ac911e839983ea7f628f2da7d04aaffa1"><div class="ttname"><a href="classCBUSConfig.html#ac911e839983ea7f628f2da7d04aaffa1">CBUSConfig::loadNVs</a></div><div class="ttdeci">void loadNVs(void)</div><div class="ttdoc">Load the global node variables from EEPROM Will set defaults if the EEPROM is unitialized.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:952</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_ac911e839983ea7f628f2da7d04aaffa1"><div class="ttname"><a href="classCBUSConfig.html#ac911e839983ea7f628f2da7d04aaffa1">CBUSConfig::loadNVs</a></div><div class="ttdeci">void loadNVs(void)</div><div class="ttdoc">Load the global node variables from EEPROM Will set defaults if the EEPROM is unitialized.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:953</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_ac96b00ab9124aac134eea2bfa670ad0a"><div class="ttname"><a href="classCBUSConfig.html#ac96b00ab9124aac134eea2bfa670ad0a">CBUSConfig::writeEventEV</a></div><div class="ttdeci">void writeEventEV(uint8_t idx, uint8_t evnum, uint8_t evval)</div><div class="ttdoc">Write an event variable to the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:448</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_aca286ebcea75ded72579ba2bc08f2712"><div class="ttname"><a href="classCBUSConfig.html#aca286ebcea75ded72579ba2bc08f2712">CBUSConfig::enableIRQs</a></div><div class="ttdeci">void enableIRQs(void)</div><div class="ttdoc">Enable interrups and re-enable the second core.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:157</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_acee42ccaa317e13ce3ef420c362c1980"><div class="ttname"><a href="classCBUSConfig.html#acee42ccaa317e13ce3ef420c362c1980">CBUSConfig::writeBytesEEPROM</a></div><div class="ttdeci">void writeBytesEEPROM(uint32_t eeaddress, uint8_t src[], uint8_t numbytes)</div><div class="ttdoc">Write a number of bytes to the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:713</div></div>
@@ -296,16 +323,20 @@ $(function() {
 <div class="ttc" id="aclassCBUSConfig_html_ad13530f85801222a58fe5f557e1ca295"><div class="ttname"><a href="classCBUSConfig.html#ad13530f85801222a58fe5f557e1ca295">CBUSConfig::setNodeNum</a></div><div class="ttdeci">void setNodeNum(uint32_t nn)</div><div class="ttdoc">Store the Node Number and cache the value.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:279</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_adac58ad040940d6cf5c9588a4f43d5a2"><div class="ttname"><a href="classCBUSConfig.html#adac58ad040940d6cf5c9588a4f43d5a2">CBUSConfig::~CBUSConfig</a></div><div class="ttdeci">~CBUSConfig()</div><div class="ttdoc">Destroy the CBUSConfig::CBUSConfig object Cleans-up the hash table.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:132</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_ae8b3fb7ae27b29b2c675946868b168a9"><div class="ttname"><a href="classCBUSConfig.html#ae8b3fb7ae27b29b2c675946868b168a9">CBUSConfig::begin</a></div><div class="ttdeci">void begin(void)</div><div class="ttdoc">initialise and set default values</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:169</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_aeaa52ed7e8379a73c3880f066b9e3aa5"><div class="ttname"><a href="classCBUSConfig.html#aeaa52ed7e8379a73c3880f066b9e3aa5">CBUSConfig::clearEventEEPROM</a></div><div class="ttdeci">void clearEventEEPROM(uint8_t index, bool bFlush=true)</div><div class="ttdoc">Clear an event from the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:783</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_aeaa52ed7e8379a73c3880f066b9e3aa5"><div class="ttname"><a href="classCBUSConfig.html#aeaa52ed7e8379a73c3880f066b9e3aa5">CBUSConfig::clearEventEEPROM</a></div><div class="ttdeci">void clearEventEEPROM(uint8_t index, bool bFlush=true)</div><div class="ttdoc">Clear an event from the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:784</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_aec9425bf280df64f9de81f8bf46e56da"><div class="ttname"><a href="classCBUSConfig.html#aec9425bf280df64f9de81f8bf46e56da">CBUSConfig::getCANID</a></div><div class="ttdeci">uint8_t getCANID(void)</div><div class="ttdef"><b>Definition:</b> CBUSConfig.h:128</div></div>
-<div class="ttc" id="aclassCBUSConfig_html_af01635afc192d8f9e380426cfc79bf2a"><div class="ttname"><a href="classCBUSConfig.html#af01635afc192d8f9e380426cfc79bf2a">CBUSConfig::commitChanges</a></div><div class="ttdeci">void commitChanges(void)</div><div class="ttdoc">Commit changes to flash.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:822</div></div>
+<div class="ttc" id="aclassCBUSConfig_html_af01635afc192d8f9e380426cfc79bf2a"><div class="ttname"><a href="classCBUSConfig.html#af01635afc192d8f9e380426cfc79bf2a">CBUSConfig::commitChanges</a></div><div class="ttdeci">void commitChanges(void)</div><div class="ttdoc">Commit changes to flash.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:823</div></div>
 <div class="ttc" id="aclassCBUSConfig_html_af2b0a3e4e5a35bc482a1b32561c399d7"><div class="ttname"><a href="classCBUSConfig.html#af2b0a3e4e5a35bc482a1b32561c399d7">CBUSConfig::readBytesEEPROM</a></div><div class="ttdeci">uint8_t readBytesEEPROM(uint32_t eeaddress, uint8_t nbytes, uint8_t dest[])</div><div class="ttdoc">Read a number of bytes of data from the EEPROM.</div><div class="ttdef"><b>Definition:</b> CBUSConfig.cpp:635</div></div>
 <div class="ttc" id="aclassCBUSLED_html"><div class="ttname"><a href="classCBUSLED.html">CBUSLED</a></div><div class="ttdoc">class to encapsulate a non-blocking LED</div><div class="ttdef"><b>Definition:</b> CBUSLED.h:49</div></div>
 <div class="ttc" id="aclassCBUSSwitch_html"><div class="ttname"><a href="classCBUSSwitch.html">CBUSSwitch</a></div><div class="ttdoc">Class to encapsulate a non-blocking switch class.</div><div class="ttdef"><b>Definition:</b> CBUSSwitch.h:49</div></div>
 </div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="CBUSConfig_8h.html">CBUSConfig.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+  </ul>
+</div>
 </body>
 </html>
