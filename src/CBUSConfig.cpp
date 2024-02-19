@@ -391,7 +391,7 @@ uint8_t CBUSConfig::findEventSpace(void)
 ///
 /// @brief Create a 8-bit hash from the combination of Node Number and Event Number
 ///
-/// @param tarr Node number in lower two bytes, Event number in upper two bytes
+/// @param evInfo event info from which to create hash
 /// @return uint8_t 8-bit has of Node Number and Event Number
 ///
 uint8_t CBUSConfig::makeHash(EVENT_INFO_t& evInfo)
@@ -475,7 +475,7 @@ void CBUSConfig::makeEvHashTable(void)
       };
    }
 
-   for (uint8_t idx = 0; idx < EE_MAX_EVENTS; idx++)
+   for (int_fast8_t idx = 0; idx < EE_MAX_EVENTS; idx++)
    {
       readEvent(idx, evInfo);
 
@@ -524,7 +524,7 @@ void CBUSConfig::updateEvHashEntry(uint8_t idx)
 void CBUSConfig::clearEvHashTable(void)
 {
    // zero in the hash table indicates that the corresponding event slot is free
-   for (uint8_t i = 0; i < EE_MAX_EVENTS; i++)
+   for (int_fast8_t i = 0; i < EE_MAX_EVENTS; i++)
    {
       m_evhashtbl[i] = 0;
    }
@@ -541,7 +541,7 @@ uint8_t CBUSConfig::numEvents(void)
 {
    uint8_t numevents = 0;
 
-   for (uint8_t i = 0; i < EE_MAX_EVENTS; i++)
+   for (int_fast8_t i = 0; i < EE_MAX_EVENTS; i++)
    {
       if (m_evhashtbl[i] != 0)
       {
@@ -718,7 +718,7 @@ void CBUSConfig::writeBytesEEPROM(uint32_t eeaddress, uint8_t src[], uint8_t num
    {
    case EEPROM_TYPE::EEPROM_EXTERNAL_I2C:
 
-      for (uint8_t val = 0; val < numbytes; val++)
+      for (int_fast8_t val = 0; val < numbytes; val++)
       {
          uint8_t txdata[2] = {static_cast<uint8_t>(eeaddress++), src[val]};
 
@@ -738,7 +738,7 @@ void CBUSConfig::writeBytesEEPROM(uint32_t eeaddress, uint8_t src[], uint8_t num
 
    case EEPROM_TYPE::EEPROM_USES_FLASH:
       // Update RAM Flash cache
-      for (uint8_t i = 0; i < numbytes; i++)
+      for (int_fast8_t i = 0; i < numbytes; i++)
       {
          setChipEEPROMVal(eeaddress + i, src[i]);
       }
@@ -779,6 +779,7 @@ void CBUSConfig::writeEvent(const uint8_t index, EVENT_INFO_t &evInfo, bool bFlu
 /// @brief Clear an event from the EEPROM
 ///
 /// @param index Index of the event to clear
+/// @param bFlush true if data should be flushed to flash
 ///
 void CBUSConfig::clearEventEEPROM(uint8_t index, bool bFlush)
 {
@@ -790,7 +791,7 @@ void CBUSConfig::clearEventEEPROM(uint8_t index, bool bFlush)
 ///
 void CBUSConfig::clearEventsEEPROM()
 {
-   for (uint8_t e = 0; e < EE_MAX_EVENTS; e++)
+   for (int_fast8_t e = 0; e < EE_MAX_EVENTS; e++)
    {
       // Clear each event, not flush on each clear
       clearEventEEPROM(e, false);
@@ -809,7 +810,7 @@ void CBUSConfig::resetEEPROM(void)
    {
       /// @todo need user define for size of EEPROM
       /// currently have 24LC00 fitted, 16 bytes only
-      for (uint32_t addr = 10; addr < 16; addr++)
+      for (int_fast8_t addr = 10; addr < 16; addr++)
       {
          writeEEPROM(addr, 0xff);
       }
@@ -935,7 +936,7 @@ void CBUSConfig::resetModule(void)
    commitChanges();
 
    // zero NVs (NVs number from one, not zero)
-   for (uint8_t i = 0; i < EE_NUM_NVS; i++)
+   for (int_fast8_t i = 0; i < EE_NUM_NVS; i++)
    {
       /// @todo need no flush version of this !!
       writeNV(i + 1, 0);
@@ -979,9 +980,9 @@ void CBUSConfig::loadNVs(void)
 ///
 bool CBUSConfig::check_hash_collisions(void)
 {
-   for (uint8_t i = 0; i < EE_MAX_EVENTS - 1; i++)
+   for (int_fast8_t i = 0; i < EE_MAX_EVENTS - 1; i++)
    {
-      for (uint8_t j = i + 1; j < EE_MAX_EVENTS; j++)
+      for (int_fast8_t j = i + 1; j < EE_MAX_EVENTS; j++)
       {
          if (m_evhashtbl[i] == m_evhashtbl[j] && m_evhashtbl[i] != 0)
          {
