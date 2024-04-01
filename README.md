@@ -1,4 +1,4 @@
-# CBUS library for RaspberryPi PICO
+# CBUS&reg; library for RaspberryPi PICO
 
 A CBUS Library for the Raspberry PICO, based on the PICO-SDK.
 
@@ -77,7 +77,7 @@ The default pin mapping used by CANPico is follows.
 | 9        | GP6           | | 32       | GP27          |
 | 10       | GP7           | | 31       | GP26          |
 | 11       | Red LED       | | 30       | RUN           |
-| 12       | Green LED     | | 29       | GP22          |
+| 12       | Green LED     | | 29       | Push Button   |
 | 13       | GND           | | 28       | GND           |
 | 14       | GP10          | | 27       | GP21          |
 | 15       | GP11          | | 26       | GP20          |
@@ -115,3 +115,6 @@ If QSPI flash is used, the last sector of flash is used.  The size of flash on t
 |---------------------|----------------------------------|----------------------------|
 | 0x000000 - 0x1FEFFF | 0x1FF000                         | Application Image          |
 | 0x1FF000 - 0x1FFFFF | 0x1000                           | Flash Storage              |
+
+\attention CBUS&reg; is a registered trademark of Dr. Michael Bolton.  See [CBUS](https://cbus-traincontrol.com/)
+
