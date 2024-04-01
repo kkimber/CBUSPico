@@ -7,7 +7,7 @@ set (PICO_BOARD pico_w)
 include(pico_sdk_import.cmake)
 
 # Define project
-project(MERG-CBUSPico-Library C CXX ASM)
+project(CBUSPico-Library C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 

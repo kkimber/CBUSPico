@@ -60,15 +60,33 @@ The documentation will be created in the build/html folder.  Open the file index
 
 ## Hardware setup
 
-The CBUSPico library and examples can be run on any Pico board as long as it is connected to a suitable CAN transceiver, however the default pin mapping has been designed to support the PICO02 board designed by Ian Hart.
+The CBUSPico library and examples can be run on any Pico board as long as it is connected to a suitable CAN transceiver.  The code uses the PIO based CAN2040 soft CAN controller, so no external CAN controller is needed. Simply connect the transceiver to the CAN Tx /Rx pins as indicated below.
 
-![Pico 2 board](doc/pico2.png "Pico 2 board")
+The default pin mapping used by CANPico is follows.
 
-The default pin mapping used by CANPico is therefore as follows.
+| Pico Pin | Function      |/| Pico Pin | Function      |
+|----------|---------------|-|----------|---------------|
+| 1        | GP0           | | 40       | VBUS          |
+| 2        | GP0           | | 39       | VSYS          |
+| 3        | GND           | | 38       | GND           |
+| 4        | GP2           | | 37       | 3V3_EN        |
+| 5        | GP3           | | 36       | 3V3           |
+| 6        | GP4           | | 35       | ADC_VREF      |
+| 7        | GP5           | | 34       | GP28          |
+| 8        | GND           | | 33       | GND           |
+| 9        | GP6           | | 32       | GP27          |
+| 10       | GP7           | | 31       | GP26          |
+| 11       | Red LED       | | 30       | RUN           |
+| 12       | Green LED     | | 29       | GP22          |
+| 13       | GND           | | 28       | GND           |
+| 14       | GP10          | | 27       | GP21          |
+| 15       | GP11          | | 26       | GP20          |
+| 16       | GP12          | | 25       | GP19          |
+| 17       | CAN Tx        | | 24       | GP18          |
+| 18       | GND           | | 23       | GND           |
+| 19       | CAN Rx        | | 22       | GP17          |
+| 20       | Yellow LED    | | 21       | GP16          |
 
-![pico pin mapping](doc/pinout.png)
-
-The current configuration of the library uses the PIO based CAN2040 libraries, and therefore the PICO2 should be setup so that the 2515 controller chip is not fitted, and the CAN transceiver is jumpered directly to the PICO.
 
 ## Storage memory layout
 
@@ -81,15 +99,15 @@ If the external FRAM or EEPROM is used the variables are located offset into the
 If QSPI flash is used, the last sector of flash is used.  The size of flash on the PICO is defined by PICO_FLASH_SIZE_BYTES, nominally 2MiB in size for current models.  Flash sector size is defined as FLASH_SECTOR_SIZE, which is the minimum size that can be erased, so with a flash size of 2MiB the data will be located at 0x1FF000, with variables located within that sector as per "Address" below.
 
 | Address #           | Length                           | Usage           | EEPROM/FRAM   |
-|---------------------|----------------------------------|-----------------|----------|
-| 0x00                | 1                                | FLiM Mode       | Optional |
-| 0x01                | 1                                | CANID           | Optional |
-| 0x02 - 0x03         | 2                                | Node Number     | Optional |
-| 0x04                | 1                                | [spare]         | Optional |
-| 0x05                | 1                                | Reset flag      | Optional |
-| 0x06 - 0x0A         | 4                                | [spare]         | Optional |
-| EE_NVS_START        | EE_NUM_NVS                       | Node Variables  | Optional |
-| EE_EVENTS_START     | EE_MAX_EVENTS * (EE_NUM_EVS + 4) | Events          | No       |
+|---------------------|----------------------------------|-----------------|---------------|
+| 0x00                | 1                                | FLiM Mode       | Optional      |
+| 0x01                | 1                                | CANID           | Optional      |
+| 0x02 - 0x03         | 2                                | Node Number     | Optional      |
+| 0x04                | 1                                | [spare]         | Optional      |
+| 0x05                | 1                                | Reset flag      | Optional      |
+| 0x06 - 0x0A         | 4                                | [spare]         | Optional      |
+| EE_NVS_START        | EE_NUM_NVS                       | Node Variables  | Optional      |
+| EE_EVENTS_START     | EE_MAX_EVENTS * (EE_NUM_EVS + 4) | Events          | No            |
 
 ### Flash
 
