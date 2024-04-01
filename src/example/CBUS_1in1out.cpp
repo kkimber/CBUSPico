@@ -1,5 +1,5 @@
 /*
-   MERG CBUS Module Library - RasberryPi Pico SDK port
+   CBUS Module Library - RasberryPi Pico SDK port
    Copyright (c) Kevin Kimber 2023
 
    Based on work by Duncan Greenwood
@@ -44,7 +44,7 @@
 #include "CBUSLED.h"      // CBUS LEDs
 #include "CBUSConfig.h"   // CBUS module configuration
 #include "CBUSParams.h"   // CBUS parameters
-#include "cbusdefs.h"     // MERG CBUS constants
+#include "cbusdefs.h"     // CBUS constants
 #include "CBUSUtil.h"     // Utility macros
 
 #include <cstdio>

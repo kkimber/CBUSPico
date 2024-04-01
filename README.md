@@ -2,7 +2,7 @@
 
 A CBUS Library for the Raspberry PICO, based on the PICO-SDK.
 
-Based on existing MERG Arduino libraries with significant refactoring and clean-up.
+Based on existing Arduino libraries with significant refactoring and clean-up.
 
    * https://github.com/MERG-DEV/CBUSLED
    * https://github.com/MERG-DEV/CBUSSWITCH
