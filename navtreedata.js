@@ -25,7 +25,7 @@
 var NAVTREE =
 [
   [ "CBUS Pico", "index.html", [
-    [ "CBUS library for RaspberryPi PICO", "index.html", [
+    [ "CBUS® library for RaspberryPi PICO", "index.html", [
       [ "Project Status", "index.html#autotoc_md1", null ],
       [ "Building", "index.html#autotoc_md3", null ],
       [ "Documentation", "index.html#autotoc_md4", null ],
