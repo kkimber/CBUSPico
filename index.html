@@ -138,11 +138,52 @@ Documentation</h1>
 <p>The documentation will be created in the build/html folder. Open the file index.html in a browser to view the docs.</p>
 <h1><a class="anchor" id="autotoc_md5"></a>
 Hardware setup</h1>
-<p>The CBUSPico library and examples can be run on any Pico board as long as it is connected to a suitable CAN transceiver, however the default pin mapping has been designed to support the PICO02 board designed by Ian Hart.</p>
-<p><img src="pico2.png" alt="" class="inline" title="Pico 2 board"/></p>
-<p>The default pin mapping used by CANPico is therefore as follows.</p>
-<p><img src="pinout.png" alt="" class="inline" title="pico pin mapping"/></p>
-<p>The current configuration of the library uses the PIO based CAN2040 libraries, and therefore the PICO2 should be setup so that the 2515 controller chip is not fitted, and the CAN transceiver is jumpered directly to the PICO.</p>
+<p>The CBUSPico library and examples can be run on any Pico board as long as it is connected to a suitable CAN transceiver. The code uses the PIO based CAN2040 soft CAN controller, so no external CAN controller is needed. Simply connect the transceiver to the CAN Tx /Rx pins as indicated below.</p>
+<p>The default pin mapping used by CANPico is follows.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Pico Pin   </th><th class="markdownTableHeadNone">Function   </th><th class="markdownTableHeadNone">/   </th><th class="markdownTableHeadNone">Pico Pin   </th><th class="markdownTableHeadNone">Function    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">1   </td><td class="markdownTableBodyNone">GP0   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">40   </td><td class="markdownTableBodyNone">VBUS    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">2   </td><td class="markdownTableBodyNone">GP0   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">39   </td><td class="markdownTableBodyNone">VSYS    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">3   </td><td class="markdownTableBodyNone">GND   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">38   </td><td class="markdownTableBodyNone">GND    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">4   </td><td class="markdownTableBodyNone">GP2   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">37   </td><td class="markdownTableBodyNone">3V3_EN    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">5   </td><td class="markdownTableBodyNone">GP3   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">36   </td><td class="markdownTableBodyNone">3V3    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">6   </td><td class="markdownTableBodyNone">GP4   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">35   </td><td class="markdownTableBodyNone">ADC_VREF    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">7   </td><td class="markdownTableBodyNone">GP5   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">34   </td><td class="markdownTableBodyNone">GP28    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">8   </td><td class="markdownTableBodyNone">GND   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">33   </td><td class="markdownTableBodyNone">GND    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">9   </td><td class="markdownTableBodyNone">GP6   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">32   </td><td class="markdownTableBodyNone">GP27    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">10   </td><td class="markdownTableBodyNone">GP7   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">31   </td><td class="markdownTableBodyNone">GP26    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">11   </td><td class="markdownTableBodyNone">Red LED   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">30   </td><td class="markdownTableBodyNone">RUN    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">12   </td><td class="markdownTableBodyNone">Green LED   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">29   </td><td class="markdownTableBodyNone">GP22    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">13   </td><td class="markdownTableBodyNone">GND   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">28   </td><td class="markdownTableBodyNone">GND    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">14   </td><td class="markdownTableBodyNone">GP10   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">27   </td><td class="markdownTableBodyNone">GP21    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">15   </td><td class="markdownTableBodyNone">GP11   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">26   </td><td class="markdownTableBodyNone">GP20    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">16   </td><td class="markdownTableBodyNone">GP12   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">25   </td><td class="markdownTableBodyNone">GP19    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">17   </td><td class="markdownTableBodyNone">CAN Tx   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">24   </td><td class="markdownTableBodyNone">GP18    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">18   </td><td class="markdownTableBodyNone">GND   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">23   </td><td class="markdownTableBodyNone">GND    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">19   </td><td class="markdownTableBodyNone">CAN Rx   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">22   </td><td class="markdownTableBodyNone">GP17    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">20   </td><td class="markdownTableBodyNone">Yellow LED   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">21   </td><td class="markdownTableBodyNone">GP16   </td></tr>
+</table>
 <h1><a class="anchor" id="autotoc_md6"></a>
 Storage memory layout</h1>
 <p>Storage for module global configuration variables and node variables can optionally be in an external I2C FRAM or EEPROM, or can be located in a the external QSPI flash on the PICO board.</p>
