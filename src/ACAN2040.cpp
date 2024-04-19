@@ -42,10 +42,10 @@
 struct can2040 *_cbusp;
 
 ///
-/// @brief PIO IRQ ISR
+/// @brief PIO IRQ ISR - locate in RAM
 ///        Notify CAN2040 of the interrupt
 ///
-static void PIOx_IRQHandler(void)
+static void __attribute__((section(".RAM"))) PIOx_IRQHandler(void)
 {
    can2040_pio_irq_handler(_cbusp);
 }

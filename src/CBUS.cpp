@@ -595,7 +595,9 @@ void CBUSbase::process(uint8_t num_messages)
 
    uint8_t mcount = 0;
 
-   while ((available() || (m_coeObj != nullptr && m_coeObj->available())) && mcount < num_messages)
+   while ((available() ||                                      // Message on local queue
+         (m_coeObj != nullptr && m_coeObj->available()))       // Message on COE queue
+         && mcount < num_messages)                             // Limit messages processed per run
    {
       ++mcount;
 
@@ -607,11 +609,13 @@ void CBUSbase::process(uint8_t num_messages)
       if (m_coeObj != nullptr && m_coeObj->available())
       {
          msg = m_coeObj->get();
+         
          // Flag this is from us, so we don't trigger enumeration
          bOwnEvent = true;
       }
       else
       {
+         // Process message received off CAN
          msg = getNextMessage();
       }
 
@@ -637,7 +641,7 @@ void CBUSbase::process(uint8_t num_messages)
          // check if incoming opcode is in the user list, if list length > 0
          if (m_numOpcodes > 0)
          {
-            for (uint8_t i = 0; i < m_numOpcodes; i++)
+            for (int_fast8_t i = 0; i < m_numOpcodes; i++)
             {
                if (opc == m_opcodes[i])
                {
@@ -742,7 +746,7 @@ void CBUSbase::checkCANenum()
       // enumeration timer has expired -- stop enumeration and process the responses
 
       // iterate through the 128 bit field
-      for (uint8_t i = 0; i < 16; i++)
+      for (int_fast8_t i = 0; i < 16; i++)
       {
 
          // ignore if this uint8_t is all 1's -> there are no unused IDs in this group of numbers
@@ -752,7 +756,7 @@ void CBUSbase::checkCANenum()
          }
 
          // for each bit in the uint8_t
-         for (uint8_t b = 0; b < 8; b++)
+         for (int_fast8_t b = 0; b < 8; b++)
          {
 
             // ignore first bit of first uint8_t -- CAN ID zero is not used for nodes
@@ -1245,7 +1249,7 @@ void CBUSbase::doRqnp()
    // respond with PARAMS message
    msg.len = 8;
    msg.data[0] = OPC_PARAMS;                         // opcode
-   msg.data[1] = m_pModuleParams->param[PAR_MANU];   // manf code -- MERG
+   msg.data[1] = m_pModuleParams->param[PAR_MANU];   // manf code
    msg.data[2] = m_pModuleParams->param[PAR_MINVER]; // minor code ver
    msg.data[3] = m_pModuleParams->param[PAR_MTYP];   // module ident
    msg.data[4] = m_pModuleParams->param[PAR_EVNUM];  // number of events
@@ -1348,7 +1352,7 @@ void CBUSbase::doEvlrn(const uint8_t evNum, const uint8_t evVal)
       // don't repeat this for subsequent EVs
       if (evNum < 2)
       {
-         EVENT_INFO_t evInfo {.nodeNumber=m_nodeNumber, .eventNumber=m_eventNumber};
+         EVENT_INFO_t evInfo{.nodeNumber = m_nodeNumber, .eventNumber = m_eventNumber};
          m_moduleConfig.writeEvent(index, evInfo);
       }
 
@@ -1456,7 +1460,7 @@ void CBUSbase::doNnevn()
    uint8_t free_slots = 0;
 
    // count free slots using the event hash table
-   for (uint8_t i = 0; i < m_moduleConfig.EE_MAX_EVENTS; i++)
+   for (int_fast8_t i = 0; i < m_moduleConfig.EE_MAX_EVENTS; i++)
    {
       if (m_moduleConfig.getEvTableEntry(i) == 0)
       {
@@ -1482,7 +1486,7 @@ void CBUSbase::doNerd()
    msg.data[2] = lowByte(m_nodeNumber);  // my NN lo
 
    // Loop for all events in the event table
-   for (uint8_t i = 0; i < m_moduleConfig.EE_MAX_EVENTS; i++)
+   for (int_fast8_t i = 0; i < m_moduleConfig.EE_MAX_EVENTS; i++)
    {
       // Check for valid event
       if (m_moduleConfig.getEvTableEntry(i) != 0)
@@ -1645,14 +1649,13 @@ bool CBUScoe::available()
 
 CANFrame CBUScoe::get()
 {
-   CANFrame msg;
-
    if (!coe_buff)
    {
+      CANFrame msg;
       return msg;
    }
 
-   msg = *coe_buff->get();
+   CANFrame* msg = coe_buff->get();
 
-   return msg;
+   return *msg;
 }

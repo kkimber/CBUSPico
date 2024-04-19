@@ -50,8 +50,8 @@
 // static pointer to object
 CBUSACAN2040 *acan2040p;
 
-// static callback function
-static void cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
+// static callback function - locate in RAM
+static __attribute__((section(".RAM"))) void cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 {
    acan2040p->notify_cb(cd, notify, msg);
 }
@@ -61,7 +61,6 @@ static void cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg)
 //
 
 CBUSACAN2040::CBUSACAN2040(CBUSConfig &config) : CBUSbase(config),
-                                                 acan2040{nullptr},
                                                  tx_buffer{nullptr},
                                                  rx_buffer{nullptr},
                                                  _gpio_tx{0x0U},
@@ -162,10 +161,10 @@ CANFrame CBUSACAN2040::getNextMessage(void)
 }
 
 //
-/// callback
+/// callback - locate in RAM
 //
 
-void CBUSACAN2040::notify_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *amsg)
+void __attribute__((section(".RAM"))) CBUSACAN2040::notify_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *amsg)
 {
    (void)(cd); // unused
 
@@ -177,7 +176,7 @@ void CBUSACAN2040::notify_cb(struct can2040 *cd, uint32_t notify, struct can2040
       msg.id = amsg->id;
       msg.len = amsg->dlc;
 
-      for (uint8_t i = 0; i < msg.len && i < 8; i++)
+      for (int_fast8_t i = 0; i < msg.len && i < 8; i++)
       {
          msg.data[i] = amsg->data[i];
       }
@@ -237,7 +236,7 @@ bool CBUSACAN2040::sendMessage(CANFrame &msg, bool rtr, bool ext, uint8_t priori
    tx_msg.id = msg.id;
    tx_msg.dlc = msg.len;
 
-   for (uint8_t i = 0; i < msg.len && i < 8; i++)
+   for (int_fast8_t i = 0; i < msg.len && i < 8; i++)
    {
       tx_msg.data[i] = msg.data[i];
    }
@@ -277,6 +276,70 @@ void CBUSACAN2040::reset(void)
    }
 
    begin();
+}
+
+///
+/// @brief Validate an NV value
+///
+/// @param NVindex Index of the NV to validate
+/// @param oldValue Previous value of the NV
+/// @param NVvalue New value of the NV
+/// @return false to prevent any updates to any NVs
+bool CBUSACAN2040::validateNV(const uint8_t NVindex, const uint8_t oldValue, const uint8_t NVvalue)
+{
+   // ALL NV's are read-only - reject all values
+   return false;
+}
+
+///
+/// @brief Transmit a CAN frame
+/// 
+/// @param msg CAN frame to transmit
+/// @return true frame queued for transmission
+/// @return false frame was not queued for transmission
+///
+bool CBUSACAN2040::sendCANMessage(CANFrame &msg)
+{
+   struct can2040_msg tx_msg;
+
+   // caller must populate the message data
+   // this method will create the correct frame header (CAN ID and priority bits)
+   // rtr and ext default to false unless arguments are supplied - see method definition in .h
+   // priority defaults to 1011 low/medium
+
+   if (!acan2040->ok_to_send())
+   {
+      return false;
+   }
+
+   //makeHeader(msg, DEFAULT_PRIORITY); // default priority unless user overrides
+
+   if (msg.rtr)
+   {
+      msg.id |= 0x40000000;
+   }
+
+   if (msg.ext)
+   {
+      msg.id |= 0x80000000;
+   }
+
+   tx_msg.id = msg.id;
+   tx_msg.dlc = msg.len;
+
+   for (int_fast8_t i = 0; i < msg.len && i < 8; i++)
+   {
+      tx_msg.data[i] = msg.data[i];
+   }
+
+   if (acan2040->send_message(&tx_msg))
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 //

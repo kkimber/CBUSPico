@@ -82,7 +82,14 @@ public:
    void setPins(uint8_t tx_pin, uint8_t rx_pin);
    void notify_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *amsg);
 
-   ACAN2040 *acan2040;
+   // Override base class implementation
+   bool validateNV(const uint8_t NVindex, const uint8_t oldValue, const uint8_t NVvalue) override;
+
+   static bool sendCANMessage(CANFrame &msg);
+
+   /// Static pointer to ACAN2040 class to manage CAN connection
+   inline static ACAN2040 *acan2040 = nullptr;
+   
    CBUSCircularBuffer *tx_buffer;
    CBUSCircularBuffer *rx_buffer;
 

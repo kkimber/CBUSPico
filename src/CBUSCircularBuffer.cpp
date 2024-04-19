@@ -50,7 +50,7 @@ bool CBUSCircularBuffer::available()
 ///
 /// @param item CANFrame to store in the circular buffer
 ///
-void CBUSCircularBuffer::put(const CANFrame &item)
+void __attribute__((section(".RAM"))) CBUSCircularBuffer::put(const CANFrame &item)
 {
    if (!m_buffer)
    {
