@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['notify_5fcb_493',['notify_cb',['../classCBUSACAN2040.html#a3d95ed70c8028f414c183083b68c7b1c',1,'CBUSACAN2040']]],
-  ['numevents_494',['numEvents',['../classCBUSConfig.html#ac144b400a84c160eed9b3c96dabe26b8',1,'CBUSConfig']]]
+  ['makeevhashtable_494',['makeEvHashTable',['../classCBUSConfig.html#a289efa9f78e20e4d54369780ca2c1a8f',1,'CBUSConfig']]],
+  ['makehash_495',['makeHash',['../classCBUSConfig.html#a4437d1ec71b80781ca1ae7b2568ba419',1,'CBUSConfig']]],
+  ['makeheader_496',['makeHeader',['../classCBUSbase.html#a1407c7fb864973f3fd1bea39184af1e0',1,'CBUSbase']]],
+  ['makeheader_5fimpl_497',['makeHeader_impl',['../CBUS_8cpp.html#ad0842b821cd2ea24cca1ebb6737e5d47',1,'CBUS.cpp']]]
 ];

@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['makeevhashtable_489',['makeEvHashTable',['../classCBUSConfig.html#a289efa9f78e20e4d54369780ca2c1a8f',1,'CBUSConfig']]],
-  ['makehash_490',['makeHash',['../classCBUSConfig.html#a4437d1ec71b80781ca1ae7b2568ba419',1,'CBUSConfig']]],
-  ['makeheader_491',['makeHeader',['../classCBUSbase.html#a1407c7fb864973f3fd1bea39184af1e0',1,'CBUSbase']]],
-  ['makeheader_5fimpl_492',['makeHeader_impl',['../CBUS_8cpp.html#ad0842b821cd2ea24cca1ebb6737e5d47',1,'CBUS.cpp']]]
+  ['loadnvs_493',['loadNVs',['../classCBUSConfig.html#ac911e839983ea7f628f2da7d04aaffa1',1,'CBUSConfig']]]
 ];

@@ -191,13 +191,13 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a3aa3ee99312bbf5b7eb3c4afb62b5511"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CBUS_8h.html#a3aa3ee99312bbf5b7eb3c4afb62b5511">eventCallback_t</a> = void(*)(uint8_t index, const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg)</td></tr>
+<tr class="memitem:a3aa3ee99312bbf5b7eb3c4afb62b5511"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CBUS_8h.html#a3aa3ee99312bbf5b7eb3c4afb62b5511">eventCallback_t</a> = void(*)(uint8_t index, const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>)</td></tr>
 <tr class="memdesc:a3aa3ee99312bbf5b7eb3c4afb62b5511"><td class="mdescLeft">&#160;</td><td class="mdescRight">Standard event callback type.  <a href="CBUS_8h.html#a3aa3ee99312bbf5b7eb3c4afb62b5511">More...</a><br /></td></tr>
 <tr class="separator:a3aa3ee99312bbf5b7eb3c4afb62b5511"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a755a0cd48c4040e08b7b8e6b8db1f0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CBUS_8h.html#a6a755a0cd48c4040e08b7b8e6b8db1f0">eventExCallback_t</a> = void(*)(uint8_t index, const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg, bool ison, uint8_t evval)</td></tr>
+<tr class="memitem:a6a755a0cd48c4040e08b7b8e6b8db1f0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CBUS_8h.html#a6a755a0cd48c4040e08b7b8e6b8db1f0">eventExCallback_t</a> = void(*)(uint8_t index, const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>, bool ison, uint8_t evval)</td></tr>
 <tr class="memdesc:a6a755a0cd48c4040e08b7b8e6b8db1f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extended event callback type.  <a href="CBUS_8h.html#a6a755a0cd48c4040e08b7b8e6b8db1f0">More...</a><br /></td></tr>
 <tr class="separator:a6a755a0cd48c4040e08b7b8e6b8db1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c31bef5eca8f3a4d680cf444f01d9de"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CBUS_8h.html#a8c31bef5eca8f3a4d680cf444f01d9de">frameCallback_t</a> = void(*)(<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg)</td></tr>
+<tr class="memitem:a8c31bef5eca8f3a4d680cf444f01d9de"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CBUS_8h.html#a8c31bef5eca8f3a4d680cf444f01d9de">frameCallback_t</a> = void(*)(<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>)</td></tr>
 <tr class="memdesc:a8c31bef5eca8f3a4d680cf444f01d9de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frame callback type.  <a href="CBUS_8h.html#a8c31bef5eca8f3a4d680cf444f01d9de">More...</a><br /></td></tr>
 <tr class="separator:a8c31bef5eca8f3a4d680cf444f01d9de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91013b482524acb97560dcb753d3a6f5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CBUS_8h.html#a91013b482524acb97560dcb753d3a6f5">longMessageCallback_t</a> = void(*)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status)</td></tr>
@@ -511,7 +511,7 @@ send_stream_id</td>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="CBUS_8h.html#a3aa3ee99312bbf5b7eb3c4afb62b5511">eventCallback_t</a> =  void (*)(uint8_t index, const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg)</td>
+          <td class="memname">using <a class="el" href="CBUS_8h.html#a3aa3ee99312bbf5b7eb3c4afb62b5511">eventCallback_t</a> =  void (*)(uint8_t index, const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -527,7 +527,7 @@ send_stream_id</td>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="CBUS_8h.html#a6a755a0cd48c4040e08b7b8e6b8db1f0">eventExCallback_t</a> =  void (*)(uint8_t index, const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg, bool ison, uint8_t evval)</td>
+          <td class="memname">using <a class="el" href="CBUS_8h.html#a6a755a0cd48c4040e08b7b8e6b8db1f0">eventExCallback_t</a> =  void (*)(uint8_t index, const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>, bool ison, uint8_t evval)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -543,7 +543,7 @@ send_stream_id</td>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="CBUS_8h.html#a8c31bef5eca8f3a4d680cf444f01d9de">frameCallback_t</a> =  void (*)(<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg)</td>
+          <td class="memname">using <a class="el" href="CBUS_8h.html#a8c31bef5eca8f3a4d680cf444f01d9de">frameCallback_t</a> =  void (*)(<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>)</td>
         </tr>
       </table>
 </div><div class="memdoc">

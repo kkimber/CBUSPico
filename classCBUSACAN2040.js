@@ -10,7 +10,7 @@ var classCBUSACAN2040 =
     [ "sendMessage", "classCBUSACAN2040.html#a285daee6270f8d1612519d2e05332dad", null ],
     [ "setNumBuffers", "classCBUSACAN2040.html#a1f84475644a47735edb46d82541b3aa5", null ],
     [ "setPins", "classCBUSACAN2040.html#a367ca216c5f2adfe378e7d1846a9fb76", null ],
-    [ "acan2040", "classCBUSACAN2040.html#ad0885ce8cbd7dee9f662e3be23a6d69a", null ],
+    [ "validateNV", "classCBUSACAN2040.html#ad85bf6ef7aaf613a2ae09c10161de99b", null ],
     [ "rx_buffer", "classCBUSACAN2040.html#a63ea241090b03f5475259fed4f062f7a", null ],
     [ "tx_buffer", "classCBUSACAN2040.html#a248e31c6f5808152d8a3e5ab645fd880", null ]
 ];

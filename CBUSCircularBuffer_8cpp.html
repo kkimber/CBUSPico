@@ -93,6 +93,8 @@ $(document).ready(function(){initNavTree('CBUSCircularBuffer_8cpp.html',''); ini
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">CBUSCircularBuffer.cpp File Reference</div>  </div>
 </div><!--header-->
@@ -112,7 +114,41 @@ Include dependency graph for CBUSCircularBuffer.cpp:</div>
 <area shape="rect" title=" " alt="" coords="130,155,197,181"/>
 </map>
 </div>
-</div></div><!-- contents -->
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a0b0bd949102d25a2e93151970e0b46f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="CBUSCircularBuffer_8cpp.html#a0b0bd949102d25a2e93151970e0b46f1">__attribute__</a> ((section(&quot;.RAM&quot;))) CBUSCircularBuffer</td></tr>
+<tr class="memdesc:a0b0bd949102d25a2e93151970e0b46f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store an item to the buffer - overwrite oldest item if buffer is full, only called from an interrupt context so we don't need to worry about subsequent interrupts.  <a href="CBUSCircularBuffer_8cpp.html#a0b0bd949102d25a2e93151970e0b46f1">More...</a><br /></td></tr>
+<tr class="separator:a0b0bd949102d25a2e93151970e0b46f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a0b0bd949102d25a2e93151970e0b46f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b0bd949102d25a2e93151970e0b46f1">&#9670;&nbsp;</a></span>__attribute__()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __attribute__ </td>
+          <td>(</td>
+          <td class="paramtype">(section(&quot;.RAM&quot;))&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Store an item to the buffer - overwrite oldest item if buffer is full, only called from an interrupt context so we don't need to worry about subsequent interrupts. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">item</td><td><a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame" title="Class to hold a CAN/CBUS frame.">CANFrame</a> to store in the circular buffer </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

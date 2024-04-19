@@ -8,7 +8,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "CBUS.h", "CBUS_8h.html", "CBUS_8h" ],
     [ "CBUSACAN2040.cpp", "CBUSACAN2040_8cpp.html", "CBUSACAN2040_8cpp" ],
     [ "CBUSACAN2040.h", "CBUSACAN2040_8h.html", "CBUSACAN2040_8h" ],
-    [ "CBUSCircularBuffer.cpp", "CBUSCircularBuffer_8cpp.html", null ],
+    [ "CBUSCircularBuffer.cpp", "CBUSCircularBuffer_8cpp.html", "CBUSCircularBuffer_8cpp" ],
     [ "CBUSCircularBuffer.h", "CBUSCircularBuffer_8h.html", [
       [ "CANFrame", "CBUSCircularBuffer_8h.html#classCANFrame", [
         [ "data", "CBUSCircularBuffer_8h.html#a42d1ffa59dc4f825e6eacad28d967cd0", null ],

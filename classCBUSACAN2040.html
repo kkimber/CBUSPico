@@ -95,7 +95,9 @@ $(document).ready(function(){initNavTree('classCBUSACAN2040.html',''); initResiz
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classCBUSACAN2040-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CBUSACAN2040 Class Reference</div>  </div>
@@ -150,7 +152,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a52939960114e4fbf898a14c68de804ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#a52939960114e4fbf898a14c68de804ce">getNextMessage</a> (void) override</td></tr>
 <tr class="memdesc:a52939960114e4fbf898a14c68de804ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">must call <a class="el" href="classCBUSACAN2040.html#a5429a218e38b388a9dadb8f70f26ec85" title="callback">available()</a> first to ensure a message is available in the buffer  <a href="classCBUSACAN2040.html#a52939960114e4fbf898a14c68de804ce">More...</a><br /></td></tr>
 <tr class="separator:a52939960114e4fbf898a14c68de804ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a285daee6270f8d1612519d2e05332dad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#a285daee6270f8d1612519d2e05332dad">sendMessage</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg, bool rtr=false, bool ext=false, uint8_t priority=<a class="el" href="CBUS_8h.html#a0756f011ef667460d583017366823244">DEFAULT_PRIORITY</a>) override</td></tr>
+<tr class="memitem:a285daee6270f8d1612519d2e05332dad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#a285daee6270f8d1612519d2e05332dad">sendMessage</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>, bool rtr=false, bool ext=false, uint8_t priority=<a class="el" href="CBUS_8h.html#a0756f011ef667460d583017366823244">DEFAULT_PRIORITY</a>) override</td></tr>
 <tr class="memdesc:a285daee6270f8d1612519d2e05332dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">send a CBUS message  <a href="classCBUSACAN2040.html#a285daee6270f8d1612519d2e05332dad">More...</a><br /></td></tr>
 <tr class="separator:a285daee6270f8d1612519d2e05332dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2d5070234e6d590dd5920f3e439053d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#ae2d5070234e6d590dd5920f3e439053d">reset</a> (void) override</td></tr>
@@ -160,9 +162,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1f84475644a47735edb46d82541b3aa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a367ca216c5f2adfe378e7d1846a9fb76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#a367ca216c5f2adfe378e7d1846a9fb76">setPins</a> (uint8_t tx_pin, uint8_t rx_pin)</td></tr>
 <tr class="separator:a367ca216c5f2adfe378e7d1846a9fb76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d95ed70c8028f414c183083b68c7b1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#a3d95ed70c8028f414c183083b68c7b1c">notify_cb</a> (struct can2040 *cd, uint32_t notify, struct can2040_msg *amsg)</td></tr>
-<tr class="memdesc:a3d95ed70c8028f414c183083b68c7b1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">callback  <a href="classCBUSACAN2040.html#a3d95ed70c8028f414c183083b68c7b1c">More...</a><br /></td></tr>
+<tr class="memitem:a3d95ed70c8028f414c183083b68c7b1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#a3d95ed70c8028f414c183083b68c7b1c">notify_cb</a> (struct can2040 *cd, uint32_t <a class="el" href="CBUSACAN2040_8cpp.html#a674da8eef20a253474cd7e0202629b12">notify</a>, struct can2040_msg *amsg)</td></tr>
 <tr class="separator:a3d95ed70c8028f414c183083b68c7b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad85bf6ef7aaf613a2ae09c10161de99b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#ad85bf6ef7aaf613a2ae09c10161de99b">validateNV</a> (const uint8_t NVindex, const uint8_t oldValue, const uint8_t NVvalue) override</td></tr>
+<tr class="memdesc:ad85bf6ef7aaf613a2ae09c10161de99b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate an NV value.  <a href="classCBUSACAN2040.html#ad85bf6ef7aaf613a2ae09c10161de99b">More...</a><br /></td></tr>
+<tr class="separator:ad85bf6ef7aaf613a2ae09c10161de99b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classCBUSbase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classCBUSbase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classCBUSbase.html">CBUSbase</a></td></tr>
 <tr class="memitem:afa37bdb86e824b6ee627408156e61d57 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#afa37bdb86e824b6ee627408156e61d57">CBUSbase</a> (<a class="el" href="classCBUSConfig.html">CBUSConfig</a> &amp;config)</td></tr>
 <tr class="separator:afa37bdb86e824b6ee627408156e61d57 inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -207,10 +211,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab0580c1201ec323b86d72fafcaa41a6a inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#ab0580c1201ec323b86d72fafcaa41a6a">getCANID</a> (uint32_t header)</td></tr>
 <tr class="memdesc:ab0580c1201ec323b86d72fafcaa41a6a inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">extract CANID from CAN frame header  <a href="classCBUSbase.html#ab0580c1201ec323b86d72fafcaa41a6a">More...</a><br /></td></tr>
 <tr class="separator:ab0580c1201ec323b86d72fafcaa41a6a inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a59691ff08b099b9c3375c0d22de899 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a8a59691ff08b099b9c3375c0d22de899">isExt</a> (const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg) const</td></tr>
+<tr class="memitem:a8a59691ff08b099b9c3375c0d22de899 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a8a59691ff08b099b9c3375c0d22de899">isExt</a> (const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>) const</td></tr>
 <tr class="memdesc:a8a59691ff08b099b9c3375c0d22de899 inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">is this an Extended CAN frame ?  <a href="classCBUSbase.html#a8a59691ff08b099b9c3375c0d22de899">More...</a><br /></td></tr>
 <tr class="separator:a8a59691ff08b099b9c3375c0d22de899 inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae375971b427d9353329ec57fc85d61e9 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#ae375971b427d9353329ec57fc85d61e9">isRTR</a> (const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg) const</td></tr>
+<tr class="memitem:ae375971b427d9353329ec57fc85d61e9 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#ae375971b427d9353329ec57fc85d61e9">isRTR</a> (const <a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>) const</td></tr>
 <tr class="memdesc:ae375971b427d9353329ec57fc85d61e9 inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">is this a Remote frame ?  <a href="classCBUSbase.html#ae375971b427d9353329ec57fc85d61e9">More...</a><br /></td></tr>
 <tr class="separator:ae375971b427d9353329ec57fc85d61e9 inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8887c1e7e0fed5607f62a3eeb24e3edc inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a8887c1e7e0fed5607f62a3eeb24e3edc">process</a> (uint8_t num_messages=3)</td></tr>
@@ -248,7 +252,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a796c466f0b4fd6bc943b8e136ef877ec inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a11d33b375ea49a896d9df675934019 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a6a11d33b375ea49a896d9df675934019">setFrameHandler</a> (<a class="el" href="CBUS_8h.html#a8c31bef5eca8f3a4d680cf444f01d9de">frameCallback_t</a>, uint8_t *opcodes=nullptr, uint8_t num_opcodes=0)</td></tr>
 <tr class="separator:a6a11d33b375ea49a896d9df675934019 inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1407c7fb864973f3fd1bea39184af1e0 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a1407c7fb864973f3fd1bea39184af1e0">makeHeader</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg, uint8_t priority=<a class="el" href="CBUS_8h.html#a0756f011ef667460d583017366823244">DEFAULT_PRIORITY</a>)</td></tr>
+<tr class="memitem:a1407c7fb864973f3fd1bea39184af1e0 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a1407c7fb864973f3fd1bea39184af1e0">makeHeader</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>, uint8_t priority=<a class="el" href="CBUS_8h.html#a0756f011ef667460d583017366823244">DEFAULT_PRIORITY</a>)</td></tr>
 <tr class="memdesc:a1407c7fb864973f3fd1bea39184af1e0 inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">utility method to populate a CBUS message header  <a href="classCBUSbase.html#a1407c7fb864973f3fd1bea39184af1e0">More...</a><br /></td></tr>
 <tr class="separator:a1407c7fb864973f3fd1bea39184af1e0 inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30e578406873081f7882534eee232dc2 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a30e578406873081f7882534eee232dc2">setLongMessageHandler</a> (<a class="el" href="classCBUSLongMessage.html">CBUSLongMessage</a> *handler)</td></tr>
@@ -256,19 +260,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a30e578406873081f7882534eee232dc2 inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82300423f4a11711ce29e24d83c08e9f inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a82300423f4a11711ce29e24d83c08e9f">consumeOwnEvents</a> (<a class="el" href="classCBUScoe.html">CBUScoe</a> *coe)</td></tr>
 <tr class="separator:a82300423f4a11711ce29e24d83c08e9f inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa9f7d57748282083fa6581eb41fe980 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#aaa9f7d57748282083fa6581eb41fe980">validateNV</a> (const uint8_t NVindex, const uint8_t oldValue, const uint8_t NVvalue)</td></tr>
-<tr class="memdesc:aaa9f7d57748282083fa6581eb41fe980 inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate a new NV value.  <a href="classCBUSbase.html#aaa9f7d57748282083fa6581eb41fe980">More...</a><br /></td></tr>
-<tr class="separator:aaa9f7d57748282083fa6581eb41fe980 inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb5904250317acf48ccead4513bc5bff inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#abb5904250317acf48ccead4513bc5bff">actUponNVchange</a> (const uint8_t NVindex, const uint8_t oldValue, const uint8_t NVvalue)</td></tr>
 <tr class="memdesc:abb5904250317acf48ccead4513bc5bff inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies of change of NV value, allowing module specific processing.  <a href="classCBUSbase.html#abb5904250317acf48ccead4513bc5bff">More...</a><br /></td></tr>
 <tr class="separator:abb5904250317acf48ccead4513bc5bff inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39c9e9c81a882a38cd53e49d9dd3f67a inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a39c9e9c81a882a38cd53e49d9dd3f67a">parseCBUSMsg</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg)</td></tr>
+<tr class="memitem:a39c9e9c81a882a38cd53e49d9dd3f67a inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a39c9e9c81a882a38cd53e49d9dd3f67a">parseCBUSMsg</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>)</td></tr>
 <tr class="memdesc:a39c9e9c81a882a38cd53e49d9dd3f67a inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process CBUS opcodes. Anything module explicit will already been deault with in the application code before calling here.  <a href="classCBUSbase.html#a39c9e9c81a882a38cd53e49d9dd3f67a">More...</a><br /></td></tr>
 <tr class="separator:a39c9e9c81a882a38cd53e49d9dd3f67a inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9cd1664a8ad833d86f03bc2f6f36406d inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a9cd1664a8ad833d86f03bc2f6f36406d">parseCBUSEvent</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg)</td></tr>
+<tr class="memitem:a9cd1664a8ad833d86f03bc2f6f36406d inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a9cd1664a8ad833d86f03bc2f6f36406d">parseCBUSEvent</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>)</td></tr>
 <tr class="memdesc:a9cd1664a8ad833d86f03bc2f6f36406d inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumes a CBUS event.  <a href="classCBUSbase.html#a9cd1664a8ad833d86f03bc2f6f36406d">More...</a><br /></td></tr>
 <tr class="separator:a9cd1664a8ad833d86f03bc2f6f36406d inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23988b901fb78d77573aab85158d2817 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a23988b901fb78d77573aab85158d2817">parseFLiMCmd</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;msg)</td></tr>
+<tr class="memitem:a23988b901fb78d77573aab85158d2817 inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#a23988b901fb78d77573aab85158d2817">parseFLiMCmd</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>)</td></tr>
 <tr class="memdesc:a23988b901fb78d77573aab85158d2817 inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process CBUS opcode for FLiM. Called after any module specific CBUS opcodes have been dealt with.  <a href="classCBUSbase.html#a23988b901fb78d77573aab85158d2817">More...</a><br /></td></tr>
 <tr class="separator:a23988b901fb78d77573aab85158d2817 inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5768b5d0f5514a3146ce84a4300212c inherit pub_methods_classCBUSbase"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#aa5768b5d0f5514a3146ce84a4300212c">getParFlags</a> (void)</td></tr>
@@ -332,10 +333,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a01864f1fbcab0b781aa04209ebae7c4a inherit pub_methods_classCBUSbase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve internal CBUS Switch UI object it can be configured The caller is expected to call <a class="el" href="classCBUSSwitch.html#aabf1595df7656194f54cc4df58bceaf9" title="Set the pin for this Switch, defines if the button is active HIGH or LOW configures the pin as a GPIO...">CBUSSwitch::setPin()</a> on the returned object.  <a href="classCBUSbase.html#a01864f1fbcab0b781aa04209ebae7c4a">More...</a><br /></td></tr>
 <tr class="separator:a01864f1fbcab0b781aa04209ebae7c4a inherit pub_methods_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a6091bcd2bb3a8abf7e9816a839949bbb"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#a6091bcd2bb3a8abf7e9816a839949bbb">sendCANMessage</a> (<a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;<a class="el" href="CBUSACAN2040_8cpp.html#a8a9bf1c088ccfcbd220ac27a3ee6a7dc">msg</a>)</td></tr>
+<tr class="memdesc:a6091bcd2bb3a8abf7e9816a839949bbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transmit a CAN frame.  <a href="classCBUSACAN2040.html#a6091bcd2bb3a8abf7e9816a839949bbb">More...</a><br /></td></tr>
+<tr class="separator:a6091bcd2bb3a8abf7e9816a839949bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ad0885ce8cbd7dee9f662e3be23a6d69a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classACAN2040.html">ACAN2040</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#ad0885ce8cbd7dee9f662e3be23a6d69a">acan2040</a></td></tr>
-<tr class="separator:ad0885ce8cbd7dee9f662e3be23a6d69a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a248e31c6f5808152d8a3e5ab645fd880"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCBUSCircularBuffer.html">CBUSCircularBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#a248e31c6f5808152d8a3e5ab645fd880">tx_buffer</a></td></tr>
 <tr class="separator:a248e31c6f5808152d8a3e5ab645fd880"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63ea241090b03f5475259fed4f062f7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classCBUSCircularBuffer.html">CBUSCircularBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#a63ea241090b03f5475259fed4f062f7a">rx_buffer</a></td></tr>
@@ -345,6 +350,12 @@ Public Attributes</h2></td></tr>
 <tr class="separator:af0195ef47f15e1564907ab963ade18f6 inherit pub_attribs_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba21f6b53567d74a448b6063ca67f809 inherit pub_attribs_classCBUSbase"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSbase.html#aba21f6b53567d74a448b6063ca67f809">m_numMsgsRcvd</a></td></tr>
 <tr class="separator:aba21f6b53567d74a448b6063ca67f809 inherit pub_attribs_classCBUSbase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:ad0885ce8cbd7dee9f662e3be23a6d69a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classACAN2040.html">ACAN2040</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSACAN2040.html#ad0885ce8cbd7dee9f662e3be23a6d69a">acan2040</a> = nullptr</td></tr>
+<tr class="memdesc:ad0885ce8cbd7dee9f662e3be23a6d69a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static pointer to <a class="el" href="classACAN2040.html" title="Library class that wraps the CAN2040 code.">ACAN2040</a> class to manage CAN connection.  <a href="classCBUSACAN2040.html#ad0885ce8cbd7dee9f662e3be23a6d69a">More...</a><br /></td></tr>
+<tr class="separator:ad0885ce8cbd7dee9f662e3be23a6d69a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -575,8 +586,6 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>callback </p>
-
 </div>
 </div>
 <a id="ae2d5070234e6d590dd5920f3e439053d"></a>
@@ -606,6 +615,43 @@ Additional Inherited Members</h2></td></tr>
 <p>reset the CAN transceiver </p>
 
 <p>Implements <a class="el" href="classCBUSbase.html#a15bb94382444966ee8e79aa5c825e417">CBUSbase</a>.</p>
+
+</div>
+</div>
+<a id="a6091bcd2bb3a8abf7e9816a839949bbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6091bcd2bb3a8abf7e9816a839949bbb">&#9670;&nbsp;</a></span>sendCANMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CBUSACAN2040::sendCANMessage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="CBUSCircularBuffer_8h.html#classCANFrame">CANFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transmit a CAN frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">msg</td><td>CAN frame to transmit </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true frame queued for transmission </dd>
+<dd>
+false frame was not queued for transmission </dd></dl>
 
 </div>
 </div>
@@ -719,18 +765,83 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="ad85bf6ef7aaf613a2ae09c10161de99b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad85bf6ef7aaf613a2ae09c10161de99b">&#9670;&nbsp;</a></span>validateNV()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CBUSACAN2040::validateNV </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>NVindex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>oldValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>NVvalue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate an NV value. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">NVindex</td><td>Index of the NV to validate </td></tr>
+    <tr><td class="paramname">oldValue</td><td>Previous value of the NV </td></tr>
+    <tr><td class="paramname">NVvalue</td><td>New value of the NV </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>false to prevent any updates to any NVs </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classCBUSbase.html#aaa9f7d57748282083fa6581eb41fe980">CBUSbase</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="ad0885ce8cbd7dee9f662e3be23a6d69a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad0885ce8cbd7dee9f662e3be23a6d69a">&#9670;&nbsp;</a></span>acan2040</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classACAN2040.html">ACAN2040</a>* CBUSACAN2040::acan2040</td>
+          <td class="memname"><a class="el" href="classACAN2040.html">ACAN2040</a>* CBUSACAN2040::acan2040 = nullptr</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Static pointer to <a class="el" href="classACAN2040.html" title="Library class that wraps the CAN2040 code.">ACAN2040</a> class to manage CAN connection. </p>
 
 </div>
 </div>
