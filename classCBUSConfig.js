@@ -35,7 +35,7 @@ var classCBUSConfig =
     [ "resetEEPROM", "classCBUSConfig.html#a4a335dbc6ebd43843eaf08188f92b6fc", null ],
     [ "resetModule", "classCBUSConfig.html#a5f79d36aa7d88e125a40171dce41bcf2", null ],
     [ "resetModule", "classCBUSConfig.html#a8e4dd6a2c956810bf6b1ed857e41bfc4", null ],
-    [ "setCANID", "classCBUSConfig.html#a5732139949b3dbff43f496388ea7568a", null ],
+    [ "setCANID", "classCBUSConfig.html#a705fa45b9345ead336abc4c2ee9b99e4", null ],
     [ "setChipEEPROMVal", "classCBUSConfig.html#aa2f81a90805daf68bc0ba3fea4c691d4", null ],
     [ "setEEPROMtype", "classCBUSConfig.html#a640e633392cf9f6dcd5373504cb3973c", null ],
     [ "setExtEEPROMAddress", "classCBUSConfig.html#ab491da30c90d0607dd416674d6a267aa", null ],

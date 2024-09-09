@@ -204,9 +204,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af01635afc192d8f9e380426cfc79bf2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSConfig.html#af01635afc192d8f9e380426cfc79bf2a">commitChanges</a> (void)</td></tr>
 <tr class="memdesc:af01635afc192d8f9e380426cfc79bf2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit changes to flash.  <a href="classCBUSConfig.html#af01635afc192d8f9e380426cfc79bf2a">More...</a><br /></td></tr>
 <tr class="separator:af01635afc192d8f9e380426cfc79bf2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5732139949b3dbff43f496388ea7568a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSConfig.html#a5732139949b3dbff43f496388ea7568a">setCANID</a> (uint8_t canid)</td></tr>
-<tr class="memdesc:a5732139949b3dbff43f496388ea7568a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the CANID and cache the valie.  <a href="classCBUSConfig.html#a5732139949b3dbff43f496388ea7568a">More...</a><br /></td></tr>
-<tr class="separator:a5732139949b3dbff43f496388ea7568a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a705fa45b9345ead336abc4c2ee9b99e4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSConfig.html#a705fa45b9345ead336abc4c2ee9b99e4">setCANID</a> (uint8_t canid)</td></tr>
+<tr class="memdesc:a705fa45b9345ead336abc4c2ee9b99e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the CANID and cache the valie.  <a href="classCBUSConfig.html#a705fa45b9345ead336abc4c2ee9b99e4">More...</a><br /></td></tr>
+<tr class="separator:a705fa45b9345ead336abc4c2ee9b99e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec9425bf280df64f9de81f8bf46e56da"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSConfig.html#aec9425bf280df64f9de81f8bf46e56da">getCANID</a> (void)</td></tr>
 <tr class="separator:aec9425bf280df64f9de81f8bf46e56da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d339abc268724fcbacb2b4866e68b10"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCBUSConfig.html#a4d339abc268724fcbacb2b4866e68b10">setFLiM</a> (bool flim)</td></tr>
@@ -1155,14 +1155,14 @@ false Reset flag is not set </dd></dl>
 
 </div>
 </div>
-<a id="a5732139949b3dbff43f496388ea7568a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5732139949b3dbff43f496388ea7568a">&#9670;&nbsp;</a></span>setCANID()</h2>
+<a id="a705fa45b9345ead336abc4c2ee9b99e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a705fa45b9345ead336abc4c2ee9b99e4">&#9670;&nbsp;</a></span>setCANID()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void CBUSConfig::setCANID </td>
+          <td class="memname">bool CBUSConfig::setCANID </td>
           <td>(</td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>canid</em></td><td>)</td>
@@ -1178,6 +1178,7 @@ false Reset flag is not set </dd></dl>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the CAN ID is valid </dd></dl>
 
 </div>
 </div>

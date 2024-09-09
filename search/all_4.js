@@ -1,10 +1,12 @@
 var searchData=
 [
-  ['data_102',['data',['../CBUSCircularBuffer_8h.html#a42d1ffa59dc4f825e6eacad28d967cd0',1,'CANFrame']]],
-  ['default_5fcanid_103',['DEFAULT_CANID',['../CBUSConfig_8cpp.html#a77ba3a4ddf7493845cd89b3bc225e1ed',1,'CBUSConfig.cpp']]],
-  ['default_5fnn_104',['DEFAULT_NN',['../CBUSConfig_8cpp.html#ad7e07f38b63ebcc2b302cbc8db0e973d',1,'CBUSConfig.cpp']]],
-  ['default_5fpriority_105',['DEFAULT_PRIORITY',['../CBUS_8h.html#a0756f011ef667460d583017366823244',1,'CBUS.h']]],
-  ['disableirqs_106',['disableIRQs',['../classCBUSConfig.html#a20b7b2c677281daa03b65306a64701d6',1,'CBUSConfig']]],
+  ['data_100',['data',['../CBUSCircularBuffer_8h.html#a42d1ffa59dc4f825e6eacad28d967cd0',1,'CANFrame']]],
+  ['debounce_5fdelay_101',['DEBOUNCE_DELAY',['../CBUSSwitch_8cpp.html#aeafb521b105278596f7e9b4103e2c66f',1,'CBUSSwitch.cpp']]],
+  ['default_5fcanid_102',['DEFAULT_CANID',['../CBUSConfig_8cpp.html#a77ba3a4ddf7493845cd89b3bc225e1ed',1,'CBUSConfig.cpp']]],
+  ['default_5fnn_103',['DEFAULT_NN',['../CBUSConfig_8cpp.html#ad7e07f38b63ebcc2b302cbc8db0e973d',1,'CBUSConfig.cpp']]],
+  ['default_5fpriority_104',['DEFAULT_PRIORITY',['../CBUS_8h.html#a0756f011ef667460d583017366823244',1,'CBUS.h']]],
+  ['disableirqs_105',['disableIRQs',['../classCBUSConfig.html#a20b7b2c677281daa03b65306a64701d6',1,'CBUSConfig']]],
+  ['doenum_106',['doEnum',['../classCBUSbase.html#a677b7494af204b4a616f2036121adc19',1,'CBUSbase']]],
   ['doevlrn_107',['doEvlrn',['../classCBUSbase.html#a2c9c96adef00f094b520258bebb58f6f',1,'CBUSbase']]],
   ['doevuln_108',['doEvuln',['../classCBUSbase.html#a06430682bb4021081043128da4b5f09a',1,'CBUSbase']]],
   ['donenrd_109',['doNenrd',['../classCBUSbase.html#a416c84ddbd3f655c8c9801c780e248f0',1,'CBUSbase']]],

@@ -1,10 +1,4 @@
 var searchData=
 [
-  ['send_5fbuffer_5findex_693',['send_buffer_index',['../CBUS_8h.html#aaf8e318eaa23f8f6fbd62510ecb993c8',1,'send_context_t']]],
-  ['send_5fbuffer_5flen_694',['send_buffer_len',['../CBUS_8h.html#a88577b743330b2f10db7cd2eb2c4b178',1,'send_context_t']]],
-  ['send_5fpriority_695',['send_priority',['../CBUS_8h.html#a94f4b0273f6cd0b54c378bd5dd7e8114',1,'send_context_t']]],
-  ['send_5fsequence_5fnum_696',['send_sequence_num',['../CBUS_8h.html#aec48b35029e1b95f9ea1365fb18de178',1,'send_context_t']]],
-  ['send_5fstream_5fid_697',['send_stream_id',['../CBUS_8h.html#a0cf45d5bac94e7c1214acc431ffab483',1,'send_context_t']]],
-  ['sender_5fcanid_698',['sender_canid',['../CBUS_8h.html#a07e926b7d96b7ec8739401b26c24e1e5',1,'receive_context_t']]],
-  ['short_5ffilcker_5ftime_699',['SHORT_FILCKER_TIME',['../CBUSLED_8cpp.html#a47496dde9a7b627b9f711f31a1ff23d5',1,'CBUSLED.cpp']]]
+  ['tx_5fbuffer_724',['tx_buffer',['../classCBUSACAN2040.html#a248e31c6f5808152d8a3e5ab645fd880',1,'CBUSACAN2040']]]
 ];

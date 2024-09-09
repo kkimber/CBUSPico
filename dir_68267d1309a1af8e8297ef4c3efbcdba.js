@@ -32,7 +32,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "CBUSLongMessage.cpp", "CBUSLongMessage_8cpp.html", "CBUSLongMessage_8cpp" ],
     [ "CBUSParams.cpp", "CBUSParams_8cpp.html", null ],
     [ "CBUSParams.h", "CBUSParams_8h.html", "CBUSParams_8h" ],
-    [ "CBUSSwitch.cpp", "CBUSSwitch_8cpp.html", null ],
+    [ "CBUSSwitch.cpp", "CBUSSwitch_8cpp.html", "CBUSSwitch_8cpp" ],
     [ "CBUSSwitch.h", "CBUSSwitch_8h.html", [
       [ "CBUSSwitch", "classCBUSSwitch.html", "classCBUSSwitch" ]
     ] ],

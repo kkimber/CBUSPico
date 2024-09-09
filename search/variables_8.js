@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['id_646',['id',['../CBUSCircularBuffer_8h.html#a363e65c6b16e876b62b7b6601450afec',1,'CANFrame']]],
-  ['in_5fuse_647',['in_use',['../CBUS_8h.html#ae3c693526f89cbf6a6a8c02a97bbc9fc',1,'receive_context_t::in_use()'],['../CBUS_8h.html#a40373fb543291b5be815337fa621f156',1,'send_context_t::in_use()']]],
-  ['incoming_5fbytes_5freceived_648',['incoming_bytes_received',['../CBUS_8h.html#af2bbe36612e2ecba4767917d5976b44e',1,'receive_context_t']]],
-  ['incoming_5fmessage_5fcrc_649',['incoming_message_crc',['../CBUS_8h.html#a983b9333b86183e77ded5ba3818d2b95',1,'receive_context_t']]],
-  ['incoming_5fmessage_5flength_650',['incoming_message_length',['../CBUS_8h.html#add4de5b2dc11cdc5d5a67a542353a7ad',1,'receive_context_t']]]
+  ['last_5ffragment_5freceived_672',['last_fragment_received',['../CBUS_8h.html#ab416de5c943bc5bc0bc8f46afc6f55e1',1,'receive_context_t']]],
+  ['last_5ffragment_5fsent_673',['last_fragment_sent',['../CBUS_8h.html#af3e88e8dff5f2c9f75f3506cf65fdea0',1,'send_context_t']]],
+  ['len_674',['len',['../CBUSCircularBuffer_8h.html#a409a3c26b60661f3fb537b7838913c0a',1,'CANFrame']]],
+  ['long_5fflicker_5ftime_675',['LONG_FLICKER_TIME',['../CBUSLED_8cpp.html#af352d1847975c5f415ff0db362a6435b',1,'CBUSLED.cpp']]],
+  ['longmessagehandler_676',['longMessageHandler',['../classCBUSbase.html#a5bbfa168d31d120f216f33ebf5d8538b',1,'CBUSbase']]]
 ];
