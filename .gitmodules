@@ -4,3 +4,6 @@
 [submodule "src/cbusdefs"]
 	path = src/cbusdefs
 	url = https://github.com/MERG-DEV/cbusdefs.git
+[submodule "src/CBUSPicoLib"]
+	path = src/CBUSPicoLib
+	url = https://github.com/kkimber/CBUSPicoLib.git
