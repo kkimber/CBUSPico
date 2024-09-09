@@ -1,4 +1,0 @@
-<map id="CBUSLongMessageEx" name="CBUSLongMessageEx">
-<area shape="rect" id="node1" title="A derived class to extend the base long message class to handle multiple concurrent messages,..." alt="" coords="5,80,168,107"/>
-<area shape="rect" id="node2" href="$classCBUSLongMessage.html" title="A basic class to send and receive CBUS long messages per MERG RFC 0005, handles a single message,..." alt="" coords="13,5,160,32"/>
-</map>

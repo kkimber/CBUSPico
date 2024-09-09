@@ -1,4 +1,0 @@
-var CBUSACAN2040_8h =
-[
-    [ "CBUSACAN2040", "classCBUSACAN2040.html", "classCBUSACAN2040" ]
-];

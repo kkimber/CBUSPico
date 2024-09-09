@@ -1,4 +1,0 @@
-<map id="CBUSACAN2040" name="CBUSACAN2040">
-<area shape="rect" id="node1" title="An implementation of the abstract base CBUSbased class using the ACAN2040 wrapper of the RP2040 PIO C..." alt="" coords="5,80,133,107"/>
-<area shape="rect" id="node2" href="$classCBUSbase.html" title="An abstract class to encapsulate CAN bus and CBUS processing for a CBUS module, it must be implemente..." alt="" coords="25,5,114,32"/>
-</map>

@@ -97,34 +97,34 @@ $(document).ready(function(){initNavTree('md_doc_cbus.html',''); initResizable()
 <div class="title">CBUS Core </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Core functionality for a CBUS module is provided by the base class, <a class="el" href="classCBUSbase.html" title="An abstract class to encapsulate CAN bus and CBUS processing for a CBUS module, it must be implemente...">CBUSbase</a>. CBUS Modules are implemented by deriving a class from this base class, which allows the core CBUS functionality to be bound to a suitable external interface, normally CAN.</p>
+<div class="textblock"><p>Core functionality for a CBUS module is provided by the base class, CBUSbase. CBUS Modules are implemented by deriving a class from this base class, which allows the core CBUS functionality to be bound to a suitable external interface, normally CAN.</p>
 <p>The base class requires the derived class to implement a number of pure virtual methods defined in the base class to orovide the interface between the CBUS functionality and the specific external inteface. These methods are:</p>
 <ul>
-<li><a class="el" href="classCBUSbase.html#a645f1658ea21b266244e0e464b5bf5aa">CBUSbase::begin</a></li>
-<li><a class="el" href="classCBUSbase.html#a4cdd760a3e42285b8e0800b103871ea2">CBUSbase::available</a></li>
-<li><a class="el" href="classCBUSbase.html#aeaf97942841d8fbf8ea77af7ddc7641b">CBUSbase::getNextMessage</a></li>
-<li><a class="el" href="classCBUSbase.html#a068657e7aff8ce3b32f417af87673c25">CBUSbase::sendMessage</a></li>
-<li><a class="el" href="classCBUSbase.html#a15bb94382444966ee8e79aa5c825e417">CBUSbase::reset</a></li>
+<li>CBUSbase::begin</li>
+<li>CBUSbase::available</li>
+<li>CBUSbase::getNextMessage</li>
+<li>CBUSbase::sendMessage</li>
+<li>CBUSbase::reset</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md10"></a>
 begin</h1>
 <p>This method is responsible for initializing the CBUS module, typical resposibilities include allocating buffers for frames, setting up ISR etc.</p>
 <h1><a class="anchor" id="autotoc_md11"></a>
 available</h1>
-<p>The available method is called to determine if data has been received from the external interface and is therefore available for processing. Should the available method indicate a frame is available, <a class="el" href="classCBUSbase.html" title="An abstract class to encapsulate CAN bus and CBUS processing for a CBUS module, it must be implemente...">CBUSbase</a> will retrieve messages via getNextMessage.</p>
+<p>The available method is called to determine if data has been received from the external interface and is therefore available for processing. Should the available method indicate a frame is available, CBUSbase will retrieve messages via getNextMessage.</p>
 <h1><a class="anchor" id="autotoc_md12"></a>
 getNextMessage</h1>
 <p>getNextMessage is called to retrieve the next stored frame from the external interface.</p>
 <h1><a class="anchor" id="autotoc_md13"></a>
 sendMessage</h1>
-<p>sendMessage is called from <a class="el" href="classCBUSbase.html" title="An abstract class to encapsulate CAN bus and CBUS processing for a CBUS module, it must be implemente...">CBUSbase</a> to transmit messages on the external interface.</p>
+<p>sendMessage is called from CBUSbase to transmit messages on the external interface.</p>
 <h1><a class="anchor" id="autotoc_md14"></a>
 reset</h1>
 <p>The reset method should reset the state of the CAN controller and associated memory buffers.</p>
 <h1><a class="anchor" id="autotoc_md15"></a>
 Related Classes</h1>
 <ul>
-<li><a class="el" href="classCBUSbase.html" title="An abstract class to encapsulate CAN bus and CBUS processing for a CBUS module, it must be implemente...">CBUSbase</a> base class providing CBUS functionality</li>
+<li>CBUSbase base class providing CBUS functionality</li>
 </ul>
 <div class="section_buttons"></div><div class="section_buttons"><table class="markdownTable">
 <tr class="markdownTableHead">

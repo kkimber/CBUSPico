@@ -1,9 +1,0 @@
-<map id="src/CBUSParams.h" name="src/CBUSParams.h">
-<area shape="rect" id="node1" title=" " alt="" coords="223,5,365,32"/>
-<area shape="rect" id="node2" href="$CBUS_8h.html" title=" " alt="" coords="173,80,266,107"/>
-<area shape="rect" id="node7" href="$CBUSParams_8cpp.html" title=" " alt="" coords="291,80,447,107"/>
-<area shape="rect" id="node3" href="$CBUS_8cpp.html" title=" " alt="" coords="5,155,113,181"/>
-<area shape="rect" id="node4" href="$CBUSACAN2040_8h.html" title=" " alt="" coords="138,155,301,181"/>
-<area shape="rect" id="node6" href="$CBUSLongMessage_8cpp.html" title=" " alt="" coords="325,155,522,181"/>
-<area shape="rect" id="node5" href="$CBUSACAN2040_8cpp.html" title=" " alt="" coords="130,229,309,256"/>
-</map>
