@@ -264,11 +264,19 @@ void CBUSConfig::setFLiM(bool flim)
 /// @brief Store the CANID and cache the valie
 ///
 /// @param canid New CAN ID for the module
+/// @return true if the CAN ID is valid
 ///
-void CBUSConfig::setCANID(uint8_t canid)
+bool CBUSConfig::setCANID(uint8_t canid)
 {
-   m_canId = canid;
-   writeEEPROM(OFS_CAN_ID, canid);
+   if ((canid >= 1) && (canid <= 99))
+   {
+      m_canId = canid;
+      writeEEPROM(OFS_CAN_ID, canid);
+
+      return true;
+   }
+   
+   return false;
 }
 
 ///

@@ -186,7 +186,11 @@ void __attribute__((section(".RAM"))) CBUSACAN2040::notify_cb(struct can2040 *cd
 
       if (rx_buffer)
       {
-         rx_buffer->put(msg);
+         // Examine incoming frame for CAN ID self-enum etc.
+         if (checkIncomingFrame(msg))
+         {
+            rx_buffer->put(msg);
+         }
       }
       break;
 

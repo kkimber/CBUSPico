@@ -124,7 +124,7 @@ public:
    void commitChanges(void);
 
    // CBUS Addressing
-   void setCANID(uint8_t canid);
+   bool setCANID(uint8_t canid);
    inline uint8_t getCANID(void) { return m_canId; };
    void setFLiM(bool flim);
    inline bool getFLiM(void) { return m_bFLiM; };

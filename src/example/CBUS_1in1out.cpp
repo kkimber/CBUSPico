@@ -227,7 +227,16 @@ void processModuleSwitchChange()
 {
    if (moduleSwitch.stateChanged())
    {
-      if (CBUS.sendMyEvent(1U, moduleSwitch.isPressed()))
+      CANFrame msg;
+      msg.id = module_config.getCANID();
+      msg.len = 5;
+      msg.data[0] = (moduleSwitch.isPressed() ? OPC_ACON : OPC_ACOF);
+      msg.data[1] = highByte(module_config.getNodeNum());
+      msg.data[2] = lowByte(module_config.getNodeNum());
+      msg.data[3] = 0;
+      msg.data[4] = 1; // event number (EN) = 1
+
+      if (CBUS.sendMessage(msg))
       {
          // Sent OK
       }

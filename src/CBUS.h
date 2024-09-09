@@ -50,12 +50,24 @@
 
 #include <cbusdefs.h>
 
-#define SW_TR_HOLD 6000U                  ///< CBUS push button hold time for SLiM/FLiM transition in millis = 6 seconds
 #define DEFAULT_PRIORITY 0xB              ///< default CBUS messages priority. 1011 = 2|3 = normal/low
 #define LONG_MESSAGE_DEFAULT_DELAY 20     ///< delay in milliseconds between sending successive long message fragments
 #define LONG_MESSAGE_RECEIVE_TIMEOUT 5000 ///< timeout waiting for next long message packet
 #define NUM_EX_CONTEXTS 4                 ///< number of send and receive contexts for extended implementation = number of concurrent messages
 #define EX_BUFFER_LEN 64                  ///< size of extended send and receive buffers
+
+// FLiM timing constants
+#define ONE_SECOND 1000U
+#define HUNDRED_MILI_SECOND 100U
+#define FLiM_DEBOUNCE_TIME HUNDRED_MILI_SECOND
+#define FLiM_HOLD_TIME 4 * ONE_SECOND
+
+// CAN ID Enumeration
+#define MAX_CANID 0x7F
+#define ENUM_ARRAY_SIZE (MAX_CANID / 8) + 1 // Size of array for enumeration results
+
+#define ENUMERATION_TIMEOUT HUNDRED_MILI_SECOND     // Wait time for enumeration responses before setting canid
+#define ENUMERATION_HOLDOFF 2 * HUNDRED_MILI_SECOND // Delay afer receiving conflict before initiating our own self enumeration
 
 //
 /// Enumeration of CBUS modes
@@ -66,6 +78,21 @@ enum
    MODE_SLIM = 0,    ///< Module is in SLiM mode
    MODE_FLIM = 1,    ///< Module is in FLiM mode
    MODE_CHANGING = 2 ///< Module mode is in the process of being changed
+};
+
+//
+/// Enumeration of FLiM modes
+//
+
+enum class fsState
+{
+   fsSLiM,         ///< Module is in SLiM mode
+   fsFLiM,         ///< Module is in FLiM mode
+   fsPressed,      ///< FLiM button is pressed
+   fsFlashing,     ///< FLiM LED is flashing
+   fsFLiMSetup,    ///< Module is in FLiM setup mode
+   fsPressedSetup, ///< FLiM button pressed while in FLiM setup
+   fsUnknown       ///< Unknown FLiM mode
 };
 
 //
@@ -132,22 +159,22 @@ public:
 
    // implementations of these methods are provided in the base class
 
+   void FLiMSWCheck(void);
    bool sendSingleOpc(const uint8_t opc);
-   bool sendOpcMyNN(const uint8_t opc, const uint8_t dataLen=0, const uint8_t d1=0, const uint8_t d2=0, const uint8_t d3=0, const uint8_t d4=0, const uint8_t d5=0);
-   bool sendOpcNN(const uint8_t opc, const uint16_t nodeId, const uint8_t dataLen=0, const uint8_t d1=0, const uint8_t d2=0, const uint8_t d3=0, const uint8_t d4=0, const uint8_t d5=0);
-   bool sendMsgMyNN(CANFrame& frame);
-   bool sendMsgNN(CANFrame& frame, const uint16_t nodeId);
+   bool sendOpcMyNN(const uint8_t opc, const uint8_t dataLen = 0, const uint8_t d1 = 0, const uint8_t d2 = 0, const uint8_t d3 = 0, const uint8_t d4 = 0, const uint8_t d5 = 0);
+   bool sendOpcNN(const uint8_t opc, const uint16_t nodeId, const uint8_t dataLen = 0, const uint8_t d1 = 0, const uint8_t d2 = 0, const uint8_t d3 = 0, const uint8_t d4 = 0, const uint8_t d5 = 0);
+   bool sendMsgMyNN(CANFrame &frame);
+   bool sendMsgNN(CANFrame &frame, const uint16_t nodeId);
    bool sendMyEvent(const uint16_t eventNum, const bool onEvent);
    bool sendEvent(const uint16_t eventNode, const uint16_t eventNum, const bool onEvent);
-   bool sendEventWithData(uint16_t eventNode, const uint16_t eventNum, const bool onEvent, const uint8_t dataLen=0, const uint8_t d1=0, const uint8_t d2=0, const uint8_t d3=0);
-   bool sendDataEvent(const uint16_t nodeId, const uint8_t d1=0, const uint8_t d2=0, const uint8_t d3=0, const uint8_t d4=0, const uint8_t d5=0);
+   bool sendEventWithData(uint16_t eventNode, const uint16_t eventNum, const bool onEvent, const uint8_t dataLen = 0, const uint8_t d1 = 0, const uint8_t d2 = 0, const uint8_t d3 = 0);
+   bool sendDataEvent(const uint16_t nodeId, const uint8_t d1 = 0, const uint8_t d2 = 0, const uint8_t d3 = 0, const uint8_t d4 = 0, const uint8_t d5 = 0);
 
    bool sendWRACK(void);
    bool sendCMDERR(uint8_t cerrno);
-   void CANenumeration(void);
    uint8_t getCANID(uint32_t header);
    bool isExt(const CANFrame &msg) const;
-   bool isRTR(const CANFrame &msg)const;
+   bool isRTR(const CANFrame &msg) const;
    void process(uint8_t num_messages = 3);
    void initFLiM(void);
    void revertSLiM(void);
@@ -155,13 +182,17 @@ public:
    void renegotiate(void);
    void setParams(cbusparam_t *mparams);
    void setName(module_name_t *moduleName);
-   void checkCANenum(void);
-   void indicateMode(uint8_t mode);
+   void indicateModeOnLEDs(uint8_t mode);
    void indicateFLiMMode(bool bFLiM);
    void setEventHandlerCB(eventCallback_t evCallback);
    void setEventHandlerExCB(eventExCallback_t evExCallback);
    void setFrameHandler(frameCallback_t, uint8_t *opcodes = nullptr, uint8_t num_opcodes = 0);
    void makeHeader(CANFrame &msg, uint8_t priority = DEFAULT_PRIORITY);
+
+   // CAN ID Self-enumeration handling
+   bool checkIncomingFrame(CANFrame &msg);
+   void doEnum(bool bSendResult);
+   void processEnumeration(void);
 
    void setLongMessageHandler(CBUSLongMessage *handler);
    void consumeOwnEvents(CBUScoe *coe);
@@ -215,16 +246,19 @@ protected: // protected members become private in derived classes
    frameCallback_t frameHandler;
    uint8_t *m_opcodes;
    uint8_t m_numOpcodes;
-   uint8_t m_enumResponses[16]; // 128 bits for storing CAN ID enumeration results
-   bool m_bModeChanging;
-   bool m_bCANenum;
+   uint8_t m_enumResponses[ENUM_ARRAY_SIZE];
    bool m_bLearn;
    bool m_bThisNN;
    uint16_t m_nodeNumber;
    uint16_t m_eventNumber;
-   uint32_t timeOutTimer;
-   uint32_t CANenumTime;
+
+   uint32_t m_enumStartTime;
    bool m_bEnumerationRequired;
+   bool m_bEnumerationInProgress;
+   bool m_bResultRequired;
+
+   fsState m_flimState;
+   fsState m_prevFlimState;
 
    CBUSLongMessage *longMessageHandler; // CBUS long message object to receive relevant frames
    CBUScoe *m_coeObj;                   // consume-own-events
@@ -276,7 +310,7 @@ protected:
    uint32_t _last_fragment_received = 0UL;
 
    longMessageCallback_t _messagehandler;
-   //void (*_messagehandler)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status) = {}; // user callback function to receive long message fragments
+   // void (*_messagehandler)(void *fragment, const uint32_t fragment_len, const uint8_t stream_id, const uint8_t status) = {}; // user callback function to receive long message fragments
    CBUSbase *_cbus_object_ptr;
 };
 

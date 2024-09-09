@@ -67,7 +67,9 @@ private:
    bool m_pressedState;
    bool m_currentState;
    bool m_lastState;
+   bool m_activeState;
    bool m_stateChanged;
+   uint32_t m_debounceStartTime;
    uint32_t m_lastStateChangeTime;
    uint32_t m_lastStateDuration;
    uint32_t m_prevReleaseTime;
