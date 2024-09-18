@@ -1,9 +1,9 @@
-[submodule "src/can2040"]
-	path = src/can2040
-	url = https://github.com/KevinOConnor/can2040.git
 [submodule "src/cbusdefs"]
 	path = src/cbusdefs
-	url = https://github.com/MERG-DEV/cbusdefs.git
+	url = https://github.com/MERG-DEV/cbusdefs
+[submodule "src/can2040"]
+	path = src/can2040
+	url = https://github.com/KevinOConnor/can2040
 [submodule "src/CBUSPicoLib"]
 	path = src/CBUSPicoLib
 	url = https://github.com/kkimber/CBUSPicoLib.git

@@ -8,13 +8,15 @@ cov-int
 *.tgz
 CBUSPico-cppcheck-build-dir
 
-### VisualStudioCode ###
-.vscode/*      # Maybe .vscode/**/* instead - see comments
+.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+!.vscode/*.code-snippets
 
-### VisualStudioCode Patch ###
-# Ignore all local history of files
-**/.history
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
