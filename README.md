@@ -127,7 +127,7 @@ To build the documentation make sure you have Doxygen and GraphViz installed and
 
 The documentation will be created in the build/html folder.  Open the file index.html in a browser to view the docs.
 
-Pre-build documentation for this repository can be found here:
+Pre-built documentation for this repository can be found here:
 
 https://kkimber.github.io/CBUSPico/
 

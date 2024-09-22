@@ -132,6 +132,8 @@ if (DOXYGEN_FOUND)
       ${PROJECT_SOURCE_DIR}/doc/config.md
       ${PROJECT_SOURCE_DIR}/doc/ui.md
       ${PROJECT_SOURCE_DIR}/doc/canif.md
+      ${PROJECT_SOURCE_DIR}/src/CBUSPicoLib
+      ${PROJECT_SOURCE_DIR}/src/CBUSPicoLib/GridConnectPicoW
       ${PROJECT_SOURCE_DIR}/src
       ${PROJECT_SOURCE_DIR}/doc
       COMMENT "Generate CBUS Library Docs"
