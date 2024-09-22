@@ -1,8 +1,12 @@
-# CBUS&reg; library for RaspberryPi PICO
+# CBUS&reg; library for RaspberryPi PICO - Simple Example
 
-A CBUS Library for the Raspberry PICO, based on the PICO-SDK.
+This repo provides a simple example for using a CBUS Library for the Raspberry PICO, based on the PICO-SDK.
 
-Based on existing Arduino libraries with significant refactoring and clean-up.
+The example provides a simple one-in, one-out module that will operate on a CBUS network with other modules.
+
+The CBUS library source itself is contained in the repo https://github.com/kkimber/CBUSPicoLib.  This source is included into this project as a git submodule.
+
+The CBUS lbirary code is based on existing Arduino CBUS libraries developed by Duncan Greenwood, but with significant refactoring and redesign.
 
    * https://github.com/MERG-DEV/CBUSLED
    * https://github.com/MERG-DEV/CBUSSWITCH
@@ -16,15 +20,15 @@ and the PICO CAN2040 libraries:
 
 ## Project Status
 
-* Current status has the example module compiling and it appears functional.
-* Use of the external I2C FRAM or EEPROM is not yet implemented, and is largely untested.
-* Module based on using the PICO QPSI flash should be functional, but has had very limited testing.
+* This project provides a fully working, simple one-in, one-out CBUS module
+* The code as provided should work on either a Pico or Pico-W module, it is not designed for a Pico 2
+* Internal flash is used for persisent storage, however the library code is designed to support an external I2C EEPROM (but this code is largely untested)
 
 **NOTE:** This is a work in progress and all API's and interfaces are therefore subject to change.
 
 **Build status**
 
-Github is configured to perform continuous integration builds on every check-in, the latest binaries can be downloaded directly from "Github Actions" without needing to download and build the sources. 
+Github is configured to perform continuous integration builds on every check-in, the latest binaries can be downloaded directly from "Github Actions" without needing to download and build from the sources. 
 
 <img alt="git build action status"
    src="https://github.com/kkimber/CBUSPico/actions/workflows/cmake_rpi_pico.yml/badge.svg"/>
@@ -33,7 +37,7 @@ Github is configured to perform continuous integration builds on every check-in,
 
 The code has been analyzed with Coverity for errors.
 
-There are currently zero defects identified in the CBUS library code itself, however there are 22 defects identified in the PICO-SDK code that the CBUS library uses.
+The current status of the Coverity analysis can be seen here: 
 
 <a href="https://scan.coverity.com/projects/kkimber-cbuspico">
   <img alt="Coverity Scan Build Status"
@@ -42,31 +46,45 @@ There are currently zero defects identified in the CBUS library code itself, how
 
 ---
 
+## Cloning the repository
+
+This project uses a number of git submodules, so when cloning the repository it is necessary to check out the submodules too.  This can be done by cloning the repository with this command:
+
+    git clone --recurse-submodules https://github.com/kkimber/CBUSPico.git
+
+If this is not done during the initial cloning, the submodules can be initialized at a later date by using this command from the directory where the repository was cloned:
+
+    git submodule update --init --recursive
+
 ## Building
 
-CANPico requires the RPi Pico-SDK to be installed and configuration files are provided to build with CMake using the standard setup for a pico-sdk based application.
+The code in github has now been setup to build using the official Pico extension for VSCode.  This should be the easiest way to build and debug the code.  When opening the cloned respository directory in VSCode, VSCode should install the Pico extension, along with other required extensions, before continuing to install other dependencies.
 
-\todo add more build details
+It is still possible to build the code without using the Pico extension, however then the dependencies must be installed manually.  This include:
 
-## Documentation 
+   * PICO C SDK -Version 1.5.1
+   * GCC compiler toolchain
+   * ARM GCC compiler toolchain
+   * CMake
+   * Python 3.x
 
-Full source documentation is provided to be generated with Doxygen:
+## Programming a Pico
 
-https://www.doxygen.nl/
+Once successfully built, installable images will be generated in the build folder.
 
-To build the documentation make sure you have Doxygen and GraphViz installed and then build the CMake target "doxygen".
+  * CBUSPico.uf2 - this can be installed on a Pico by putting the Pico into DFU mode by powering the Pico with the BOOTSEL button pressed down.  When in DFU mode, the Pico will appear as a flash drive, and a drag / drop of the uf2 file to that drive will program the Pico.
 
-The documentation will be created in the build/html folder.  Open the file index.html in a browser to view the docs.
+  * CBUSPico.elf / bin - these files can be used with a suitable debug probe and VSCode to program and debug the code.
 
 ## Hardware setup
 
-The CBUSPico library and examples can be run on any Pico board as long as it is connected to a suitable CAN transceiver.  The code uses the PIO based CAN2040 soft CAN controller, so no external CAN controller is needed. Simply connect the transceiver to the CAN Tx /Rx pins as indicated below.
+This example module can be run on any Pico or Pico W (version 1) board as long as it is connected to a suitable CAN transceiver.  The code uses the PIO based CAN2040 soft CAN controller, so no external CAN controller is needed. Simply connect the transceiver to the CAN Tx /Rx pins as indicated below.
 
-The default pin mapping used by CANPico is follows.
+The default pin mapping used by CANPico example is follows.
 
 | Pico Pin | Function      |/| Pico Pin | Function      |
 |----------|---------------|-|----------|---------------|
-| 1        | GP0           | | 40       | VBUS          |
+| 1        | Module Button | | 40       | VBUS          |
 | 2        | GP0           | | 39       | VSYS          |
 | 3        | GND           | | 38       | GND           |
 | 4        | GP2           | | 37       | 3V3_EN        |
@@ -87,10 +105,35 @@ The default pin mapping used by CANPico is follows.
 | 19       | CAN Rx        | | 22       | GP17          |
 | 20       | Yellow LED    | | 21       | GP16          |
 
+\note
+
+   * LED outputs should be connected to ground via 1K resistors.
+   * Switch inputs should be connected to ground and have internal pull-up resistors configured in firmware
+   * CAN Tx and Rx lines should be connected to a suitable CAN Transceiver, e.g. an MCP2562 as follows
+
+![alt text](doc/schematic.png)
+
+and here is a visual presentation of the required wiring:
+
+![alt text](doc/wiring.png)
+
+## Documentation
+
+Full source documentation is provided to be generated with Doxygen:
+
+https://www.doxygen.nl/
+
+To build the documentation make sure you have Doxygen and GraphViz installed and then build the CMake target "doxygen".
+
+The documentation will be created in the build/html folder.  Open the file index.html in a browser to view the docs.
+
+Pre-build documentation for this repository can be found here:
+
+https://kkimber.github.io/CBUSPico/
 
 ## Storage memory layout
 
-Storage for module global configuration variables and node variables can optionally be in an external I2C FRAM or EEPROM, or can be located in a the external QSPI flash on the PICO board.
+Storage for module global configuration variables and node variables can optionally be stored in an external I2C FRAM or EEPROM, or can be located in a the external QSPI flash on the PICO board.
 
 ### External FRAM / EEPROM or Flash
 
