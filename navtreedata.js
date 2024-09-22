@@ -58,12 +58,26 @@ var NAVTREE =
       [ "Related Classes", "md_doc_canif.html#autotoc_md25", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
+    [ "Classes", "annotated.html", [
+      [ "Class List", "annotated.html", "annotated_dup" ],
+      [ "Class Index", "classes.html", null ],
+      [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
+      [ "Class Members", "functions.html", [
+        [ "All", "functions.html", "functions_dup" ],
+        [ "Functions", "functions_func.html", "functions_func" ],
+        [ "Variables", "functions_vars.html", null ]
+      ] ]
+    ] ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
-        [ "Variables", "globals_vars.html", null ]
+        [ "Variables", "globals_vars.html", null ],
+        [ "Typedefs", "globals_type.html", null ],
+        [ "Enumerations", "globals_enum.html", null ],
+        [ "Enumerator", "globals_eval.html", null ],
+        [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
   ] ]
@@ -71,7 +85,9 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"CBUS__1in1out_8cpp.html"
+"ACAN2040_8cpp.html",
+"classCBUSConfig.html#a1999e216c9144650022b54c6e958be7f",
+"dir_e68e8157741866f444e17edd764ebbae.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

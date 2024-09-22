@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classCBUSLongMessage.html" title="A basic class to send and receive CBUS long messages per MERG RFC 0005, handles a single message,..." alt="" coords="5,5,152,32"/>
+<area shape="rect" id="node2" href="$classCBUSLongMessageEx.html" title="A derived class to extend the base long message class to handle multiple concurrent messages,..." alt="" coords="200,5,363,32"/>
+</map>

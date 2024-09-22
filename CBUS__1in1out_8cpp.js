@@ -1,6 +1,5 @@
 var CBUS__1in1out_8cpp =
 [
-    [ "CBUS", "CBUS__1in1out_8cpp.html#aa4b4e13d8a0f0f825a49ab152cdd866d", null ],
     [ "eventhandler", "CBUS__1in1out_8cpp.html#ab5ad44c24bba231a966ce6689b7abf34", null ],
     [ "loop", "CBUS__1in1out_8cpp.html#afe461d27b9c48d5921c00d521181f12f", null ],
     [ "main", "CBUS__1in1out_8cpp.html#a2c3f6775325c30275d11c6abee2db6a0", null ],
@@ -9,6 +8,7 @@ var CBUS__1in1out_8cpp =
     [ "setupCBUS", "CBUS__1in1out_8cpp.html#a36869766bb246b1be3003952fd763da4", null ],
     [ "CAN_RX", "CBUS__1in1out_8cpp.html#a0a06a25d8ea420898326358fdccdb359", null ],
     [ "CAN_TX", "CBUS__1in1out_8cpp.html#a0d27de6a35d3a4600e6803895cdcf60a", null ],
+    [ "CBUS", "CBUS__1in1out_8cpp.html#ac82c880033386ee0e452e71dad8c16ec", null ],
     [ "coe", "CBUS__1in1out_8cpp.html#a274803ddea96ab961e6451167e4c836d", null ],
     [ "LED_GRN", "CBUS__1in1out_8cpp.html#a9ed691e5ca31121b0439f3118a7b5067", null ],
     [ "LED_YLW", "CBUS__1in1out_8cpp.html#ae80465ba3965512f03163e6f0b8ef493", null ],

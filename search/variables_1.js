@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['led_5fgrn_54',['LED_GRN',['../CBUS__1in1out_8cpp.html#a9ed691e5ca31121b0439f3118a7b5067',1,'CBUS_1in1out.cpp']]],
-  ['led_5fylw_55',['LED_YLW',['../CBUS__1in1out_8cpp.html#ae80465ba3965512f03163e6f0b8ef493',1,'CBUS_1in1out.cpp']]]
+  ['acan2040_839',['acan2040',['../classCBUSACAN2040.html#ad0885ce8cbd7dee9f662e3be23a6d69a',1,'CBUSACAN2040']]],
+  ['acan2040p_840',['acan2040p',['../CBUSACAN2040_8cpp.html#a9fdcaf546f07f8531fd7b5056cb686cb',1,'CBUSACAN2040.cpp']]]
 ];

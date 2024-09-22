@@ -1,0 +1,4 @@
+<map id="TCPServer_t" name="TCPServer_t">
+<area shape="rect" id="node1" title="Type to hold status information for the GridConnect TCP server." alt="" coords="9,109,109,136"/>
+<area shape="rect" id="node2" href="$CBUSGridConnect_8h.html#structgcMessage__t" title="Type for holding a Grid Connect string." alt="" coords="5,5,112,32"/>
+</map>
