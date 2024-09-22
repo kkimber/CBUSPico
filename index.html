@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CBUS Pico: CBUS&reg; library for RaspberryPi PICO</title>
+<title>CBUS Pico: CBUS&reg; library for RaspberryPi PICO - Simple Example</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -94,11 +94,13 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">CBUS&reg; library for RaspberryPi PICO </div>  </div>
+<div class="title">CBUS&reg; library for RaspberryPi PICO - Simple Example </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_README"></a> A CBUS Library for the Raspberry PICO, based on the PICO-SDK.</p>
-<p>Based on existing Arduino libraries with significant refactoring and clean-up.</p>
+<div class="textblock"><p><a class="anchor" id="md_README"></a> This repo provides a simple example for using a CBUS Library for the Raspberry PICO, based on the PICO-SDK.</p>
+<p>The example provides a simple one-in, one-out module that will operate on a CBUS network with other modules.</p>
+<p>The CBUS library source itself is contained in the repo <a href="https://github.com/kkimber/CBUSPicoLib">https://github.com/kkimber/CBUSPicoLib</a>. This source is included into this project as a git submodule.</p>
+<p>The CBUS lbirary code is based on existing Arduino CBUS libraries developed by Duncan Greenwood, but with significant refactoring and redesign.</p>
 <ul>
 <li><a href="https://github.com/MERG-DEV/CBUSLED">https://github.com/MERG-DEV/CBUSLED</a></li>
 <li><a href="https://github.com/MERG-DEV/CBUSSWITCH">https://github.com/MERG-DEV/CBUSSWITCH</a></li>
@@ -113,38 +115,50 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <h1><a class="anchor" id="autotoc_md1"></a>
 Project Status</h1>
 <ul>
-<li>Current status has the example module compiling and it appears functional.</li>
-<li>Use of the external I2C FRAM or EEPROM is not yet implemented, and is largely untested.</li>
-<li>Module based on using the PICO QPSI flash should be functional, but has had very limited testing.</li>
+<li>This project provides a fully working, simple one-in, one-out CBUS module</li>
+<li>The code as provided should work on either a Pico or Pico-W module, it is not designed for a Pico 2</li>
+<li>Internal flash is used for persisent storage, however the library code is designed to support an external I2C EEPROM (but this code is largely untested)</li>
 </ul>
 <p><b>NOTE:</b> This is a work in progress and all API's and interfaces are therefore subject to change.</p>
 <p><b>Build status</b></p>
-<p>Github is configured to perform continuous integration builds on every check-in, the latest binaries can be downloaded directly from "Github Actions" without needing to download and build the sources.</p>
+<p>Github is configured to perform continuous integration builds on every check-in, the latest binaries can be downloaded directly from "Github Actions" without needing to download and build from the sources.</p>
 <p><img src="https://github.com/kkimber/CBUSPico/actions/workflows/cmake_rpi_pico.yml/badge.svg" alt="git build action status" style="pointer-events: none;" class="inline"/></p>
 <p><b>Static code analysis status</b></p>
 <p>The code has been analyzed with Coverity for errors.</p>
-<p>There are currently zero defects identified in the CBUS library code itself, however there are 22 defects identified in the PICO-SDK code that the CBUS library uses.</p>
+<p>The current status of the Coverity analysis can be seen here:</p>
 <p><a href="https://scan.coverity.com/projects/kkimber-cbuspico"><img src="https://scan.coverity.com/projects/29566/badge.svg" alt="Coverity Scan Build Status" style="pointer-events: none;" class="inline"/> </a></p>
 <hr  />
 <h1><a class="anchor" id="autotoc_md3"></a>
+Cloning the repository</h1>
+<p>This project uses a number of git submodules, so when cloning the repository it is necessary to check out the submodules too. This can be done by cloning the repository with this command: </p><pre class="fragment">git clone --recurse-submodules https://github.com/kkimber/CBUSPico.git
+</pre><p> If this is not done during the initial cloning, the submodules can be initialized at a later date by using this command from the directory where the repository was cloned: </p><pre class="fragment">git submodule update --init --recursive
+</pre> <h1><a class="anchor" id="autotoc_md4"></a>
 Building</h1>
-<p>CANPico requires the RPi Pico-SDK to be installed and configuration files are provided to build with CMake using the standard setup for a pico-sdk based application.</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>add more build details</dd></dl>
-<h1><a class="anchor" id="autotoc_md4"></a>
-Documentation</h1>
-<p>Full source documentation is provided to be generated with Doxygen:</p>
-<p><a href="https://www.doxygen.nl/">https://www.doxygen.nl/</a></p>
-<p>To build the documentation make sure you have Doxygen and GraphViz installed and then build the CMake target "doxygen".</p>
-<p>The documentation will be created in the build/html folder. Open the file index.html in a browser to view the docs.</p>
+<p>The code in github has now been setup to build using the official Pico extension for VSCode. This should be the easiest way to build and debug the code. When opening the cloned respository directory in VSCode, VSCode should install the Pico extension, along with other required extensions, before continuing to install other dependencies.</p>
+<p>It is still possible to build the code without using the Pico extension, however then the dependencies must be installed manually. This include:</p>
+<ul>
+<li>PICO C SDK -Version 1.5.1</li>
+<li>GCC compiler toolchain</li>
+<li>ARM GCC compiler toolchain</li>
+<li>CMake</li>
+<li>Python 3.x</li>
+</ul>
 <h1><a class="anchor" id="autotoc_md5"></a>
+Programming a Pico</h1>
+<p>Once successfully built, installable images will be generated in the build folder.</p>
+<ul>
+<li>CBUSPico.uf2 - this can be installed on a Pico by putting the Pico into DFU mode by powering the Pico with the BOOTSEL button pressed down. When in DFU mode, the Pico will appear as a flash drive, and a drag / drop of the uf2 file to that drive will program the Pico.</li>
+<li>CBUSPico.elf / bin - these files can be used with a suitable debug probe and VSCode to program and debug the code.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md6"></a>
 Hardware setup</h1>
-<p>The CBUSPico library and examples can be run on any Pico board as long as it is connected to a suitable CAN transceiver. The code uses the PIO based CAN2040 soft CAN controller, so no external CAN controller is needed. Simply connect the transceiver to the CAN Tx /Rx pins as indicated below.</p>
-<p>The default pin mapping used by CANPico is follows.</p>
+<p>This example module can be run on any Pico or Pico W (version 1) board as long as it is connected to a suitable CAN transceiver. The code uses the PIO based CAN2040 soft CAN controller, so no external CAN controller is needed. Simply connect the transceiver to the CAN Tx /Rx pins as indicated below.</p>
+<p>The default pin mapping used by CANPico example is follows.</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadNone">Pico Pin   </th><th class="markdownTableHeadNone">Function   </th><th class="markdownTableHeadNone">/   </th><th class="markdownTableHeadNone">Pico Pin   </th><th class="markdownTableHeadNone">Function    </th></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">1   </td><td class="markdownTableBodyNone">GP0   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">40   </td><td class="markdownTableBodyNone">VBUS    </td></tr>
+<td class="markdownTableBodyNone">1   </td><td class="markdownTableBodyNone">Module Button   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">40   </td><td class="markdownTableBodyNone">VBUS    </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">2   </td><td class="markdownTableBodyNone">GP0   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">39   </td><td class="markdownTableBodyNone">VSYS    </td></tr>
 <tr class="markdownTableRowOdd">
@@ -184,10 +198,27 @@ Hardware setup</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">20   </td><td class="markdownTableBodyNone">Yellow LED   </td><td class="markdownTableBodyNone"></td><td class="markdownTableBodyNone">21   </td><td class="markdownTableBodyNone">GP16   </td></tr>
 </table>
-<h1><a class="anchor" id="autotoc_md6"></a>
+<dl class="section note"><dt>Note</dt><dd></dd></dl>
+<ul>
+<li>LED outputs should be connected to ground via 1K resistors.</li>
+<li>Switch inputs should be connected to ground and have internal pull-up resistors configured in firmware</li>
+<li>CAN Tx and Rx lines should be connected to a suitable CAN Transceiver, e.g. an MCP2562 as follows</li>
+</ul>
+<p><img src="schematic.png" alt="" class="inline" title="alt text"/></p>
+<p>and here is a visual presentation of the required wiring:</p>
+<p><img src="wiring.png" alt="" class="inline" title="alt text"/></p>
+<h1><a class="anchor" id="autotoc_md7"></a>
+Documentation</h1>
+<p>Full source documentation is provided to be generated with Doxygen:</p>
+<p><a href="https://www.doxygen.nl/">https://www.doxygen.nl/</a></p>
+<p>To build the documentation make sure you have Doxygen and GraphViz installed and then build the CMake target "doxygen".</p>
+<p>The documentation will be created in the build/html folder. Open the file index.html in a browser to view the docs.</p>
+<p>Pre-build documentation for this repository can be found here:</p>
+<p><a href="https://kkimber.github.io/CBUSPico/">https://kkimber.github.io/CBUSPico/</a></p>
+<h1><a class="anchor" id="autotoc_md8"></a>
 Storage memory layout</h1>
-<p>Storage for module global configuration variables and node variables can optionally be in an external I2C FRAM or EEPROM, or can be located in a the external QSPI flash on the PICO board.</p>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<p>Storage for module global configuration variables and node variables can optionally be stored in an external I2C FRAM or EEPROM, or can be located in a the external QSPI flash on the PICO board.</p>
+<h2><a class="anchor" id="autotoc_md9"></a>
 External FRAM / EEPROM or Flash</h2>
 <p>If the external FRAM or EEPROM is used the variables are located offset into the FRAM or EEPROM as per "Address" below.</p>
 <p>If QSPI flash is used, the last sector of flash is used. The size of flash on the PICO is defined by PICO_FLASH_SIZE_BYTES, nominally 2MiB in size for current models. Flash sector size is defined as FLASH_SECTOR_SIZE, which is the minimum size that can be erased, so with a flash size of 2MiB the data will be located at 0x1FF000, with variables located within that sector as per "Address" below.</p>
@@ -211,7 +242,7 @@ External FRAM / EEPROM or Flash</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">EE_EVENTS_START   </td><td class="markdownTableBodyNone">EE_MAX_EVENTS * (EE_NUM_EVS + 4)   </td><td class="markdownTableBodyNone">Events   </td><td class="markdownTableBodyNone">No   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md8"></a>
+<h2><a class="anchor" id="autotoc_md10"></a>
 Flash</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">

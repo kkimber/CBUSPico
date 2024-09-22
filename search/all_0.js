@@ -9,7 +9,7 @@ var searchData=
   ['cbus_20module_20configuration_6',['CBUS Module Configuration',['../md_doc_config.html',1,'']]],
   ['cbus_20module_20parameters_7',['CBUS Module Parameters',['../md_doc_params.html',1,'']]],
   ['cbus_20user_20interface_8',['CBUS User Interface',['../md_doc_ui.html',1,'']]],
-  ['cbus_26reg_3b_20library_20for_20raspberrypi_20pico_9',['CBUS&amp;reg; library for RaspberryPi PICO',['../index.html',1,'']]],
+  ['cbus_26reg_3b_20library_20for_20raspberrypi_20pico_20_2d_20simple_20example_9',['CBUS&amp;reg; library for RaspberryPi PICO - Simple Example',['../index.html',1,'']]],
   ['cbus_2emd_10',['cbus.md',['../cbus_8md.html',1,'']]],
   ['cbus_5f1in1out_2ecpp_11',['CBUS_1in1out.cpp',['../CBUS__1in1out_8cpp.html',1,'']]],
   ['coe_12',['coe',['../CBUS__1in1out_8cpp.html#a274803ddea96ab961e6451167e4c836d',1,'CBUS_1in1out.cpp']]],

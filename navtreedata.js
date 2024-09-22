@@ -25,35 +25,37 @@
 var NAVTREE =
 [
   [ "CBUS Pico", "index.html", [
-    [ "CBUS® library for RaspberryPi PICO", "index.html", [
+    [ "CBUS® library for RaspberryPi PICO - Simple Example", "index.html", [
       [ "Project Status", "index.html#autotoc_md1", null ],
-      [ "Building", "index.html#autotoc_md3", null ],
-      [ "Documentation", "index.html#autotoc_md4", null ],
-      [ "Hardware setup", "index.html#autotoc_md5", null ],
-      [ "Storage memory layout", "index.html#autotoc_md6", [
-        [ "External FRAM / EEPROM or Flash", "index.html#autotoc_md7", null ],
-        [ "Flash", "index.html#autotoc_md8", null ]
+      [ "Cloning the repository", "index.html#autotoc_md3", null ],
+      [ "Building", "index.html#autotoc_md4", null ],
+      [ "Programming a Pico", "index.html#autotoc_md5", null ],
+      [ "Hardware setup", "index.html#autotoc_md6", null ],
+      [ "Documentation", "index.html#autotoc_md7", null ],
+      [ "Storage memory layout", "index.html#autotoc_md8", [
+        [ "External FRAM / EEPROM or Flash", "index.html#autotoc_md9", null ],
+        [ "Flash", "index.html#autotoc_md10", null ]
       ] ]
     ] ],
     [ "CBUS Core", "md_doc_cbus.html", [
-      [ "begin", "md_doc_cbus.html#autotoc_md10", null ],
-      [ "available", "md_doc_cbus.html#autotoc_md11", null ],
-      [ "getNextMessage", "md_doc_cbus.html#autotoc_md12", null ],
-      [ "sendMessage", "md_doc_cbus.html#autotoc_md13", null ],
-      [ "reset", "md_doc_cbus.html#autotoc_md14", null ],
-      [ "Related Classes", "md_doc_cbus.html#autotoc_md15", null ]
+      [ "begin", "md_doc_cbus.html#autotoc_md12", null ],
+      [ "available", "md_doc_cbus.html#autotoc_md13", null ],
+      [ "getNextMessage", "md_doc_cbus.html#autotoc_md14", null ],
+      [ "sendMessage", "md_doc_cbus.html#autotoc_md15", null ],
+      [ "reset", "md_doc_cbus.html#autotoc_md16", null ],
+      [ "Related Classes", "md_doc_cbus.html#autotoc_md17", null ]
     ] ],
     [ "CBUS Module Parameters", "md_doc_params.html", [
-      [ "Related Classes", "md_doc_params.html#autotoc_md17", null ]
+      [ "Related Classes", "md_doc_params.html#autotoc_md19", null ]
     ] ],
     [ "CBUS Module Configuration", "md_doc_config.html", [
-      [ "Related Classes", "md_doc_config.html#autotoc_md19", null ]
+      [ "Related Classes", "md_doc_config.html#autotoc_md21", null ]
     ] ],
     [ "CBUS User Interface", "md_doc_ui.html", [
-      [ "Related Classes", "md_doc_ui.html#autotoc_md21", null ]
+      [ "Related Classes", "md_doc_ui.html#autotoc_md23", null ]
     ] ],
     [ "CBUS CAN Interfaces", "md_doc_canif.html", [
-      [ "Related Classes", "md_doc_canif.html#autotoc_md23", null ]
+      [ "Related Classes", "md_doc_canif.html#autotoc_md25", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
     [ "Files", "files.html", [
